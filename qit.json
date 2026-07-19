@@ -1,0 +1,10 @@
+{
+    "sut": {
+        "slug": "loyaltybay",
+        "type": "plugin",
+        "source": {
+            "type": "local",
+            "path": "."
+        }
+    }
+}

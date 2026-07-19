@@ -1,0 +1,23 @@
+.campaignbay-discount-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.campaignbay-discount-table th,
+.campaignbay-discount-table td {
+    border: 1px solid #dddddd86;
+    padding: 8px;
+    text-align: left;
+}
+
+.campaignbay-discount-table th {
+    font-weight: bold;
+}
+
+.campaignbay-discount-table tr:nth-child(even) {
+}
+
+.campaignbay-discount-table tr:hover {
+
+}
