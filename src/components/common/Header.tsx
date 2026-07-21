@@ -7,7 +7,7 @@ const Header = ({
 }) => {
   return (
     <div
-      className={`lb-text-[20px] lb-font-[700] lb-leading-[30px] lb-text-[#000000]  ${className}`}
+      className={`loyaltybay-text-[20px] loyaltybay-font-[700] loyaltybay-leading-[30px] loyaltybay-text-[#000000]  ${className}`}
     >
       {children}
     </div>

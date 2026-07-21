@@ -1,10 +1,33 @@
 <?php
+/**
+ * REST API controller for the points ledger.
+ *
+ * @package    LoyaltyBay
+ * @subpackage Admin
+ * @since      1.0.0
+ * @author     LoyaltyBay <loyaltybay@gmail.com>
+ */
+
 namespace LoyaltyBay\Admin;
 
 use LoyaltyBay\Api\ApiController;
 
+/**
+ * REST API controller for the points ledger.
+ *
+ * @since      1.0.0
+ * @package    LoyaltyBay
+ * @subpackage LoyaltyBay/Admin
+ * @author     LoyaltyBay <loyaltybay@gmail.com>
+ */
 class LedgerController extends ApiController {
 
+	/**
+	 * Register the REST routes for this controller.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
 	public function register_routes() {
 		register_rest_route(
 			$this->namespace . $this->version,
@@ -22,6 +45,13 @@ class LedgerController extends ApiController {
 	const SORTABLE_COLUMNS = array( 'id', 'amount', 'created_at' );
 	const REFERENCE_TYPES  = array( 'order', 'order_reversal', 'refund', 'review', 'referral', 'referral_signup', 'referral_reversal', 'referral_signup_reversal', 'admin' );
 
+	/**
+	 * Retrieve a paginated, filtered list of ledger entries.
+	 *
+	 * @since 1.0.0
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_REST_Response The ledger entries and the total row count.
+	 */
 	public function get_items( $request ) {
 		global $wpdb;
 		$table = $wpdb->prefix . 'loyaltybay_ledger';

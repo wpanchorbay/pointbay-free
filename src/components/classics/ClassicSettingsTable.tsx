@@ -27,8 +27,8 @@ export const ClassicSettingsTable: React.FC<ClassicSettingsTableProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`lb-settings-section ${className}`}>
-      {title && <h2 className="lb-ignore-preflight">{title}</h2>}
+    <div className={`loyaltybay-settings-section ${className}`}>
+      {title && <h2 className="loyaltybay-ignore-preflight">{title}</h2>}
       {description && <p className="description ">{description}</p>}
 
       <table className="form-table">
@@ -38,13 +38,13 @@ export const ClassicSettingsTable: React.FC<ClassicSettingsTableProps> = ({
               <th scope="row">
                 <label
                   htmlFor={field.id}
-                  className="!lb-flex lb-items-center"
+                  className="!loyaltybay-flex loyaltybay-items-center"
                 >
-                  <span className="lb-w-full">{field.label}</span>
+                  <span className="loyaltybay-w-full">{field.label}</span>
                   {field.tooltip && (
                     <ClassicTooltip
                       tip={field.tooltip}
-                      className="lb-ml-1"
+                      className="loyaltybay-ml-1"
                     />
                   )}
                 </label>

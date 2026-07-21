@@ -60,62 +60,62 @@ export const Popover: React.FC<PopoverProps> = ({
   switch (align) {
     case "top":
       positionClasses =
-        "lb-bottom-full lb-mb-2 lb-left-1/2 lb--translate-x-1/2";
-      originClass = "lb-origin-bottom";
+        "loyaltybay-bottom-full loyaltybay-mb-2 loyaltybay-left-1/2 loyaltybay--translate-x-1/2";
+      originClass = "loyaltybay-origin-bottom";
       break;
     case "top-left":
-      positionClasses = "lb-bottom-full lb-mb-2 lb-left-0";
-      originClass = "lb-origin-bottom-left";
+      positionClasses = "loyaltybay-bottom-full loyaltybay-mb-2 loyaltybay-left-0";
+      originClass = "loyaltybay-origin-bottom-left";
       break;
     case "top-right":
       positionClasses =
-        "lb-bottom-full lb-mb-2 lb-right-0";
-      originClass = "lb-origin-bottom-right";
+        "loyaltybay-bottom-full loyaltybay-mb-2 loyaltybay-right-0";
+      originClass = "loyaltybay-origin-bottom-right";
       break;
     case "bottom":
       positionClasses =
-        "lb-top-full lb-mt-2 lb-left-1/2 lb--translate-x-1/2";
-      originClass = "lb-origin-top";
+        "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-left-1/2 loyaltybay--translate-x-1/2";
+      originClass = "loyaltybay-origin-top";
       break;
     case "bottom-left":
-      positionClasses = "lb-top-full lb-mt-2 lb-left-0";
-      originClass = "lb-origin-top-left";
+      positionClasses = "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-left-0";
+      originClass = "loyaltybay-origin-top-left";
       break;
     case "bottom-right":
-      positionClasses = "lb-top-full lb-mt-2 lb-right-0";
-      originClass = "lb-origin-top-right";
+      positionClasses = "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-right-0";
+      originClass = "loyaltybay-origin-top-right";
       break;
     case "left":
       positionClasses =
-        "lb-right-full lb-mr-2 lb-top-1/2 lb--translate-y-1/2";
-      originClass = "lb-origin-right";
+        "loyaltybay-right-full loyaltybay-mr-2 loyaltybay-top-1/2 loyaltybay--translate-y-1/2";
+      originClass = "loyaltybay-origin-right";
       break;
     case "right":
       positionClasses =
-        "lb-left-full lb-ml-2 lb-top-1/2 lb--translate-y-1/2";
-      originClass = "lb-origin-left";
+        "loyaltybay-left-full loyaltybay-ml-2 loyaltybay-top-1/2 loyaltybay--translate-y-1/2";
+      originClass = "loyaltybay-origin-left";
       break;
     default:
-      positionClasses = "lb-top-full lb-mt-2 lb-left-0";
-      originClass = "lb-origin-top-left";
+      positionClasses = "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-left-0";
+      originClass = "loyaltybay-origin-top-left";
   }
 
   // Transition classes (Opacity + Scale)
   const transitionClasses = isOpen
-    ? "lb-opacity-100 lb-scale-100 lb-pointer-events-auto"
-    : "lb-opacity-0 lb-scale-95 lb-pointer-events-none";
+    ? "loyaltybay-opacity-100 loyaltybay-scale-100 loyaltybay-pointer-events-auto"
+    : "loyaltybay-opacity-0 loyaltybay-scale-95 loyaltybay-pointer-events-none";
 
   return (
     <div
       ref={containerRef}
-      className={`lb-relative lb-inline-block ${className} ${
+      className={`loyaltybay-relative loyaltybay-inline-block ${className} ${
         classNames?.root || ""
       }`}
     >
       {/* Trigger Wrapper */}
       <div
         onClick={toggle}
-        className={`lb-cursor-pointer lb-inline-flex ${
+        className={`loyaltybay-cursor-pointer loyaltybay-inline-flex ${
           classNames?.triggerWrapper || ""
         }`}
       >
@@ -125,9 +125,9 @@ export const Popover: React.FC<PopoverProps> = ({
       {/* Dropdown Content */}
       <div
         className={`
-          lb-absolute lb-z-50 lb-w-48
-          lb-bg-white lb-rounded-xl lb-shadow-xl lb-border lb-border-default
-          lb-transition-all lb-duration-200 lb-ease-out
+          loyaltybay-absolute loyaltybay-z-50 loyaltybay-w-48
+          loyaltybay-bg-white loyaltybay-rounded-xl loyaltybay-shadow-xl loyaltybay-border loyaltybay-border-default
+          loyaltybay-transition-all loyaltybay-duration-200 loyaltybay-ease-out
           ${positionClasses}
           ${originClass}
           ${transitionClasses}

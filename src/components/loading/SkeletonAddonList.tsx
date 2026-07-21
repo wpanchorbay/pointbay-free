@@ -6,22 +6,22 @@ export const SkeletonAddonList: React.FC = () => {
   return (
     <>
       {skeletonRows.map((index) => (
-        <tr key={index} className="lb-border-b lb-border-gray-200 lb-animate-pulse">
-          <td className="lb-p-2">
-            <div className="lb-w-4 lb-h-4 lb-bg-gray-200 lb-rounded"></div>
+        <tr key={index} className="loyaltybay-border-b loyaltybay-border-gray-200 loyaltybay-animate-pulse">
+          <td className="loyaltybay-p-2">
+            <div className="loyaltybay-w-4 loyaltybay-h-4 loyaltybay-bg-gray-200 loyaltybay-rounded"></div>
           </td>
-          <td className="lb-p-2">
-            <div className="lb-h-4 lb-bg-gray-200 lb-rounded lb-w-3/4"></div>
-            <div className="lb-h-3 lb-bg-gray-200 lb-rounded lb-w-1/2 lb-mt-2"></div>
+          <td className="loyaltybay-p-2">
+            <div className="loyaltybay-h-4 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-3/4"></div>
+            <div className="loyaltybay-h-3 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-1/2 loyaltybay-mt-2"></div>
           </td>
-          <td className="lb-p-2">
-            <div className="lb-h-4 lb-bg-gray-200 lb-rounded lb-w-6"></div>
+          <td className="loyaltybay-p-2">
+            <div className="loyaltybay-h-4 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-6"></div>
           </td>
-          <td className="lb-p-2">
-            <div className="lb-h-4 lb-bg-gray-200 lb-rounded lb-w-1/3"></div>
+          <td className="loyaltybay-p-2">
+            <div className="loyaltybay-h-4 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-1/3"></div>
           </td>
-          <td className="lb-p-2">
-            <div className="lb-h-5 lb-bg-gray-200 lb-rounded lb-w-12"></div>
+          <td className="loyaltybay-p-2">
+            <div className="loyaltybay-h-5 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-12"></div>
           </td>
         </tr>
       ))}

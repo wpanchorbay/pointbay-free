@@ -194,7 +194,7 @@ class Plugin {
 	 * @return array The modified array of plugin data.
 	 */
 	public function change_plugin_display_name( $plugins ) {
-		$plugin_basename = plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay.php' );
+		$plugin_basename = plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay-loyalty-points-referral-rewards-woo.php' );
 
 		if ( isset( $plugins[ $plugin_basename ] ) ) {
 			$plugins[ $plugin_basename ]['Name'] = 'LoyaltyBay';

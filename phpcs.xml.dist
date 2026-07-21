@@ -46,7 +46,7 @@
     <rule ref="WordPress.WP.I18n">
         <properties>
             <property name="text_domain" type="array">
-                <element value="loyaltybay"/>
+                <element value="loyaltybay-loyalty-points-referral-rewards-woo"/>
             </property>
         </properties>
     </rule>

@@ -22,18 +22,18 @@ export const Radio: React.FC<RadioProps> = ({
 }) => {
   return (
     <label
-      className={`lb-flex lb-items-center lb-gap-3 lb-cursor-pointer ${
-        disabled ? "lb-opacity-50 lb-cursor-not-allowed" : ""
+      className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-3 loyaltybay-cursor-pointer ${
+        disabled ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed" : ""
       } ${classNames?.root || ""}`}
     >
       <div
         className={`
-        lb-relative lb-flex lb-items-center lb-justify-center
-        lb-w-5 lb-h-5 lb-rounded-full lb-border-2 lb-transition-all lb-duration-200
+        loyaltybay-relative loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
+        loyaltybay-w-5 loyaltybay-h-5 loyaltybay-rounded-full loyaltybay-border-2 loyaltybay-transition-all loyaltybay-duration-200
         ${
           checked
-            ? "lb-border-primary lb-bg-primary"
-            : "lb-border-gray-300 lb-bg-white hover:lb-border-primary"
+            ? "loyaltybay-border-primary loyaltybay-bg-primary"
+            : "loyaltybay-border-gray-300 loyaltybay-bg-white hover:loyaltybay-border-primary"
         }
         ${classNames?.circle || ""}
       `}
@@ -41,22 +41,22 @@ export const Radio: React.FC<RadioProps> = ({
         {/* Inner white dot for selected state */}
         <div
           className={`
-                lb-w-2 lb-h-2 lb-bg-white lb-rounded-full lb-transform lb-transition-transform lb-duration-200
-                ${checked ? "lb-scale-100" : "lb-scale-0"}
+                loyaltybay-w-2 loyaltybay-h-2 loyaltybay-bg-white loyaltybay-rounded-full loyaltybay-transform loyaltybay-transition-transform loyaltybay-duration-200
+                ${checked ? "loyaltybay-scale-100" : "loyaltybay-scale-0"}
                 ${classNames?.dot || ""}
             `}
         />
         <input
           type="radio"
-          className="lb-hidden"
+          className="loyaltybay-hidden"
           checked={checked}
           onChange={onChange}
           disabled={disabled}
         />
       </div>
       <span
-        className={`lb-text-[15px] lb-font-semibold ${
-          checked ? "lb-text-gray-900" : "lb-text-gray-700"
+        className={`loyaltybay-text-[15px] loyaltybay-font-semibold ${
+          checked ? "loyaltybay-text-gray-900" : "loyaltybay-text-gray-700"
         } ${classNames?.label || ""}`}
       >
         {label}

@@ -30,22 +30,22 @@ export const ListSelect: React.FC<ListSelectProps> = ({
 }) => {
   const sizeStyles = {
     small: {
-      item: "lb-px-3 lb-py-2",
-      label: "lb-text-xs",
-      iconWrapper: "lb-w-4",
-      icon: "lb-w-3 lb-h-3",
+      item: "loyaltybay-px-3 loyaltybay-py-2",
+      label: "loyaltybay-text-xs",
+      iconWrapper: "loyaltybay-w-4",
+      icon: "loyaltybay-w-3 loyaltybay-h-3",
     },
     medium: {
-      item: "lb-px-4 lb-py-3",
-      label: "lb-text-sm",
-      iconWrapper: "lb-w-5",
-      icon: "lb-w-4 lb-h-4",
+      item: "loyaltybay-px-4 loyaltybay-py-3",
+      label: "loyaltybay-text-sm",
+      iconWrapper: "loyaltybay-w-5",
+      icon: "loyaltybay-w-4 loyaltybay-h-4",
     },
     large: {
-      item: "lb-px-5 lb-py-4",
-      label: "lb-text-base",
-      iconWrapper: "lb-w-6",
-      icon: "lb-w-5 lb-h-5",
+      item: "loyaltybay-px-5 loyaltybay-py-4",
+      label: "loyaltybay-text-base",
+      iconWrapper: "loyaltybay-w-6",
+      icon: "loyaltybay-w-5 loyaltybay-h-5",
     },
   };
 
@@ -53,7 +53,7 @@ export const ListSelect: React.FC<ListSelectProps> = ({
 
   return (
     <div
-      className={`lb-flex lb-flex-col lb-border lb-border-default lb-rounded-lg lb-bg-white lb-overflow-hidden ${className} ${
+      className={`loyaltybay-flex loyaltybay-flex-col loyaltybay-border loyaltybay-border-default loyaltybay-rounded-lg loyaltybay-bg-white loyaltybay-overflow-hidden ${className} ${
         classNames?.root || ""
       }`}
     >
@@ -64,26 +64,26 @@ export const ListSelect: React.FC<ListSelectProps> = ({
             key={item.value}
             onClick={() => onChange(item.value)}
             className={`
-              lb-flex lb-items-center lb-gap-3 
-              lb-cursor-pointer lb-transition-colors
-              hover:lb-bg-gray-50
+              loyaltybay-flex loyaltybay-items-center loyaltybay-gap-3 
+              loyaltybay-cursor-pointer loyaltybay-transition-colors
+              hover:loyaltybay-bg-gray-50
               ${currentSize.item}
               ${
                 index !== items.length - 1
-                  ? "lb-border-b lb-border-gray-100"
+                  ? "loyaltybay-border-b loyaltybay-border-gray-100"
                   : ""
               }
               ${classNames?.item || ""}
             `}
           >
             <div
-              className={`lb-flex lb-justify-center ${
+              className={`loyaltybay-flex loyaltybay-justify-center ${
                 currentSize.iconWrapper
               } ${classNames?.iconWrapper || ""}`}
             >
               {isSelected && (
                 <svg
-                  className={`lb-text-gray-900 ${currentSize.icon} ${
+                  className={`loyaltybay-text-gray-900 ${currentSize.icon} ${
                     classNames?.icon || ""
                   }`}
                   viewBox="0 0 24 24"
@@ -100,8 +100,8 @@ export const ListSelect: React.FC<ListSelectProps> = ({
             <span
               className={`${currentSize.label} ${
                 isSelected
-                  ? "lb-text-gray-900 lb-font-medium"
-                  : "lb-text-gray-500"
+                  ? "loyaltybay-text-gray-900 loyaltybay-font-medium"
+                  : "loyaltybay-text-gray-500"
               } ${classNames?.label || ""}`}
             >
               {item.label}

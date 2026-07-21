@@ -39,10 +39,10 @@ class Activator {
 	public static function activate() {
 		// Bail out (and deactivate) if WooCommerce isn't active — this plugin requires it.
 		if ( ! self::is_woocommerce_active() ) {
-			deactivate_plugins( plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay.php' ) );
+			deactivate_plugins( plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay-loyalty-points-referral-rewards-woo.php' ) );
 			wp_die(
-				esc_html__( 'LoyaltyBay requires WooCommerce to be installed and active.', 'loyaltybay' ),
-				esc_html__( 'Plugin dependency check', 'loyaltybay' ),
+				esc_html__( 'LoyaltyBay requires WooCommerce to be installed and active.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+				esc_html__( 'Plugin dependency check', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 				array( 'back_link' => true )
 			);
 		}

@@ -43,16 +43,16 @@ export const CardRadioGroup: React.FC<CardRadioGroupProps> = ({
 
   switch (layout) {
     case "vertical":
-      containerClass = "lb-flex lb-flex-col lb-gap-4";
+      containerClass = "loyaltybay-flex loyaltybay-flex-col loyaltybay-gap-4";
       break;
     case "horizontal":
       containerClass =
-        "lb-flex lb-flex-row lb-gap-4 lb-overflow-x-auto lb-pb-2"; // Added overflow handling for safe horizontal scrolling if needed
+        "loyaltybay-flex loyaltybay-flex-row loyaltybay-gap-4 loyaltybay-overflow-x-auto loyaltybay-pb-2"; // Added overflow handling for safe horizontal scrolling if needed
       break;
     case "responsive":
     default:
       containerClass =
-        "lb-grid lb-grid-cols-1 md:!lb-grid-cols-2 lb-gap-4";
+        "loyaltybay-grid loyaltybay-grid-cols-1 md:!loyaltybay-grid-cols-2 loyaltybay-gap-4";
       break;
   }
 
@@ -142,7 +142,7 @@ export const CardRadioGroup: React.FC<CardRadioGroupProps> = ({
         createPortal(
           <div
             ref={tooltipRef}
-            className="lb-fixed lb-z-[50001] lb-flex lb-flex-col lb-items-center lb-gap-1.5 lb-bg-gray-900 lb-text-white lb-text-xs lb-p-2 lb-min-w-[140px] lb-rounded-md lb-shadow-lg"
+            className="loyaltybay-fixed loyaltybay-z-[50001] loyaltybay-flex loyaltybay-flex-col loyaltybay-items-center loyaltybay-gap-1.5 loyaltybay-bg-gray-900 loyaltybay-text-white loyaltybay-text-xs loyaltybay-p-2 loyaltybay-min-w-[140px] loyaltybay-rounded-md loyaltybay-shadow-lg"
             style={{
               top: tooltipState.top - 10, // Slight offset upwards from the card top
               left: tooltipState.left,
@@ -151,19 +151,19 @@ export const CardRadioGroup: React.FC<CardRadioGroupProps> = ({
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}
           >
-            <span className="lb-font-medium lb-whitespace-nowrap">
+            <span className="loyaltybay-font-medium loyaltybay-whitespace-nowrap">
               Upgrade to unlock
             </span>
             <a
               href="#"
               target="_blank"
               onClick={(e) => e.preventDefault()}
-              className="lb-w-full lb-bg-[#f02a74] hover:!lb-bg-[#e71161] lb-text-white hover:!lb-text-white lb-font-bold lb-py-1.5 lb-px-3 lb-transition-colors focus:lb-outline-none focus:lb-ring-0 lb-cursor-pointer lb-text-center lb-rounded"
+              className="loyaltybay-w-full loyaltybay-bg-[#f02a74] hover:!loyaltybay-bg-[#e71161] loyaltybay-text-white hover:!loyaltybay-text-white loyaltybay-font-bold loyaltybay-py-1.5 loyaltybay-px-3 loyaltybay-transition-colors focus:loyaltybay-outline-none focus:loyaltybay-ring-0 loyaltybay-cursor-pointer loyaltybay-text-center loyaltybay-rounded"
             >
               Buy Pro
             </a>
             {/* Tooltip Arrow */}
-            <div className="lb-absolute lb-top-full lb-left-1/2 -lb-translate-x-1/2 lb-border-4 lb-border-transparent lb-border-t-gray-900"></div>
+            <div className="loyaltybay-absolute loyaltybay-top-full loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-4 loyaltybay-border-transparent loyaltybay-border-t-gray-900"></div>
           </div>,
           document.body,
         )}

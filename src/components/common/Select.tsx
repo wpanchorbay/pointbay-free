@@ -188,7 +188,7 @@ const Select: React.FC<SelectProps> = ({
   enableSearch = false,
   border = borderClasses,
   hoverBorder = hoverBorderClasses,
-  color = "lb-text-[#0a4b78]",
+  color = "loyaltybay-text-[#0a4b78]",
   isError = false,
   errorClassName = errorClasses,
   differentDropdownWidth = false,
@@ -456,14 +456,14 @@ const Select: React.FC<SelectProps> = ({
   };
   return (
     <div
-      className={`lb-relative lb-w-full ${className} ${
+      className={`loyaltybay-relative loyaltybay-w-full ${className} ${
         classNames.wrapper || ""
       }`}
       ref={containerRef}
     >
       {label && (
         <label
-          className={`lb-block lb-text-sm lb-font-medium lb-text-gray-700 lb-mb-1 ${
+          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-medium loyaltybay-text-gray-700 loyaltybay-mb-1 ${
             classNames.label || ""
           }`}
         >
@@ -484,29 +484,29 @@ const Select: React.FC<SelectProps> = ({
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
         className={`
-          lb-ring-1 lb-ring-transparent
-          lb-relative lb-flex lb-flex-wrap  lb-items-center lb-justify-between lb-w-full lb-gap-0 lb-px-4  lb-text-left !lb-cursor-pointer 
-          lb-transition-all lb-duration-200 lb-ease-in-out lb-border lb-rounded-[8px] lb-bg-white ${border} 
-          ${isCompact ? "lb-py-[5px]" : "lb-py-[9px]"}
+          loyaltybay-ring-1 loyaltybay-ring-transparent
+          loyaltybay-relative loyaltybay-flex loyaltybay-flex-wrap  loyaltybay-items-center loyaltybay-justify-between loyaltybay-w-full loyaltybay-gap-0 loyaltybay-px-4  loyaltybay-text-left !loyaltybay-cursor-pointer 
+          loyaltybay-transition-all loyaltybay-duration-200 loyaltybay-ease-in-out loyaltybay-border loyaltybay-rounded-[8px] loyaltybay-bg-white ${border} 
+          ${isCompact ? "loyaltybay-py-[5px]" : "loyaltybay-py-[9px]"}
           ${!disabled && !isOpen ? ` ${color} ` : ""}
           ${
             disabled
-              ? "lb-bg-gray-100 lb-cursor-not-allowed lb-text-gray-400 lb-border-gray-200"
+              ? "loyaltybay-bg-gray-100 loyaltybay-cursor-not-allowed loyaltybay-text-gray-400 loyaltybay-border-gray-200"
               : isError
               ? ""
-              : "hover:!lb-border-[#3858e9]"
+              : "hover:!loyaltybay-border-[#3858e9]"
           }
           ${isOpen ? (isError ? errorClassesManual : hoverClassesManual) : ""}
           ${isError ? `${errorClassName} ${classNames.error || ""}` : ""}
           ${classNames.select || ""} ${classNames.container || ""}
         `}
       >
-        <div className="lb-flex-1 lb-min-w-0">
+        <div className="loyaltybay-flex-1 loyaltybay-min-w-0">
           {enableSearch && isOpen ? (
             <input
               ref={searchInputRef}
               type="text"
-              className={`lb-w-full !lb-bg-transparent !lb-border-none !lb-shadow-none !lb-outline-none !lb-p-0 !lb-font-[${fontWeight}] !lb-text-[${fontSize}px] !lb-leading-[20px] !lb-min-h-[unset] ${
+              className={`loyaltybay-w-full !loyaltybay-bg-transparent !loyaltybay-border-none !loyaltybay-shadow-none !loyaltybay-outline-none !loyaltybay-p-0 !loyaltybay-font-[${fontWeight}] !loyaltybay-text-[${fontSize}px] !loyaltybay-leading-[20px] !loyaltybay-min-h-[unset] ${
                 classNames.search || ""
               }`}
               value={searchQuery}
@@ -520,11 +520,11 @@ const Select: React.FC<SelectProps> = ({
             />
           ) : (
             <span
-              className={`lb-block lb-truncate ${color} hover:!lb-text-[#3858e9] lb-text-[${fontSize}px] lb-font-[${fontWeight}]`}
+              className={`loyaltybay-block loyaltybay-truncate ${color} hover:!loyaltybay-text-[#3858e9] loyaltybay-text-[${fontSize}px] loyaltybay-font-[${fontWeight}]`}
             >
               {value ? (
                 <span
-                  className={`lb-flex lb-items-center lb-gap-2 `}
+                  className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2 `}
                 >
                   {renderOption && selectedOption
                     ? renderOption(selectedOption)
@@ -539,10 +539,10 @@ const Select: React.FC<SelectProps> = ({
 
         {/* Chevron Icon */}
         {!hideIcon ? (
-          <span className="lb-flex-shrink-0 lb-ml-2 lb-flex lb-items-center">
+          <span className="loyaltybay-flex-shrink-0 loyaltybay-ml-2 loyaltybay-flex loyaltybay-items-center">
             <ChevronDown
-              className={`lb-h-4 lb-w-4 lb-text-gray-700 lb-transition-transform lb-duration-200 ${
-                isOpen ? "lb-transform lb-rotate-180" : ""
+              className={`loyaltybay-h-4 loyaltybay-w-4 loyaltybay-text-gray-700 loyaltybay-transition-transform loyaltybay-duration-200 ${
+                isOpen ? "loyaltybay-transform loyaltybay-rotate-180" : ""
               }`}
             />
           </span>
@@ -552,8 +552,8 @@ const Select: React.FC<SelectProps> = ({
       {/* Dropdown Panel */}
       {isOpen && (
         <div
-          className={`lb-absolute lb-z-[50000] lb-bg-white lb-border lb-border-gray-200 lb-rounded-[12px] lb-shadow-[0_2px_2px_rgba(0,0,0,0.3)] -lb-mt-[1px] lb-p-1 ${
-            differentDropdownWidth ? "" : "lb-w-full"
+          className={`loyaltybay-absolute loyaltybay-z-[50000] loyaltybay-bg-white loyaltybay-border loyaltybay-border-gray-200 loyaltybay-rounded-[12px] loyaltybay-shadow-[0_2px_2px_rgba(0,0,0,0.3)] -loyaltybay-mt-[1px] loyaltybay-p-1 ${
+            differentDropdownWidth ? "" : "loyaltybay-w-full"
           } ${classNames.dropdown || ""}`}
         >
           {/* Options List */}
@@ -563,11 +563,11 @@ const Select: React.FC<SelectProps> = ({
             role="listbox"
             tabIndex={-1}
             onScroll={() => setTooltipState(null)} // Hide tooltip on scroll to prevent detachment
-            className={`lb-max-h-60 lb-overflow-auto focus:lb-outline-none lb-scrollbar-hide lb-relative ${color} lb-font-[${fontWeight}] lb-text-[${fontSize}px]`}
+            className={`loyaltybay-max-h-60 loyaltybay-overflow-auto focus:loyaltybay-outline-none loyaltybay-scrollbar-hide loyaltybay-relative ${color} loyaltybay-font-[${fontWeight}] loyaltybay-text-[${fontSize}px]`}
             style={{ scrollbarWidth: "none" }}
           >
             {filteredOptions.length === 0 ? (
-              <li className="lb-relative lb-cursor-default lb-select-none lb-p-1  lb-italic lb-text-center lb-rounded-[8px]">
+              <li className="loyaltybay-relative loyaltybay-cursor-default loyaltybay-select-none loyaltybay-p-1  loyaltybay-italic loyaltybay-text-center loyaltybay-rounded-[8px]">
                 {searchQuery ? "No results found" : "No options available"}
               </li>
             ) : (
@@ -596,22 +596,22 @@ const Select: React.FC<SelectProps> = ({
                       handleSelect(option);
                     }}
                     className={`
-                      lb-group lb-relative lb-cursor-pointer lb-select-none lb-px-3  lb-flex lb-flex-nowrap lb-justify-between lb-min-h-[36px]lb-font-medium lb-transition-colors lb-duration-150 !lb-mb-0 lb-border-b-[1px] lb-border-gray-100  lb-rounded-[8px] 
+                      loyaltybay-group loyaltybay-relative loyaltybay-cursor-pointer loyaltybay-select-none loyaltybay-px-3  loyaltybay-flex loyaltybay-flex-nowrap loyaltybay-justify-between loyaltybay-min-h-[36px]loyaltybay-font-medium loyaltybay-transition-colors loyaltybay-duration-150 !loyaltybay-mb-0 loyaltybay-border-b-[1px] loyaltybay-border-gray-100  loyaltybay-rounded-[8px] 
                       ${
                         isDisabled
-                          ? "lb-opacity-100 !lb-cursor-not-allowed lb-text-gray-500 lb-bg-gray-200"
+                          ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed loyaltybay-text-gray-500 loyaltybay-bg-gray-200"
                           : ""
                       }
                       ${
                         isComingSoon
-                          ? "lb-opacity-100 !lb-cursor-not-allowed !lb-text-pink-500 hover:!lb-text-pink-600 lb-bg-gray-200"
+                          ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed !loyaltybay-text-pink-500 hover:!loyaltybay-text-pink-600 loyaltybay-bg-gray-200"
                           : ""
                       }
                       ${
                         isHighlighted && !isDisabled
-                          ? "lb-bg-blue-600 lb-text-white"
+                          ? "loyaltybay-bg-blue-600 loyaltybay-text-white"
                           : isDisabled
-                          ? "lb-text-gray-400"
+                          ? "loyaltybay-text-gray-400"
                           : ""
                       }
                       ${
@@ -622,12 +622,12 @@ const Select: React.FC<SelectProps> = ({
                       ${classNames.option || ""}
                     `}
                   >
-                    <div className="lb-flex lb-items-center lb-justify-between lb-min-h-[36px] lb-w-full lb-gap-4">
+                    <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-min-h-[36px] loyaltybay-w-full loyaltybay-gap-4">
                       <span
-                        className={`lb-block lb-truncate ${
+                        className={`loyaltybay-block loyaltybay-truncate ${
                           isSelected
-                            ? "lb-font-semibold"
-                            : "lb-font-normal"
+                            ? "loyaltybay-font-semibold"
+                            : "loyaltybay-font-normal"
                         }`}
                       >
                         {renderOption ? renderOption(option) : option.label}
@@ -635,12 +635,12 @@ const Select: React.FC<SelectProps> = ({
 
                       {/* Lock Icon for Buy Pro */}
                       {isPro && (
-                        <LockKeyhole className="lb-w-3.5 lb-h-3.5 lb-text-[#f02a74]" />
+                        <LockKeyhole className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-[#f02a74]" />
                       )}
                       {isComingSoon && (
-                        <span className="lb-bg-pink-600 lb-text-white lb-p-1 lb-px-2 lb-rounded-full lb-text-xs lb-flex lb-items-center lb-gap-1 lb-flex-nowrap">
-                          <Hourglass className="lb-w-3.5 lb-h-3.5 lb-text-white" />
-                          <span className="lb-whitespace-nowrap">
+                        <span className="loyaltybay-bg-pink-600 loyaltybay-text-white loyaltybay-p-1 loyaltybay-px-2 loyaltybay-rounded-full loyaltybay-text-xs loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-flex-nowrap">
+                          <Hourglass className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-white" />
+                          <span className="loyaltybay-whitespace-nowrap">
                             Coming Soon
                           </span>
                         </span>
@@ -650,14 +650,14 @@ const Select: React.FC<SelectProps> = ({
                     {/* Checkmark for selected item */}
                     {isSelected && !isPro && !isComingSoon && (
                       <span
-                        className={`lb-px-3 lb-pr-0 lb-flex-nowrap lb-flex lb-items-center lb-pr-4 ${
+                        className={`loyaltybay-px-3 loyaltybay-pr-0 loyaltybay-flex-nowrap loyaltybay-flex loyaltybay-items-center loyaltybay-pr-4 ${
                           isHighlighted && !isDisabled
-                            ? "lb-text-white"
-                            : "lb-text-blue-600"
+                            ? "loyaltybay-text-white"
+                            : "loyaltybay-text-blue-600"
                         }`}
                       >
                         <svg
-                          className="lb-h-5 lb-w-5"
+                          className="loyaltybay-h-5 loyaltybay-w-5"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"
@@ -685,7 +685,7 @@ const Select: React.FC<SelectProps> = ({
         createPortal(
           <div
             ref={tooltipRef}
-            className="lb-fixed lb-z-[50001] lb-flex lb-flex-col lb-items-center lb-gap-1.5 lb-bg-gray-900 lb-text-white lb-text-xs lb-p-2 lb-min-w-[140px] lb-rounded-md lb-shadow-lg"
+            className="loyaltybay-fixed loyaltybay-z-[50001] loyaltybay-flex loyaltybay-flex-col loyaltybay-items-center loyaltybay-gap-1.5 loyaltybay-bg-gray-900 loyaltybay-text-white loyaltybay-text-xs loyaltybay-p-2 loyaltybay-min-w-[140px] loyaltybay-rounded-md loyaltybay-shadow-lg"
             style={{
               top: tooltipState.top + 5, // Adjusted to user preference
               left: tooltipState.left,
@@ -694,19 +694,19 @@ const Select: React.FC<SelectProps> = ({
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}
           >
-            <span className="lb-font-medium lb-whitespace-nowrap">
+            <span className="loyaltybay-font-medium loyaltybay-whitespace-nowrap">
               Upgrade to unlock
             </span>
             <a
               href="#"
               target="_blank"
               onClick={(e) => e.preventDefault()}
-              className="lb-w-full lb-bg-[#f02a74] hover:!lb-bg-[#e71161] lb-text-white hover:!lb-text-white lb-font-bold lb-py-1.5 lb-px-3 lb-transition-colors focus:lb-outline-none focus:lb-ring-0 lb-cursor-pointer lb-text-center lb-rounded"
+              className="loyaltybay-w-full loyaltybay-bg-[#f02a74] hover:!loyaltybay-bg-[#e71161] loyaltybay-text-white hover:!loyaltybay-text-white loyaltybay-font-bold loyaltybay-py-1.5 loyaltybay-px-3 loyaltybay-transition-colors focus:loyaltybay-outline-none focus:loyaltybay-ring-0 loyaltybay-cursor-pointer loyaltybay-text-center loyaltybay-rounded"
             >
               Buy Pro
             </a>
             {/* Tooltip Arrow */}
-            <div className="lb-absolute lb-top-full lb-left-1/2 -lb-translate-x-1/2 lb-border-4 lb-border-transparent lb-border-t-gray-900"></div>
+            <div className="loyaltybay-absolute loyaltybay-top-full loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-4 loyaltybay-border-transparent loyaltybay-border-t-gray-900"></div>
           </div>,
           document.body,
         )}

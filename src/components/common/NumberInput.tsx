@@ -145,10 +145,10 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   };
 
   return (
-    <div className={`lb-w-full ${classNames?.wrapper || ""}`}>
+    <div className={`loyaltybay-w-full ${classNames?.wrapper || ""}`}>
       {label && (
         <label
-          className={`lb-block lb-text-sm lb-font-bold lb-text-gray-900 lb-mb-2 ${
+          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 ${
             classNames?.label || ""
           }`}
         >
@@ -158,14 +158,14 @@ export const NumberInput: React.FC<NumberInputProps> = ({
 
       <div
         className={`
-          lb-flex lb-items-center lb-justify-between lb-overflow-hidden
-          lb-rounded-[8px] lb-bg-white lb-min-w-min lb-py-[1px]
+          loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-overflow-hidden
+          loyaltybay-rounded-[8px] loyaltybay-bg-white loyaltybay-min-w-min loyaltybay-py-[1px]
           ${borderClasses}
           ${transitionClasses}
           ${error ? errorWithInClasses : hoverWithInClasses}
           ${
             disabled
-              ? "lb-opacity-50 lb-cursor-not-allowed lb-bg-gray-50"
+              ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed loyaltybay-bg-gray-50"
               : ""
           }
           ${className}
@@ -179,23 +179,23 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           onBlur={handleBlur}
           disabled={disabled}
           className={`
-            !lb-border-none !lb-outline-none 
-            focus:!lb-outline-none focus:!lb-border-none focus:!lb-shadow-none
-            lb-px-[12px] lb-py-[9px] 
-            lb-text-[13px] lb-leading-[20px] 
-            lb-text-[#1e1e1e] lb-font-[400] 
-            lb-min-w-[60px] lb-w-full 
-            lb-bg-transparent lb-border-none lb-outline-none 
-            lb-placeholder-gray-400
+            !loyaltybay-border-none !loyaltybay-outline-none 
+            focus:!loyaltybay-outline-none focus:!loyaltybay-border-none focus:!loyaltybay-shadow-none
+            loyaltybay-px-[12px] loyaltybay-py-[9px] 
+            loyaltybay-text-[13px] loyaltybay-leading-[20px] 
+            loyaltybay-text-[#1e1e1e] loyaltybay-font-[400] 
+            loyaltybay-min-w-[60px] loyaltybay-w-full 
+            loyaltybay-bg-transparent loyaltybay-border-none loyaltybay-outline-none 
+            loyaltybay-placeholder-gray-400
             hide-spin-button
-            ${disabled ? "lb-cursor-not-allowed" : ""}
+            ${disabled ? "loyaltybay-cursor-not-allowed" : ""}
             ${classNames?.input || ""}
           `}
           placeholder={placeholder}
         />
 
         <div
-          className={`lb-flex lb-items-center lb-px-2 !lb-pl-0.5 lb-space-x-1 lb-select-none ${
+          className={`loyaltybay-flex loyaltybay-items-center loyaltybay-px-2 !loyaltybay-pl-0.5 loyaltybay-space-x-1 loyaltybay-select-none ${
             classNames?.buttonContainer || ""
           }`}
         >
@@ -207,9 +207,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
               (value !== null && value !== undefined && value >= max)
             }
             className={`
-              lb-p-2 !lb-pr-0.5 lb-text-gray-500 lb-transition-colors lb-duration-150
-              hover:lb-text-gray-900 focus:lb-outline-none active:lb-scale-95
-              disabled:lb-opacity-30 disabled:hover:lb-text-gray-500
+              loyaltybay-p-2 !loyaltybay-pr-0.5 loyaltybay-text-gray-500 loyaltybay-transition-colors loyaltybay-duration-150
+              hover:loyaltybay-text-gray-900 focus:loyaltybay-outline-none active:loyaltybay-scale-95
+              disabled:loyaltybay-opacity-30 disabled:hover:loyaltybay-text-gray-500
               ${classNames?.incrementButton || ""}
             `}
             aria-label="Increase value"
@@ -237,9 +237,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
               (value !== null && value !== undefined && value <= min)
             }
             className={`
-              lb-p-2 lb-text-gray-500 lb-transition-colors lb-duration-150
-              hover:lb-text-gray-900 focus:lb-outline-none active:lb-scale-95
-              disabled:lb-opacity-30 disabled:hover:lb-text-gray-500
+              loyaltybay-p-2 loyaltybay-text-gray-500 loyaltybay-transition-colors loyaltybay-duration-150
+              hover:loyaltybay-text-gray-900 focus:loyaltybay-outline-none active:loyaltybay-scale-95
+              disabled:loyaltybay-opacity-30 disabled:hover:loyaltybay-text-gray-500
               ${classNames?.decrementButton || ""}
             `}
             aria-label="Decrease value"
@@ -262,7 +262,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
 
       {error && (
         <span
-          className={`lb-mt-1 lb-text-xs lb-text-red-500 ${
+          className={`loyaltybay-mt-1 loyaltybay-text-xs loyaltybay-text-red-500 ${
             classNames?.error || ""
           }`}
         >

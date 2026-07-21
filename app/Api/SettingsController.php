@@ -131,7 +131,7 @@ class SettingsController extends ApiController {
 		return new WP_REST_Response(
 			array(
 				'success' => true,
-				'message' => __( 'Settings updated successfully.', 'loyaltybay' ),
+				'message' => __( 'Settings updated successfully.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 				'data'    => $res,
 			),
 			200

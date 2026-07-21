@@ -24,28 +24,28 @@ export const ClassicCheckbox: React.FC<ClassicCheckboxProps> = ({
 
   return (
     <div
-      className={`lb-flex lb-flex-col lb-gap-1 ${className}`}
+      className={`loyaltybay-flex loyaltybay-flex-col loyaltybay-gap-1 ${className}`}
     >
       <label
         htmlFor={checkboxId}
-        className={`lb-flex lb-items-center lb-gap-2 lb-cursor-pointer ${
-          disabled ? "lb-opacity-50 lb-cursor-not-allowed" : ""
+        className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2 loyaltybay-cursor-pointer ${
+          disabled ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed" : ""
         }`}
       >
         <div
           className={`
-          lb-flex lb-items-center lb-justify-center
-          lb-w-4 lb-h-4 lb-rounded lb-border-2 lb-transition-all lb-duration-200
+          loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
+          loyaltybay-w-4 loyaltybay-h-4 loyaltybay-rounded loyaltybay-border-2 loyaltybay-transition-all loyaltybay-duration-200
           ${
             checked
-              ? "lb-border-[#2271b1] lb-bg-[#2271b1]"
-              : "lb-border-[#8c8f94] lb-bg-white hover:lb-border-[#2271b1]"
+              ? "loyaltybay-border-[#2271b1] loyaltybay-bg-[#2271b1]"
+              : "loyaltybay-border-[#8c8f94] loyaltybay-bg-white hover:loyaltybay-border-[#2271b1]"
           }
         `}
         >
           <svg
-            className={`lb-w-3.5 lb-h-3.5 lb-text-white lb-transform lb-transition-transform lb-duration-200 ${
-              checked ? "lb-scale-100" : "lb-scale-0"
+            className={`loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-white loyaltybay-transform loyaltybay-transition-transform loyaltybay-duration-200 ${
+              checked ? "loyaltybay-scale-100" : "loyaltybay-scale-0"
             }`}
             viewBox="0 0 24 24"
             fill="none"
@@ -59,7 +59,7 @@ export const ClassicCheckbox: React.FC<ClassicCheckboxProps> = ({
           <input
             id={checkboxId}
             type="checkbox"
-            className="!lb-hidden"
+            className="!loyaltybay-hidden"
             checked={checked}
             onChange={(e) => onChange(e.target.checked)}
             disabled={disabled}
@@ -69,7 +69,7 @@ export const ClassicCheckbox: React.FC<ClassicCheckboxProps> = ({
       </label>
       {description && (
         <p
-          className="description lb-block lb-mt-0 lb-pl-6"
+          className="description loyaltybay-block loyaltybay-mt-0 loyaltybay-pl-6"
         >
           {description}
         </p>

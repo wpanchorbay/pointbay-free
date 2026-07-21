@@ -256,7 +256,7 @@ function addonReducer(
       const newField = {
         ...JSON.parse(JSON.stringify(originalField)), // Deep clone
         id: generateFieldId(),
-        label: (originalField.label || "") + " " + __("(Copy)", "loyaltybay"),
+        label: (originalField.label || "") + " " + __("(Copy)", "loyaltybay-loyalty-points-referral-rewards-woo"),
       };
 
       const newSchema = [...state.schema];

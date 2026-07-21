@@ -118,8 +118,8 @@
 */
 
 *,
-*:not(.lb-ignore-preflight)::before,
-*:not(.lb-ignore-preflight)::after {
+*:not(.loyaltybay-ignore-preflight)::before,
+*:not(.loyaltybay-ignore-preflight)::after {
   box-sizing: border-box;
   /* 1 */
   border-width: 0;
@@ -206,12 +206,12 @@ abbr:where([title]) {
 Remove the default font size and weight for headings.
 */
 
-h1:not(.lb-ignore-preflight),
-h2:not(.lb-ignore-preflight),
-h3:not(.lb-ignore-preflight),
-h4:not(.lb-ignore-preflight),
-h5:not(.lb-ignore-preflight),
-h6:not(.lb-ignore-preflight) {
+h1:not(.loyaltybay-ignore-preflight),
+h2:not(.loyaltybay-ignore-preflight),
+h3:not(.loyaltybay-ignore-preflight),
+h4:not(.loyaltybay-ignore-preflight),
+h5:not(.loyaltybay-ignore-preflight),
+h6:not(.loyaltybay-ignore-preflight) {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -220,7 +220,7 @@ h6:not(.lb-ignore-preflight) {
 Reset links to optimize for opt-in styling instead of opt-out.
 */
 
-a:not(.lb-ignore-preflight) {
+a:not(.loyaltybay-ignore-preflight) {
   color: inherit;
   text-decoration: inherit;
 }
@@ -229,8 +229,8 @@ a:not(.lb-ignore-preflight) {
 Add the correct font weight in Edge and Safari.
 */
 
-b:not(.lb-ignore-preflight),
-strong:not(.lb-ignore-preflight) {
+b:not(.loyaltybay-ignore-preflight),
+strong:not(.loyaltybay-ignore-preflight) {
   font-weight: bolder;
 }
 
@@ -259,7 +259,7 @@ pre {
 Add the correct font size in all browsers.
 */
 
-small:not(.lb-ignore-preflight) {
+small:not(.loyaltybay-ignore-preflight) {
   font-size: 80%;
 }
 
@@ -267,19 +267,19 @@ small:not(.lb-ignore-preflight) {
 Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
 
-sub:not(.lb-ignore-preflight),
-sup:not(.lb-ignore-preflight) {
+sub:not(.loyaltybay-ignore-preflight),
+sup:not(.loyaltybay-ignore-preflight) {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-sub:not(.lb-ignore-preflight) {
+sub:not(.loyaltybay-ignore-preflight) {
   bottom: -0.25em;
 }
 
-sup:not(.lb-ignore-preflight) {
+sup:not(.loyaltybay-ignore-preflight) {
   top: -0.5em;
 }
 
@@ -289,7 +289,7 @@ sup:not(.lb-ignore-preflight) {
 3. Remove gaps between table borders by default.
 */
 
-table:not(.lb-ignore-preflight) {
+table:not(.loyaltybay-ignore-preflight) {
   text-indent: 0;
   /* 1 */
   border-color: inherit;
@@ -434,25 +434,25 @@ summary {
 Removes the default spacing and border for appropriate elements.
 */
 
-blockquote:not(.lb-ignore-preflight),
-dl:not(.lb-ignore-preflight),
-dd:not(.lb-ignore-preflight),
-h1:not(.lb-ignore-preflight),
+blockquote:not(.loyaltybay-ignore-preflight),
+dl:not(.loyaltybay-ignore-preflight),
+dd:not(.loyaltybay-ignore-preflight),
+h1:not(.loyaltybay-ignore-preflight),
 // use only on classic mode
-h2:not(.lb-ignore-preflight),
+h2:not(.loyaltybay-ignore-preflight),
 // use only on classic mode
-h3:not(.lb-ignore-preflight),
+h3:not(.loyaltybay-ignore-preflight),
 // use only on classic mode
-h4:not(.lb-ignore-preflight),
+h4:not(.loyaltybay-ignore-preflight),
 // use only on classic mode
-h5:not(.lb-ignore-preflight),
+h5:not(.loyaltybay-ignore-preflight),
 // use only on classic mode
-h6:not(.lb-ignore-preflight),
+h6:not(.loyaltybay-ignore-preflight),
 // use only on classic mode
-hr:not(.lb-ignore-preflight),
-figure:not(.lb-ignore-preflight),
-p:not(.lb-ignore-preflight),
-pre:not(.lb-ignore-preflight) {
+hr:not(.loyaltybay-ignore-preflight),
+figure:not(.loyaltybay-ignore-preflight),
+p:not(.loyaltybay-ignore-preflight),
+pre:not(.loyaltybay-ignore-preflight) {
   margin: 0;
 }
 
@@ -566,64 +566,64 @@ video {
 
 
 @layer components {
-  .lb-p-x-page-default {
-    @apply lb-px-[12px] md:lb-px-[24px];
+  .loyaltybay-p-x-page-default {
+    @apply loyaltybay-px-[12px] md:loyaltybay-px-[24px];
   }
 
-  .lb-bg-secondary {
-    @apply lb-bg-[#f1f5f9];
+  .loyaltybay-bg-secondary {
+    @apply loyaltybay-bg-[#f1f5f9];
   }
 
-  .lb-bg-primary {
-    @apply lb-bg-[#3858e9];
+  .loyaltybay-bg-primary {
+    @apply loyaltybay-bg-[#3858e9];
   }
 
-  .lb-bg-primary-hovered {
-    @apply lb-bg-[#3858ff];
+  .loyaltybay-bg-primary-hovered {
+    @apply loyaltybay-bg-[#3858ff];
   }
 
-  .lb-text-primary {
-    @apply lb-text-[#3858e9];
+  .loyaltybay-text-primary {
+    @apply loyaltybay-text-[#3858e9];
   }
 
-  .lb-text-primary-hovered {
-    @apply lb-text-[#3858e9];
+  .loyaltybay-text-primary-hovered {
+    @apply loyaltybay-text-[#3858e9];
   }
 
-  .lb-gap-default {
-    @apply lb-gap-[12px];
+  .loyaltybay-gap-default {
+    @apply loyaltybay-gap-[12px];
   }
 
-  .lb-gap-default-big {
-    @apply lb-gap-[12px] xl:lb-gap-[36px];
+  .loyaltybay-gap-default-big {
+    @apply loyaltybay-gap-[12px] xl:loyaltybay-gap-[36px];
   }
 
-  .lb-text-default {
-    @apply lb-text-[13px] lb-leading-[20px];
+  .loyaltybay-text-default {
+    @apply loyaltybay-text-[13px] loyaltybay-leading-[20px];
   }
 
-  .lb-text-secondary {
-    @apply lb-text-[#949494];
+  .loyaltybay-text-secondary {
+    @apply loyaltybay-text-[#949494];
   }
 
-  .lb-text-small {
-    @apply lb-text-[12px] lb-leading-[16px];
+  .loyaltybay-text-small {
+    @apply loyaltybay-text-[12px] loyaltybay-leading-[16px];
   }
 
-  .lb-border-default {
-    @apply lb-border-[#e0e0e0];
+  .loyaltybay-border-default {
+    @apply loyaltybay-border-[#e0e0e0];
   }
 
-  .lb-border-primary {
-    @apply lb-border-[#3858e9];
+  .loyaltybay-border-primary {
+    @apply loyaltybay-border-[#3858e9];
   }
 
-  .lb-border-secondary {
-    @apply lb-border-[#f1f5f9];
+  .loyaltybay-border-secondary {
+    @apply loyaltybay-border-[#f1f5f9];
   }
 
-  .lb-outline-primary {
-    @apply lb-outline-[#3858e9];
+  .loyaltybay-outline-primary {
+    @apply loyaltybay-outline-[#3858e9];
   }
 }
 
@@ -671,7 +671,7 @@ video {
 }
 
 // --- Base Skeleton Class ---
-.lb-skeleton {
+.loyaltybay-skeleton {
   display: block;
   background-color: #e9e9e9;
   position: relative;
@@ -683,8 +683,8 @@ video {
   }
 }
 
-.lb-skeleton-animation,
-.lb-skeleton {
+.loyaltybay-skeleton-animation,
+.loyaltybay-skeleton {
   position: relative;
   overflow: hidden;
 
@@ -726,25 +726,25 @@ video {
 
 
 
-.lb-add-items-modal {
+.loyaltybay-add-items-modal {
   min-height: 90vh;
 }
 
-.lb-add-items-modal-example {
+.loyaltybay-add-items-modal-example {
   width: 50%;
   display: none; // Hide on small devices
 }
 
-.lb-add-items-modal-grid-cols {
+.loyaltybay-add-items-modal-grid-cols {
   overflow-y: auto;
   // scrollbar-width: none;
 }
 
-.lb-add-items-modal-overlay {
+.loyaltybay-add-items-modal-overlay {
   display: block; // Show overlay on small devices
 }
 
-.lb-add-items-modal-grid-item {
+.loyaltybay-add-items-modal-grid-item {
   min-height: 170px;
   width: 250px;
   padding-top: 40px;
@@ -757,46 +757,46 @@ video {
 
 
 @media (min-width: 600px) {
-  .lb-add-items-modal {
+  .loyaltybay-add-items-modal {
     min-width: 560px;
     min-height: 400px;
   }
 
-  .lb-add-items-modal-grid-cols {
+  .loyaltybay-add-items-modal-grid-cols {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 850px) {
-  .lb-add-items-modal {
+  .loyaltybay-add-items-modal {
     min-width: 835px;
   }
 
-  .lb-add-items-modal-example {
+  .loyaltybay-add-items-modal-example {
     display: block; // Show example panel on larger devices
     width: 270px;
   }
 
-  .lb-add-items-modal-overlay {
+  .loyaltybay-add-items-modal-overlay {
     display: none !important; // Hide overlay on larger devices
   }
 
-  .lb-add-items-modal-grid-cols {
+  .loyaltybay-add-items-modal-grid-cols {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .lb-add-items-modal-grid-item {
+  .loyaltybay-add-items-modal-grid-item {
     min-height: 136px;
     padding-top: 28px;
   }
 }
 
 @media (min-width: 1100px) {
-  .lb-add-items-modal {
+  .loyaltybay-add-items-modal {
     min-width: 1080px;
   }
 
-  .lb-add-items-modal-grid-cols {
+  .loyaltybay-add-items-modal-grid-cols {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -890,7 +890,7 @@ video {
   }
 }
 
-.lb-animate-tooltip {
+.loyaltybay-animate-tooltip {
   animation: tooltip-fade 0.15s ease-out forwards;
 }
 
@@ -900,11 +900,11 @@ video {
 // Points Ledger — native wp-admin list-table page
 // ==========================================================================
 
-.lb-ledger-page {
+.loyaltybay-ledger-page {
   // WooCommerce's mark.order-status pill CSS isn't enqueued on this screen
   // (it's not a WC-registered admin page), so the look is reproduced here
   // rather than relied on.
-  .lb-status-pill {
+  .loyaltybay-status-pill {
     display: inline-block;
     line-height: 2.5em;
     color: #777;

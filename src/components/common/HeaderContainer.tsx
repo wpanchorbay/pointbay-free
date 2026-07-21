@@ -6,7 +6,7 @@ const HeaderContainer = ({
   className?: string;
 }) => {
   return (
-    <div className={`lb-flex lb-justify-between ${className}`}>
+    <div className={`loyaltybay-flex loyaltybay-justify-between ${className}`}>
       {children}
     </div>
   );

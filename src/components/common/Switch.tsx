@@ -22,19 +22,19 @@ export const Switch: React.FC<SwitchProps> = ({
 }) => {
   const sizeConfig = {
     small: {
-      switch: "lb-h-4 lb-w-7",
-      thumb: "lb-h-3 lb-w-3",
-      translate: "lb-translate-x-3",
+      switch: "loyaltybay-h-4 loyaltybay-w-7",
+      thumb: "loyaltybay-h-3 loyaltybay-w-3",
+      translate: "loyaltybay-translate-x-3",
     },
     medium: {
-      switch: "lb-h-6 lb-w-11",
-      thumb: "lb-h-5 lb-w-5",
-      translate: "lb-translate-x-5",
+      switch: "loyaltybay-h-6 loyaltybay-w-11",
+      thumb: "loyaltybay-h-5 loyaltybay-w-5",
+      translate: "loyaltybay-translate-x-5",
     },
     large: {
-      switch: "lb-h-7 lb-w-14",
-      thumb: "lb-h-6 lb-w-6",
-      translate: "lb-translate-x-7",
+      switch: "loyaltybay-h-7 loyaltybay-w-14",
+      thumb: "loyaltybay-h-6 loyaltybay-w-6",
+      translate: "loyaltybay-translate-x-7",
     },
   };
 
@@ -49,21 +49,21 @@ export const Switch: React.FC<SwitchProps> = ({
       onClick={() => !disabled && onChange(!checked)}
       disabled={disabled}
       className={`
-        lb-group lb-relative lb-inline-flex lb-shrink-0 lb-cursor-pointer lb-items-center lb-rounded-full lb-border-2 lb-border-transparent lb-transition-colors lb-duration-200 lb-ease-in-out focus:lb-outline-none focus:lb-ring-2 focus:lb-ring-primary focus:lb-ring-offset-2
+        loyaltybay-group loyaltybay-relative loyaltybay-inline-flex loyaltybay-shrink-0 loyaltybay-cursor-pointer loyaltybay-items-center loyaltybay-rounded-full loyaltybay-border-2 loyaltybay-border-transparent loyaltybay-transition-colors loyaltybay-duration-200 loyaltybay-ease-in-out focus:loyaltybay-outline-none focus:loyaltybay-ring-2 focus:loyaltybay-ring-primary focus:loyaltybay-ring-offset-2
         ${currentSize.switch}
-        ${checked ? "lb-bg-green-500" : "lb-bg-black"}
-        ${disabled ? "lb-opacity-50 lb-cursor-not-allowed" : ""}
+        ${checked ? "loyaltybay-bg-green-500" : "loyaltybay-bg-black"}
+        ${disabled ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed" : ""}
         ${className}
         ${classNames?.root || ""}
       `}
     >
-      <span className="lb-sr-only">Toggle setting</span>
+      <span className="loyaltybay-sr-only">Toggle setting</span>
       <span
         aria-hidden="true"
         className={`
-          lb-pointer-events-none lb-inline-block lb-transform lb-rounded-full lb-bg-white lb-shadow lb-ring-0 lb-transition lb-duration-200 lb-ease-in-out
+          loyaltybay-pointer-events-none loyaltybay-inline-block loyaltybay-transform loyaltybay-rounded-full loyaltybay-bg-white loyaltybay-shadow loyaltybay-ring-0 loyaltybay-transition loyaltybay-duration-200 loyaltybay-ease-in-out
           ${currentSize.thumb}
-          ${checked ? currentSize.translate : "lb-translate-x-0"}
+          ${checked ? currentSize.translate : "loyaltybay-translate-x-0"}
           ${classNames?.thumb || ""}
         `}
       />

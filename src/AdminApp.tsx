@@ -1,19 +1,19 @@
 import LedgerAdmin from "./pages/LedgerAdmin";
-import { WpabProvider } from "./store/wpabStore";
+import { LoyaltyBayProvider } from "./store/loyaltybayStore";
 import { ToastProvider } from "./store/toast/use-toast";
 import { ToastContainer } from "./components/common/ToastContainer";
 import { ClassicLayout } from "./components/classics";
 
 function AdminApp() {
   return (
-    <WpabProvider>
+    <LoyaltyBayProvider>
       <ToastProvider>
         <ToastContainer />
         <ClassicLayout title="Loyalty Points">
           <LedgerAdmin />
         </ClassicLayout>
       </ToastProvider>
-    </WpabProvider>
+    </LoyaltyBayProvider>
   );
 }
 

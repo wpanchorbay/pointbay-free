@@ -25,7 +25,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   title,
   children,
   footer,
-  maxWidth = "lb-max-w-2xl",
+  maxWidth = "loyaltybay-max-w-2xl",
   closeOnOutsideClick = true,
   className = "",
   showHeader = true,
@@ -56,20 +56,20 @@ const CustomModal: React.FC<CustomModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="lb-fixed lb-inset-0 lb-z-[9998] lb-flex lb-items-center lb-justify-center lb-p-4 lb-bg-black/75 lb-transition-opacity lb-duration-300">
+    <div className="loyaltybay-fixed loyaltybay-inset-0 loyaltybay-z-[9998] loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-p-4 loyaltybay-bg-black/75 loyaltybay-transition-opacity loyaltybay-duration-300">
       {/* Backdrop click handler */}
       <div
-        className="lb-absolute lb-inset-0"
+        className="loyaltybay-absolute loyaltybay-inset-0"
         onClick={closeOnOutsideClick ? onClose : undefined}
       />
 
       {/* Modal Content */}
       <div
         className={`
-          lb-relative lb-w-full ${maxWidth} 
-          lb-bg-white lb-shadow-2xl lb-rounded-xl 
-          lb-flex lb-flex-col lb-max-h-[90vh]
-          lb-animate-in lb-fade-in lb-zoom-in-95 lb-duration-200
+          loyaltybay-relative loyaltybay-w-full ${maxWidth} 
+          loyaltybay-bg-white loyaltybay-shadow-2xl loyaltybay-rounded-xl 
+          loyaltybay-flex loyaltybay-flex-col loyaltybay-max-h-[90vh]
+          loyaltybay-animate-in loyaltybay-fade-in loyaltybay-zoom-in-95 loyaltybay-duration-200
           ${className}
         `}
         role="dialog"
@@ -78,24 +78,24 @@ const CustomModal: React.FC<CustomModalProps> = ({
         {/* Header */}
         {showHeader && (
           <div
-            className={`lb-flex lb-items-center lb-justify-between lb-px-6 lb-py-4 lb-border-b lb-border-gray-100 ${classNames.header}`}
+            className={`loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-px-6 loyaltybay-py-4 loyaltybay-border-b loyaltybay-border-gray-100 ${classNames.header}`}
           >
-            <h3 className="lb-text-lg lb-font-semibold lb-text-gray-900">
+            <h3 className="loyaltybay-text-lg loyaltybay-font-semibold loyaltybay-text-gray-900">
               {title}
             </h3>
             <button
               onClick={onClose}
-              className="lb-p-1.5 lb-text-gray-400 hover:lb-text-gray-600 lb-transition-colors hover:lb-bg-gray-100 lb-rounded-full"
+              className="loyaltybay-p-1.5 loyaltybay-text-gray-400 hover:loyaltybay-text-gray-600 loyaltybay-transition-colors hover:loyaltybay-bg-gray-100 loyaltybay-rounded-full"
               aria-label="Close modal"
             >
-              <X className="lb-w-5 lb-h-5" />
+              <X className="loyaltybay-w-5 loyaltybay-h-5" />
             </button>
           </div>
         )}
 
         {/* Body */}
         <div
-          className={`lb-p-6 lb-overflow-y-auto lb-flex-1 ${classNames.body}`}
+          className={`loyaltybay-p-6 loyaltybay-overflow-y-auto loyaltybay-flex-1 ${classNames.body}`}
         >
           {children}
         </div>
@@ -103,7 +103,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
         {/* Footer */}
         {footer && (
           <div
-            className={`lb-flex lb-items-center lb-justify-end lb-gap-3 lb-px-6 lb-py-4 lb-bg-gray-50 lb-border-t lb-border-gray-100 lb-rounded-b-xl ${classNames.footer}`}
+            className={`loyaltybay-flex loyaltybay-items-center loyaltybay-justify-end loyaltybay-gap-3 loyaltybay-px-6 loyaltybay-py-4 loyaltybay-bg-gray-50 loyaltybay-border-t loyaltybay-border-gray-100 loyaltybay-rounded-b-xl ${classNames.footer}`}
           >
             {footer}
           </div>

@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 
 const AppLayout: FC = () => {
   return (
-    <div className="lb-cb-container">
+    <div className="loyaltybay-cb-container">
       <Navbar />
       <Outlet />
     </div>

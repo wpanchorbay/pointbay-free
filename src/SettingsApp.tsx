@@ -1,18 +1,18 @@
-import { WpabProvider } from "./store/wpabStore";
+import { LoyaltyBayProvider } from "./store/loyaltybayStore";
 import { ToastProvider } from "./store/toast/use-toast";
 import Settings from "./pages/Settings";
 import { ToastContainer } from "./components/common/ToastContainer";
 
 function SettingsApp() {
   return (
-    <WpabProvider>
+    <LoyaltyBayProvider>
       <ToastProvider>
         <ToastContainer />
         <div className="">
            <Settings />
         </div>
       </ToastProvider>
-    </WpabProvider>
+    </LoyaltyBayProvider>
   );
 }
 

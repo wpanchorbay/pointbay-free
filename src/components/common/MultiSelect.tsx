@@ -130,7 +130,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   enableSearch = true,
   isError = false,
-  errorClassName = "lb-border-danger",
+  errorClassName = "loyaltybay-border-danger",
   classNames = {},
   isCompact = false,
   renderOption,
@@ -436,14 +436,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div
-      className={`lb-relative lb-w-full ${className} ${
+      className={`loyaltybay-relative loyaltybay-w-full ${className} ${
         classNames.wrapper || ""
       }`}
       ref={containerRef}
     >
       {label && (
         <label
-          className={`lb-block lb-text-sm lb-font-bold lb-text-gray-900 lb-mb-2 ${
+          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 ${
             classNames.label || ""
           }`}
         >
@@ -457,14 +457,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         ref={ref}
         onClick={handleTriggerClick}
         className={`
-          lb-relative lb-flex lb-flex-wrap lb-items-center lb-gap-2 lb-w-full lb-px-4 lb-text-left !lb-cursor-text
-          lb-transition-all lb-duration-200 lb-ease-in-out lb-border lb-rounded-[8px] lb-bg-white
+          loyaltybay-relative loyaltybay-flex loyaltybay-flex-wrap loyaltybay-items-center loyaltybay-gap-2 loyaltybay-w-full loyaltybay-px-4 loyaltybay-text-left !loyaltybay-cursor-text
+          loyaltybay-transition-all loyaltybay-duration-200 loyaltybay-ease-in-out loyaltybay-border loyaltybay-rounded-[8px] loyaltybay-bg-white
           ${borderClasses}
-          ${isCompact ? "lb-py-[4px]" : "lb-py-[7px]"}
+          ${isCompact ? "loyaltybay-py-[4px]" : "loyaltybay-py-[7px]"}
           ${
             disabled
-              ? "lb-bg-gray-50 lb-cursor-not-allowed lb-text-gray-400 lb-border-gray-200"
-              : `hover:!lb-border-primary`
+              ? "loyaltybay-bg-gray-50 loyaltybay-cursor-not-allowed loyaltybay-text-gray-400 loyaltybay-border-gray-200"
+              : `hover:!loyaltybay-border-primary`
           }
           ${isOpen ? hoverBorderClasses : ""}
           ${isError ? errorClassName : ""}
@@ -476,7 +476,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           <span
             key={option.value}
             className={`
-                lb-inline-flex lb-items-center lb-gap-1 lb-bg-gray-100 lb-text-gray-800 lb-px-2 lb-py-[2px] lb-rounded-none lb-text-[13px] lb-leading-[20px] lb-font-[400]
+                loyaltybay-inline-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-bg-gray-100 loyaltybay-text-gray-800 loyaltybay-px-2 loyaltybay-py-[2px] loyaltybay-rounded-none loyaltybay-text-[13px] loyaltybay-leading-[20px] loyaltybay-font-[400]
                 ${classNames.tag || ""}
             `}
           >
@@ -484,10 +484,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             <button
               type="button"
               onClick={(e) => handleRemove(option.value, e)}
-              className="lb-flex lb-items-center lb-justify-center lb-w-4 lb-h-4 lb-rounded-full hover:lb-bg-gray-200 lb-transition-colors lb-text-gray-500"
+              className="loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-w-4 loyaltybay-h-4 loyaltybay-rounded-full hover:loyaltybay-bg-gray-200 loyaltybay-transition-colors loyaltybay-text-gray-500"
               aria-label={`Remove ${option.label}`}
             >
-              <X className="lb-w-3 lb-h-3" />
+              <X className="loyaltybay-w-3 loyaltybay-h-3" />
             </button>
           </span>
         ))}
@@ -497,7 +497,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           ref={searchInputRef}
           type="text"
           className={`
-            lb-flex-1 lb-min-w-[80px] lb-bg-transparent !lb-border-none !lb-shadow-none lb-outline-none lb-px-1 lb-py-[2px]  !lb-text-[13px] !lb-leading-[20px] lb-font-[400] lb-text-gray-900 lb-placeholder-gray-400 !lb-min-h-[24px]
+            loyaltybay-flex-1 loyaltybay-min-w-[80px] loyaltybay-bg-transparent !loyaltybay-border-none !loyaltybay-shadow-none loyaltybay-outline-none loyaltybay-px-1 loyaltybay-py-[2px]  !loyaltybay-text-[13px] !loyaltybay-leading-[20px] loyaltybay-font-[400] loyaltybay-text-gray-900 loyaltybay-placeholder-gray-400 !loyaltybay-min-h-[24px]
             ${classNames.search || ""}
           `}
           value={searchQuery}
@@ -513,10 +513,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         />
 
         {/* Chevron Icon */}
-        <span className="lb-flex-shrink-0 lb-ml-auto lb-flex lb-items-center">
+        <span className="loyaltybay-flex-shrink-0 loyaltybay-ml-auto loyaltybay-flex loyaltybay-items-center">
           <ChevronDown
-            className={`lb-h-4 lb-w-4 lb-text-gray-500 lb-transition-transform lb-duration-200 ${
-              isOpen ? "lb-transform lb-rotate-180" : ""
+            className={`loyaltybay-h-4 loyaltybay-w-4 loyaltybay-text-gray-500 loyaltybay-transition-transform loyaltybay-duration-200 ${
+              isOpen ? "loyaltybay-transform loyaltybay-rotate-180" : ""
             }`}
           />
         </span>
@@ -527,7 +527,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         <div
           ref={dropdownRef}
           className={`
-                lb-absolute lb-z-[50000] lb-w-full lb-bg-white lb-border lb-border-gray-200 lb-rounded-[12px] lb-p-[4px] lb-shadow-[0_4px_12px_rgba(0,0,0,0.1)] lb-top-full lb-left-0 -lb-mt-[1px]
+                loyaltybay-absolute loyaltybay-z-[50000] loyaltybay-w-full loyaltybay-bg-white loyaltybay-border loyaltybay-border-gray-200 loyaltybay-rounded-[12px] loyaltybay-p-[4px] loyaltybay-shadow-[0_4px_12px_rgba(0,0,0,0.1)] loyaltybay-top-full loyaltybay-left-0 -loyaltybay-mt-[1px]
                 ${classNames.dropdown || ""}
             `}
         >
@@ -535,15 +535,15 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             ref={listRef}
             role="listbox"
             tabIndex={-1}
-            className="lb-max-h-[204px] lb-overflow-auto focus:lb-outline-none"
+            className="loyaltybay-max-h-[204px] loyaltybay-overflow-auto focus:loyaltybay-outline-none"
             style={{ scrollbarWidth: "none" }}
           >
             {isLoading ? (
-              <li className="lb-px-3 lb-py-2 lb-text-gray-500 lb-text-sm lb-text-center lb-italic !lb-mb-0 lb-rounded-[8px]">
+              <li className="loyaltybay-px-3 loyaltybay-py-2 loyaltybay-text-gray-500 loyaltybay-text-sm loyaltybay-text-center loyaltybay-italic !loyaltybay-mb-0 loyaltybay-rounded-[8px]">
                 Loading...
               </li>
             ) : filteredOptions.length === 0 ? (
-              <li className="lb-px-3 lb-py-2 lb-text-gray-500 lb-text-sm lb-text-center lb-italic !lb-mb-0 lb-rounded-[8px]">
+              <li className="loyaltybay-px-3 loyaltybay-py-2 loyaltybay-text-gray-500 loyaltybay-text-sm loyaltybay-text-center loyaltybay-italic !loyaltybay-mb-0 loyaltybay-rounded-[8px]">
                 {searchQuery ? "No results found" : "No more options"}
               </li>
             ) : (
@@ -567,11 +567,11 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       handleSelect(option);
                     }}
                     className={`
-                        lb-group lb-relative lb-cursor-pointer lb-select-none lb-px-4 lb-py-2.5 lb-text-sm lb-transition-colors lb-border-b lb-border-gray-50 last:lb-border-0 !lb-mb-0 lb-rounded-[8px]
-                        lb-flex lb-flex-nowrap lb-justify-between lb-items-center
+                        loyaltybay-group loyaltybay-relative loyaltybay-cursor-pointer loyaltybay-select-none loyaltybay-px-4 loyaltybay-py-2.5 loyaltybay-text-sm loyaltybay-transition-colors loyaltybay-border-b loyaltybay-border-gray-50 last:loyaltybay-border-0 !loyaltybay-mb-0 loyaltybay-rounded-[8px]
+                        loyaltybay-flex loyaltybay-flex-nowrap loyaltybay-justify-between loyaltybay-items-center
                         ${
                           isDisabled || isPro || isComingSoon
-                            ? "lb-opacity-100 !lb-cursor-not-allowed lb-text-gray-500 lb-bg-gray-100/50"
+                            ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed loyaltybay-text-gray-500 loyaltybay-bg-gray-100/50"
                             : ""
                         }
                         ${
@@ -579,32 +579,32 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                           !isDisabled &&
                           !isPro &&
                           !isComingSoon
-                            ? "lb-bg-blue-600 lb-text-white"
-                            : "lb-text-gray-700"
+                            ? "loyaltybay-bg-blue-600 loyaltybay-text-white"
+                            : "loyaltybay-text-gray-700"
                         }
                         ${
                           isComingSoon
-                            ? "hover:!lb-text-pink-600 !lb-text-pink-500"
+                            ? "hover:!loyaltybay-text-pink-600 !loyaltybay-text-pink-500"
                             : ""
                         }
                         ${option.className || ""}
                         ${classNames.option || ""}
                         `}
                   >
-                    <div className="lb-flex lb-items-center lb-min-w-0 lb-gap-4">
-                      <span className="lb-block lb-truncate">
+                    <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-min-w-0 loyaltybay-gap-4">
+                      <span className="loyaltybay-block loyaltybay-truncate">
                         {renderOption ? renderOption(option) : option.label}
                       </span>
                     </div>
 
                     {/* Lock Icon for Buy Pro */}
                     {isPro && (
-                      <LockKeyhole className="lb-w-3.5 lb-h-3.5 lb-text-[#f02a74] lb-flex-shrink-0" />
+                      <LockKeyhole className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-[#f02a74] loyaltybay-flex-shrink-0" />
                     )}
                     {isComingSoon && (
-                      <span className="lb-bg-pink-600 lb-text-white lb-p-1 lb-px-2 lb-rounded-full lb-text-xs lb-flex lb-items-center lb-gap-1 lb-flex-nowrap lb-flex-shrink-0">
-                        <Hourglass className="lb-w-3.5 lb-h-3.5 lb-text-white" />
-                        <span className="lb-whitespace-nowrap">
+                      <span className="loyaltybay-bg-pink-600 loyaltybay-text-white loyaltybay-p-1 loyaltybay-px-2 loyaltybay-rounded-full loyaltybay-text-xs loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-flex-nowrap loyaltybay-flex-shrink-0">
+                        <Hourglass className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-white" />
+                        <span className="loyaltybay-whitespace-nowrap">
                           Coming Soon
                         </span>
                       </span>
@@ -623,7 +623,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         createPortal(
           <div
             ref={tooltipRef}
-            className="lb-fixed lb-z-[50001] lb-flex lb-flex-col lb-items-center lb-gap-1.5 lb-bg-gray-900 lb-text-white lb-text-xs lb-p-2 lb-min-w-[140px] lb-rounded-md lb-shadow-lg"
+            className="loyaltybay-fixed loyaltybay-z-[50001] loyaltybay-flex loyaltybay-flex-col loyaltybay-items-center loyaltybay-gap-1.5 loyaltybay-bg-gray-900 loyaltybay-text-white loyaltybay-text-xs loyaltybay-p-2 loyaltybay-min-w-[140px] loyaltybay-rounded-md loyaltybay-shadow-lg"
             style={{
               top: tooltipState.top + 5,
               left: tooltipState.left,
@@ -632,19 +632,19 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}
           >
-            <span className="lb-font-medium lb-whitespace-nowrap">
+            <span className="loyaltybay-font-medium loyaltybay-whitespace-nowrap">
               Upgrade to unlock
             </span>
             <a
               href="#"
               target="_blank"
               onClick={(e) => e.preventDefault()}
-              className="lb-w-full lb-bg-[#f02a74] hover:!lb-bg-[#e71161] lb-text-white hover:!lb-text-white lb-font-bold lb-py-1.5 lb-px-3 lb-transition-colors focus:lb-outline-none focus:lb-ring-0 lb-cursor-pointer lb-text-center lb-rounded"
+              className="loyaltybay-w-full loyaltybay-bg-[#f02a74] hover:!loyaltybay-bg-[#e71161] loyaltybay-text-white hover:!loyaltybay-text-white loyaltybay-font-bold loyaltybay-py-1.5 loyaltybay-px-3 loyaltybay-transition-colors focus:loyaltybay-outline-none focus:loyaltybay-ring-0 loyaltybay-cursor-pointer loyaltybay-text-center loyaltybay-rounded"
             >
               Buy Pro
             </a>
             {/* Tooltip Arrow */}
-            <div className="lb-absolute lb-top-full lb-left-1/2 -lb-translate-x-1/2 lb-border-4 lb-border-transparent lb-border-t-gray-900"></div>
+            <div className="loyaltybay-absolute loyaltybay-top-full loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-4 loyaltybay-border-transparent loyaltybay-border-t-gray-900"></div>
           </div>,
           document.body,
         )}

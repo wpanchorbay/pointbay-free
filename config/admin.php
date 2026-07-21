@@ -31,8 +31,8 @@ return array(
 		 * Only active if 'show_main_menu' is true.
 		 */
 		'top_level' => array(
-			'page_title' => __( 'LoyaltyBay', 'loyaltybay' ),
-			'menu_title' => __( 'LoyaltyBay', 'loyaltybay' ),
+			'page_title' => __( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			'menu_title' => __( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 			'capability' => 'manage_loyaltybay',
 			'menu_slug'  => \LOYALTYBAY_PLUGIN_NAME,
 			'icon_url'   => 'dashicons-awards',
@@ -46,15 +46,15 @@ return array(
 		'sub_menus' => array(
 			array(
 				'parent_slug' => 'woocommerce',
-				'page_title'  => __( 'Points History', 'loyaltybay' ),
-				'menu_title'  => __( 'Points History', 'loyaltybay' ),
+				'page_title'  => __( 'Points History', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+				'menu_title'  => __( 'Points History', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 				'capability'  => 'manage_loyaltybay',
 				'menu_slug'   => 'loyaltybay-ledger',
 			),
 			array(
 				'parent_slug' => 'woocommerce',
-				'page_title'  => __( 'Loyalty', 'loyaltybay' ),
-				'menu_title'  => __( 'Loyalty', 'loyaltybay' ),
+				'page_title'  => __( 'Loyalty', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+				'menu_title'  => __( 'Loyalty', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 				'capability'  => 'manage_loyaltybay',
 				'menu_slug'   => 'admin.php?page=wc-settings&tab=' . \LOYALTYBAY_PLUGIN_NAME,
 				'is_link'     => true,
@@ -69,14 +69,16 @@ return array(
 	 */
 	'plugin_action_links' => array(
 		array(
-			'text' => __( 'Settings', 'loyaltybay' ),
+			'text' => __( 'Settings', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 			'url'  => admin_url( 'admin.php?page=wc-settings&tab=' . \LOYALTYBAY_PLUGIN_NAME ),
 		),
 		/**
 		 * EXAMPLE: Add a Support Link
 		 *
+		 * Uncomment and adapt the block below to add a support link:
+		 *
 		 * array(
-		 *     'text' => __( 'Support', 'loyaltybay' ),
+		 *     'text' => __( 'Support', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 		 *     'url'  => 'https://example.com/support',
 		 * ),
 		 */
@@ -88,9 +90,9 @@ return array(
 	 * General data used throughout the admin dashboard and JS localization.
 	 */
 	'plugin_data'         => array(
-		'plugin_name' => esc_html__( 'LoyaltyBay', 'loyaltybay' ),
-		'short_name'  => esc_html__( 'LoyaltyBay', 'loyaltybay' ),
-		'menu_label'  => esc_html__( 'LoyaltyBay', 'loyaltybay' ),
+		'plugin_name' => esc_html__( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+		'short_name'  => esc_html__( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+		'menu_label'  => esc_html__( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 		'custom_icon' => \LOYALTYBAY_URL . 'assets/img/icon.svg',
 		'menu_icon'   => 'dashicons-awards',
 		'author_name' => 'LoyaltyBay',

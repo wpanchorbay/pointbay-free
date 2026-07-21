@@ -21,35 +21,35 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const sizeClasses = {
-      small: "lb-px-[8px] lb-py-[5px]",
-      medium: "lb-px-[12px] lb-py-[6px]",
-      large: "lb-px-[16px] lb-py-[10px]",
+      small: "loyaltybay-px-[8px] loyaltybay-py-[5px]",
+      medium: "loyaltybay-px-[12px] loyaltybay-py-[6px]",
+      large: "loyaltybay-px-[16px] loyaltybay-py-[10px]",
     };
 
     const colorClasses = {
       primary: {
         solid:
-          "lb-bg-primary lb-text-white lb-border lb-border-primary hover:lb-bg-primary-hovered hover:lb-border-primary-hovered",
+          "loyaltybay-bg-primary loyaltybay-text-white loyaltybay-border loyaltybay-border-primary hover:loyaltybay-bg-primary-hovered hover:loyaltybay-border-primary-hovered",
         outline:
-          "lb-bg-transparent lb-border lb-border-primary lb-text-primary hover:lb-bg-primary hover:lb-text-white",
+          "loyaltybay-bg-transparent loyaltybay-border loyaltybay-border-primary loyaltybay-text-primary hover:loyaltybay-bg-primary hover:loyaltybay-text-white",
         ghost:
-          "lb-bg-transparent lb-text-primary hover:lb-text-primary-hovered hover:lb-bg-primary/10",
+          "loyaltybay-bg-transparent loyaltybay-text-primary hover:loyaltybay-text-primary-hovered hover:loyaltybay-bg-primary/10",
       },
       secondary: {
         solid:
-          "lb-bg-secondary lb-text-white lb-border lb-border-secondary hover:lb-bg-secondary-hovered",
+          "loyaltybay-bg-secondary loyaltybay-text-white loyaltybay-border loyaltybay-border-secondary hover:loyaltybay-bg-secondary-hovered",
         outline:
-          "lb-bg-transparent lb-border lb-border-secondary lb-text-secondary hover:lb-bg-secondary hover:lb-text-white",
+          "loyaltybay-bg-transparent loyaltybay-border loyaltybay-border-secondary loyaltybay-text-secondary hover:loyaltybay-bg-secondary hover:loyaltybay-text-white",
         ghost:
-          "lb-bg-transparent lb-text-[#1e1e1e] hover:!lb-text-primary",
+          "loyaltybay-bg-transparent loyaltybay-text-[#1e1e1e] hover:!loyaltybay-text-primary",
       },
       danger: {
         solid:
-          "lb-bg-red-500 lb-text-white lb-border lb-border-red-500 hover:lb-bg-red-600 hover:lb-border-red-600",
+          "loyaltybay-bg-red-500 loyaltybay-text-white loyaltybay-border loyaltybay-border-red-500 hover:loyaltybay-bg-red-600 hover:loyaltybay-border-red-600",
         outline:
-          "lb-bg-transparent lb-border lb-border-red-500 lb-text-red-500 hover:lb-bg-red-500 hover:lb-text-white",
+          "loyaltybay-bg-transparent loyaltybay-border loyaltybay-border-red-500 loyaltybay-text-red-500 hover:loyaltybay-bg-red-500 hover:loyaltybay-text-white",
         ghost:
-          "lb-bg-transparent lb-text-red-500 hover:lb-bg-red-500/10",
+          "loyaltybay-bg-transparent loyaltybay-text-red-500 hover:loyaltybay-bg-red-500/10",
       },
     };
 
@@ -62,9 +62,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={`
-                lb-flex lb-items-center lb-justify-center lb-gap-[6px]
-                lb-text-default lb-rounded-[8px] lb-transition-all lb-duration-200
-                disabled:lb-opacity-50 disabled:lb-cursor-not-allowed
+                loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-gap-[6px]
+                loyaltybay-text-default loyaltybay-rounded-[8px] loyaltybay-transition-all loyaltybay-duration-200
+                disabled:loyaltybay-opacity-50 disabled:loyaltybay-cursor-not-allowed
                 ${finalSizeClass} 
                 ${variantClasses} 
                 ${className}

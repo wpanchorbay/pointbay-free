@@ -22,25 +22,25 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 }) => {
   return (
     <label
-      className={`lb-flex lb-items-center lb-gap-3 lb-cursor-pointer ${
-        disabled ? "lb-opacity-50 lb-cursor-not-allowed" : ""
+      className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-3 loyaltybay-cursor-pointer ${
+        disabled ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed" : ""
       } ${classNames?.root || ""}`}
     >
       <div
         className={`
-        lb-flex lb-items-center lb-justify-center
-        lb-w-4 lb-h-4 lb-rounded lb-border-2 lb-transition-all lb-duration-200
+        loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
+        loyaltybay-w-4 loyaltybay-h-4 loyaltybay-rounded loyaltybay-border-2 loyaltybay-transition-all loyaltybay-duration-200
         ${
           checked
-            ? "lb-border-primary lb-bg-primary"
-            : "lb-border-[#949494] lb-bg-transparent hover:lb-border-primary"
+            ? "loyaltybay-border-primary loyaltybay-bg-primary"
+            : "loyaltybay-border-[#949494] loyaltybay-bg-transparent hover:loyaltybay-border-primary"
         }
         ${classNames?.box || ""}
       `}
       >
         <svg
-          className={`lb-w-3.5 lb-h-3.5 lb-text-white lb-transform lb-transition-transform lb-duration-200 ${
-            checked ? "lb-scale-100" : "lb-scale-0"
+          className={`loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-white loyaltybay-transform loyaltybay-transition-transform loyaltybay-duration-200 ${
+            checked ? "loyaltybay-scale-100" : "loyaltybay-scale-0"
           } ${classNames?.icon || ""}`}
           viewBox="0 0 24 24"
           fill="none"
@@ -53,7 +53,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         </svg>
         <input
           type="checkbox"
-          className="!lb-hidden"
+          className="!loyaltybay-hidden"
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
@@ -61,7 +61,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
       </div>
       {label && (
         <span
-          className={`lb-text-[13px] lb-font-[400] lb-leading-[20px] lb-text-[#1e1e1e] ${
+          className={`loyaltybay-text-[13px] loyaltybay-font-[400] loyaltybay-leading-[20px] loyaltybay-text-[#1e1e1e] ${
             classNames?.label || ""
           }`}
         >

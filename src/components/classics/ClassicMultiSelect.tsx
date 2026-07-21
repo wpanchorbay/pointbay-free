@@ -305,16 +305,16 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
 
   return (
     <div
-      className={`${sizeClass} ${className} lb-align-middle`}
+      className={`${sizeClass} ${className} loyaltybay-align-middle`}
       ref={containerRef}
     >
       {label && (
-        <label htmlFor={selectId} className="lb-block lb-mb-1">
+        <label htmlFor={selectId} className="loyaltybay-block loyaltybay-mb-1">
           {label}
         </label>
       )}
 
-      <div className="lb-relative" style={{ width: explicitWidth }}>
+      <div className="loyaltybay-relative" style={{ width: explicitWidth }}>
         <div
           id={selectId}
           tabIndex={disabled ? -1 : 0}
@@ -327,23 +327,23 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
             setIsOpen(!isOpen);
           }}
           onKeyDown={handleTriggerKeyDown}
-          className={`lb-flex lb-flex-wrap lb-items-center lb-gap-1 lb-min-h-[40px] lb-bg-white lb-border lb-border-[#8c8f94] lb-rounded-[3px] lb-p-[3px_24px_3px_6px] lb-min-h-[30px] lb-transition-shadow lb-duration-100 lb-relative lb-box-border lb-w-full ${disabled
-            ? "lb-cursor-not-allowed lb-bg-[#f0f0f1]"
-            : "lb-cursor-text"
+          className={`loyaltybay-flex loyaltybay-flex-wrap loyaltybay-items-center loyaltybay-gap-1 loyaltybay-min-h-[40px] loyaltybay-bg-white loyaltybay-border loyaltybay-border-[#8c8f94] loyaltybay-rounded-[3px] loyaltybay-p-[3px_24px_3px_6px] loyaltybay-min-h-[30px] loyaltybay-transition-shadow loyaltybay-duration-100 loyaltybay-relative loyaltybay-box-border loyaltybay-w-full ${disabled
+            ? "loyaltybay-cursor-not-allowed loyaltybay-bg-[#f0f0f1]"
+            : "loyaltybay-cursor-text"
             } ${isOpen
-              ? "lb-border-[#2271b1] lb-shadow-[0_0_0_1px_#2271b1] lb-outline-none"
-              : "lb-shadow-none"
+              ? "loyaltybay-border-[#2271b1] loyaltybay-shadow-[0_0_0_1px_#2271b1] loyaltybay-outline-none"
+              : "loyaltybay-shadow-none"
             }`}
         >
           {selectedOptions.map((opt) => (
             <span
               key={opt.value}
-              className="lb-bg-[#f0f0f1] lb-border lb-border-[#c3c4c7] lb-rounded-[3px] lb-px-1 lb-flex lb-items-center lb-gap-1 lb-text-xs lb-text-[#3c434a] lb-leading-[20px]"
+              className="loyaltybay-bg-[#f0f0f1] loyaltybay-border loyaltybay-border-[#c3c4c7] loyaltybay-rounded-[3px] loyaltybay-px-1 loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-text-xs loyaltybay-text-[#3c434a] loyaltybay-leading-[20px]"
             >
               {opt.label}
               <button
                 onClick={(e) => handleRemove(e, opt.value)}
-                className="lb-bg-transparent lb-border-none lb-p-0 lb-cursor-pointer lb-text-[#8c8f94] lb-flex lb-items-center"
+                className="loyaltybay-bg-transparent loyaltybay-border-none loyaltybay-p-0 loyaltybay-cursor-pointer loyaltybay-text-[#8c8f94] loyaltybay-flex loyaltybay-items-center"
               >
                 <X size={12} />
               </button>
@@ -351,20 +351,20 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
           ))}
 
           {!enableSearch && value.length === 0 && (
-            <span className="lb-text-[#8c8f94] lb-text-[13px] lb-pl-1">
+            <span className="loyaltybay-text-[#8c8f94] loyaltybay-text-[13px] loyaltybay-pl-1">
               {placeholder}
             </span>
           )}
 
           {/* Chevron icon pointing down */}
-          <span className="lb-absolute lb-right-1.5 lb-top-1/2 -lb-translate-y-1/2 lb-flex lb-pointer-events-none">
+          <span className="loyaltybay-absolute loyaltybay-right-1.5 loyaltybay-top-1/2 -loyaltybay-translate-y-1/2 loyaltybay-flex loyaltybay-pointer-events-none">
             <ChevronDown size={14} color="#50575e" />
           </span>
         </div>
 
         {isOpen && (
           <div
-            className="lb-absolute lb-z-[99999] lb-bg-white lb-border-2 lb-border-[#2271b1] lb-border-t-0  lb-rounded-b-[3px] lb-shadow-[0_3px_5px_rgba(0,0,0,0.2)] lb-p-0 lb-box-border lb-top-full lb-left-[-1px] lb-mt-[-3px]"
+            className="loyaltybay-absolute loyaltybay-z-[99999] loyaltybay-bg-white loyaltybay-border-2 loyaltybay-border-[#2271b1] loyaltybay-border-t-0  loyaltybay-rounded-b-[3px] loyaltybay-shadow-[0_3px_5px_rgba(0,0,0,0.2)] loyaltybay-p-0 loyaltybay-box-border loyaltybay-top-full loyaltybay-left-[-1px] loyaltybay-mt-[-3px]"
             style={{
               ...(differentDropdownWidth
                 ? { minWidth: "calc(100% + 2px)" }
@@ -386,22 +386,22 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                 onKeyDown={handleSearchKeyDown}
                 placeholder={value.length === 0 ? placeholder : ""}
                 disabled={disabled}
-                className="lb-w-[calc(100%-8px)] lb-px-2 lb-leading-loose lb-min-h-[26px] lb-border lb-border-[#aaaaaa] lb-bg-[#fcfcfc] lb-rounded-[3px] lb-box-border lb-text-[13px] focus:lb-outline-none focus:lb-shadow-none lb-m-[4px]"
+                className="loyaltybay-w-[calc(100%-8px)] loyaltybay-px-2 loyaltybay-leading-loose loyaltybay-min-h-[26px] loyaltybay-border loyaltybay-border-[#aaaaaa] loyaltybay-bg-[#fcfcfc] loyaltybay-rounded-[3px] loyaltybay-box-border loyaltybay-text-[13px] focus:loyaltybay-outline-none focus:loyaltybay-shadow-none loyaltybay-m-[4px]"
               />
             )}
             {isLoading ? (
-              <div className="lb-py-2 lb-px-3 lb-text-[#646970] lb-text-[13px] lb-flex lb-items-center lb-gap-2">
-                <Hourglass size={14} className="lb-animate-spin" />{" "}
+              <div className="loyaltybay-py-2 loyaltybay-px-3 loyaltybay-text-[#646970] loyaltybay-text-[13px] loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2">
+                <Hourglass size={14} className="loyaltybay-animate-spin" />{" "}
                 Loading...
               </div>
             ) : (
               <ul
                 ref={listRef}
                 role="listbox"
-                className="lb-max-h-[220px] lb-overflow-y-auto lb-m-0 lb-p-0 lb-list-none"
+                className="loyaltybay-max-h-[220px] loyaltybay-overflow-y-auto loyaltybay-m-0 loyaltybay-p-0 loyaltybay-list-none"
               >
                 {filteredOptions.length === 0 ? (
-                  <li className="lb-px-3 lb-py-1.5 lb-text-[#646970] lb-italic lb-text-[13px] lb-m-0">
+                  <li className="loyaltybay-px-3 loyaltybay-py-1.5 loyaltybay-text-[#646970] loyaltybay-italic loyaltybay-text-[13px] loyaltybay-m-0">
                     {searchQuery ? "No results found" : "No options available"}
                   </li>
                 ) : (
@@ -440,38 +440,38 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                           e.stopPropagation();
                           handleSelect(opt);
                         }}
-                        className={`lb-px-3 lb-py-1.5 lb-flex lb-items-center lb-justify-between lb-text-[13px] lb-m-0 ${isDisabled
-                          ? "lb-cursor-not-allowed"
-                          : "lb-cursor-pointer"
+                        className={`loyaltybay-px-3 loyaltybay-py-1.5 loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-text-[13px] loyaltybay-m-0 ${isDisabled
+                          ? "loyaltybay-cursor-not-allowed"
+                          : "loyaltybay-cursor-pointer"
                           } ${isHighlighted
-                            ? "lb-bg-[#2271b1] lb-text-white"
+                            ? "loyaltybay-bg-[#2271b1] loyaltybay-text-white"
                             : isDisabled
-                              ? "lb-bg-transparent lb-text-[#a7aaad]"
-                              : "lb-bg-transparent lb-text-[#2c3338]"
+                              ? "loyaltybay-bg-transparent loyaltybay-text-[#a7aaad]"
+                              : "loyaltybay-bg-transparent loyaltybay-text-[#2c3338]"
                           }`}
                       >
-                        <div className="lb-flex lb-items-center lb-gap-2">
+                        <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2">
                           <div
                             className={`
-                            lb-flex lb-items-center lb-justify-center
-                            lb-w-4 lb-h-4 lb-rounded lb-border-2 lb-transition-all lb-duration-200
+                            loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
+                            loyaltybay-w-4 loyaltybay-h-4 loyaltybay-rounded loyaltybay-border-2 loyaltybay-transition-all loyaltybay-duration-200
                             ${isSelected
                                 ? isHighlighted
-                                  ? "lb-border-white lb-bg-white"
-                                  : "lb-border-[#2271b1] lb-bg-[#2271b1]"
+                                  ? "loyaltybay-border-white loyaltybay-bg-white"
+                                  : "loyaltybay-border-[#2271b1] loyaltybay-bg-[#2271b1]"
                                 : isHighlighted
-                                  ? "lb-border-white lb-bg-transparent"
-                                  : "lb-border-[#8c8f94] lb-bg-white"
+                                  ? "loyaltybay-border-white loyaltybay-bg-transparent"
+                                  : "loyaltybay-border-[#8c8f94] loyaltybay-bg-white"
                               }
                           `}
                           >
                             <svg
-                              className={`lb-w-3.5 lb-h-3.5 lb-transform lb-transition-transform lb-duration-200 ${isSelected
-                                ? "lb-scale-100"
-                                : "lb-scale-0"
+                              className={`loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-transform loyaltybay-transition-transform loyaltybay-duration-200 ${isSelected
+                                ? "loyaltybay-scale-100"
+                                : "loyaltybay-scale-0"
                                 } ${isHighlighted && isSelected
-                                  ? "lb-text-[#2271b1]"
-                                  : "lb-text-white"
+                                  ? "loyaltybay-text-[#2271b1]"
+                                  : "loyaltybay-text-white"
                                 }`}
                               viewBox="0 0 24 24"
                               fill="none"
@@ -491,9 +491,9 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                         {/* Icons for variants */}
                         {isPro && (
                           <span
-                            className={`lb-flex ${isHighlighted
-                              ? "lb-text-white"
-                              : "lb-text-[#ffb900]"
+                            className={`loyaltybay-flex ${isHighlighted
+                              ? "loyaltybay-text-white"
+                              : "loyaltybay-text-[#ffb900]"
                               }`}
                           >
                             <Lock size={14} />
@@ -501,9 +501,9 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                         )}
                         {isComingSoon && (
                           <span
-                            className={`lb-text-[10px] lb-uppercase lb-px-1.5 lb-py-0.5 lb-rounded-[10px] lb-font-semibold lb-flex lb-items-center lb-gap-1 ${isHighlighted
-                              ? "lb-bg-white/20 lb-text-white"
-                              : "lb-bg-[#f0f0f1] lb-text-[#646970]"
+                            className={`loyaltybay-text-[10px] loyaltybay-uppercase loyaltybay-px-1.5 loyaltybay-py-0.5 loyaltybay-rounded-[10px] loyaltybay-font-semibold loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 ${isHighlighted
+                              ? "loyaltybay-bg-white/20 loyaltybay-text-white"
+                              : "loyaltybay-bg-[#f0f0f1] loyaltybay-text-[#646970]"
                               }`}
                           >
                             <Hourglass size={10} />
@@ -521,12 +521,12 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
       </div>
 
       {description && (
-        <p className="description lb-mt-1">{description}</p>
+        <p className="description loyaltybay-mt-1">{description}</p>
       )}
 
       {tooltipState?.visible && (
         <div
-          className="lb-fixed lb-bg-[#1d2327] lb-text-white lb-px-2.5 lb-py-1 lb-rounded-[3px] lb-text-[12px] lb-pointer-events-none lb-z-[100000] lb-whitespace-nowrap"
+          className="loyaltybay-fixed loyaltybay-bg-[#1d2327] loyaltybay-text-white loyaltybay-px-2.5 loyaltybay-py-1 loyaltybay-rounded-[3px] loyaltybay-text-[12px] loyaltybay-pointer-events-none loyaltybay-z-[100000] loyaltybay-whitespace-nowrap"
           style={{
             top: tooltipState.top - 8,
             left: tooltipState.left,
@@ -534,7 +534,7 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
           }}
         >
           {tooltipState.text}
-          <div className="lb-absolute -lb-bottom-1 lb-left-1/2 -lb-translate-x-1/2 lb-border-x-4 lb-border-t-4 lb-border-x-transparent lb-border-b-transparent lb-border-t-[#1d2327]" />
+          <div className="loyaltybay-absolute -loyaltybay-bottom-1 loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-x-4 loyaltybay-border-t-4 loyaltybay-border-x-transparent loyaltybay-border-b-transparent loyaltybay-border-t-[#1d2327]" />
         </div>
       )}
     </div>

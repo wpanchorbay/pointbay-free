@@ -2,36 +2,36 @@ import React from "react";
 
 export const SkeletonBuilder: React.FC = () => {
   return (
-    <div className="lb-animate-pulse lb-flex lb-flex-col lg:lb-flex-row lb-gap-6 lb-items-start lb-w-full">
+    <div className="loyaltybay-animate-pulse loyaltybay-flex loyaltybay-flex-col lg:loyaltybay-flex-row loyaltybay-gap-6 loyaltybay-items-start loyaltybay-w-full">
       {/* Left side */}
-      <div className="lb-w-full lb-flex lb-flex-col lb-gap-6">
+      <div className="loyaltybay-w-full loyaltybay-flex loyaltybay-flex-col loyaltybay-gap-6">
         {/* Title Input */}
-        <div className="lb-h-[50px] lb-bg-gray-200 lb-rounded-md lb-w-full"></div>
+        <div className="loyaltybay-h-[50px] loyaltybay-bg-gray-200 loyaltybay-rounded-md loyaltybay-w-full"></div>
         
         {/* Assignment rules container */}
-        <div className="lb-h-[100px] lb-bg-gray-200 lb-rounded-lg lb-w-full"></div>
+        <div className="loyaltybay-h-[100px] loyaltybay-bg-gray-200 loyaltybay-rounded-lg loyaltybay-w-full"></div>
         
         {/* Fields header */}
         <div>
-          <div className="lb-h-6 lb-bg-gray-200 lb-rounded lb-w-32 lb-mb-2"></div>
-          <div className="lb-h-4 lb-bg-gray-200 lb-rounded lb-w-64"></div>
+          <div className="loyaltybay-h-6 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-32 loyaltybay-mb-2"></div>
+          <div className="loyaltybay-h-4 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-w-64"></div>
         </div>
 
         {/* Fields list */}
-        <div className="lb-border lb-border-gray-200 lb-rounded-lg lb-p-4">
+        <div className="loyaltybay-border loyaltybay-border-gray-200 loyaltybay-rounded-lg loyaltybay-p-4">
            {Array.from({ length: 3 }).map((_, i) => (
-             <div key={i} className="lb-h-12 lb-bg-gray-100 lb-rounded-md lb-w-full lb-mb-2 lb-flex lb-items-center lb-px-4">
-                <div className="lb-h-4 lb-w-4 lb-bg-gray-200 lb-rounded lb-mr-4"></div>
-                <div className="lb-h-4 lb-w-32 lb-bg-gray-200 lb-rounded lb-mr-auto"></div>
-                <div className="lb-h-4 lb-w-24 lb-bg-gray-200 lb-rounded"></div>
+             <div key={i} className="loyaltybay-h-12 loyaltybay-bg-gray-100 loyaltybay-rounded-md loyaltybay-w-full loyaltybay-mb-2 loyaltybay-flex loyaltybay-items-center loyaltybay-px-4">
+                <div className="loyaltybay-h-4 loyaltybay-w-4 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-mr-4"></div>
+                <div className="loyaltybay-h-4 loyaltybay-w-32 loyaltybay-bg-gray-200 loyaltybay-rounded loyaltybay-mr-auto"></div>
+                <div className="loyaltybay-h-4 loyaltybay-w-24 loyaltybay-bg-gray-200 loyaltybay-rounded"></div>
              </div>
            ))}
         </div>
       </div>
 
       {/* Right Sidebar */}
-      <div className="lg:lb-w-[320px] lb-w-full lb-flex-shrink-0">
-        <div className="lb-h-[500px] lb-bg-gray-200 lb-rounded-lg lb-w-full"></div>
+      <div className="lg:loyaltybay-w-[320px] loyaltybay-w-full loyaltybay-flex-shrink-0">
+        <div className="loyaltybay-h-[500px] loyaltybay-bg-gray-200 loyaltybay-rounded-lg loyaltybay-w-full"></div>
       </div>
     </div>
   );

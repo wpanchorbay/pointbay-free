@@ -67,7 +67,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
   return (
     <div>
       <div
-        className={`lb-flex lb-items-center lb-gap-2 ${className} ${
+        className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2 ${className} ${
           classNames?.root || ""
         }`}
       >
@@ -82,21 +82,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
           readOnly={disabled}
           placeholder={placeholder}
           className={`
-          !lb-bg-transparent !lb-shadow-none
-          lb-text-[#1e1e1e] lb-font-[700] lb-text-[20px] lb-leading-[32px]
-          lb-px-1 lb-py-0.5
-          lb-w-auto 
-          !lb-border-t-0 !lb-border-l-0 !lb-border-r-0 !lb-border-b-2
-           !lb-rounded-[0px]
-          focus:lb-outline-none
-          lb-transition-colors lb-duration-200 placeholder:lb-italic
+          !loyaltybay-bg-transparent !loyaltybay-shadow-none
+          loyaltybay-text-[#1e1e1e] loyaltybay-font-[700] loyaltybay-text-[20px] loyaltybay-leading-[32px]
+          loyaltybay-px-1 loyaltybay-py-0.5
+          loyaltybay-w-auto 
+          !loyaltybay-border-t-0 !loyaltybay-border-l-0 !loyaltybay-border-r-0 !loyaltybay-border-b-2
+           !loyaltybay-rounded-[0px]
+          focus:loyaltybay-outline-none
+          loyaltybay-transition-colors loyaltybay-duration-200 placeholder:loyaltybay-italic
           ${
             error
-              ? "!lb-border-red-500"
-              : "!lb-border-transparent focus:!lb-border-[#3858e9]"
+              ? "!loyaltybay-border-red-500"
+              : "!loyaltybay-border-transparent focus:!loyaltybay-border-[#3858e9]"
           }
-          ${isEditing ? "" : "lb-cursor-pointer"}
-          ${disabled ? "lb-cursor-not-allowed lb-opacity-60" : ""}
+          ${isEditing ? "" : "loyaltybay-cursor-pointer"}
+          ${disabled ? "loyaltybay-cursor-not-allowed loyaltybay-opacity-60" : ""}
           ${isEditing ? classNames?.input || "" : classNames?.text || ""}
         `}
         />
@@ -115,11 +115,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
               }
             }}
             className={`
-            lb-p-1 lb-rounded-full lb-transition-colors
+            loyaltybay-p-1 loyaltybay-rounded-full loyaltybay-transition-colors
             ${
               isEditing
-                ? "lb-text-primary hover:lb-bg-blue-50"
-                : "lb-text-gray-400 hover:lb-text-primary hover:lb-bg-gray-100"
+                ? "loyaltybay-text-primary hover:loyaltybay-bg-blue-50"
+                : "loyaltybay-text-gray-400 hover:loyaltybay-text-primary hover:loyaltybay-bg-gray-100"
             }
             ${classNames?.iconButton || ""}
           `}
@@ -134,7 +134,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         )}
       </div>
       {error && (
-        <span className="lb-text-red-500 lb-text-sm lb-mt-1">
+        <span className="loyaltybay-text-red-500 loyaltybay-text-sm loyaltybay-mt-1">
           {error}
         </span>
       )}

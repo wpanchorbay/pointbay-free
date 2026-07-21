@@ -16,18 +16,18 @@ const Skeleton: FC<SkeletonProps> = ({
   className,
 }) => {
   // Helpers to handle arbitrary values safely
-  const hClass = height ? (height.includes("[") ? `lb-h-${height}` : `lb-h-[${height}]`) : "";
-  const wClass = width ? (width.includes("[") ? `lb-w-${width}` : `lb-w-[${width}]`) : "";
-  const rClass = borderRadius ? (borderRadius.includes("[") ? `lb-rounded-${borderRadius}` : `lb-rounded-[${borderRadius}]`) : "lb-rounded-[6px]";
+  const hClass = height ? (height.includes("[") ? `loyaltybay-h-${height}` : `loyaltybay-h-[${height}]`) : "";
+  const wClass = width ? (width.includes("[") ? `loyaltybay-w-${width}` : `loyaltybay-w-[${width}]`) : "";
+  const rClass = borderRadius ? (borderRadius.includes("[") ? `loyaltybay-rounded-${borderRadius}` : `loyaltybay-rounded-[${borderRadius}]`) : "loyaltybay-rounded-[6px]";
 
   return (
     <div
       className={`
-        lb-block lb-bg-[#e9e9e9] lb-relative lb-overflow-hidden
-        lb-animate-shimmer
+        loyaltybay-block loyaltybay-bg-[#e9e9e9] loyaltybay-relative loyaltybay-overflow-hidden
+        loyaltybay-animate-shimmer
         ${hClass} ${wClass} ${rClass}
         ${className || ""}
-        [&>*]:lb-opacity-0
+        [&>*]:loyaltybay-opacity-0
       `}
     >
       {children}

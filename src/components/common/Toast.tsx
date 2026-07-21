@@ -29,30 +29,30 @@ export const Toast: FC<ToastProps> = ({ toast, onDismiss }) => {
   const getToastTypeClasses = () => {
     switch (toast.type) {
       case "success":
-        return "lb-bg-[#f0fff4] lb-border-l-[#228b22] lb-text-[#1a472a]";
+        return "loyaltybay-bg-[#f0fff4] loyaltybay-border-l-[#228b22] loyaltybay-text-[#1a472a]";
       case "error":
-        return "lb-bg-[#fff5f5] lb-border-l-[#cc0000] lb-text-[#5c2121]";
+        return "loyaltybay-bg-[#fff5f5] loyaltybay-border-l-[#cc0000] loyaltybay-text-[#5c2121]";
       case "info":
       default:
-        return "lb-bg-white lb-border-l-[#2271b1] lb-text-[#1d2327]";
+        return "loyaltybay-bg-white loyaltybay-border-l-[#2271b1] loyaltybay-text-[#1d2327]";
     }
   };
 
   const toastClasses = `
-    lb-relative lb-p-5 lb-rounded-[4px] lb-shadow-[0_4px_12px_rgba(0,0,0,0.15)] 
-    lb-flex lb-items-center lb-justify-between lb-gap-[15px] 
-    lb-border-l-[5px] lb-backdrop-blur-[3px]
-    ${isClosing ? "lb-animate-slide-out" : "lb-animate-slide-in"}
+    loyaltybay-relative loyaltybay-p-5 loyaltybay-rounded-[4px] loyaltybay-shadow-[0_4px_12px_rgba(0,0,0,0.15)] 
+    loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-gap-[15px] 
+    loyaltybay-border-l-[5px] loyaltybay-backdrop-blur-[3px]
+    ${isClosing ? "loyaltybay-animate-slide-out" : "loyaltybay-animate-slide-in"}
     ${getToastTypeClasses()}
   `;
 
   return (
     <div className={toastClasses}>
-      <p className="lb-m-0 lb-text-[14px] lb-leading-[1.5] lb-flex-1 ">
+      <p className="loyaltybay-m-0 loyaltybay-text-[14px] loyaltybay-leading-[1.5] loyaltybay-flex-1 ">
         {toast.message}
       </p>
       <button
-        className="lb-bg-none lb-border-none lb-text-inherit lb-opacity-60 hover:lb-opacity-100 lb-cursor-pointer lb-text-[20px] lb-leading-none lb-px-[5px] lb-self-start -lb-mt-[5px] -lb-mr-[5px] -lb-mb-[5px] lb-ml-0"
+        className="loyaltybay-bg-none loyaltybay-border-none loyaltybay-text-inherit loyaltybay-opacity-60 hover:loyaltybay-opacity-100 loyaltybay-cursor-pointer loyaltybay-text-[20px] loyaltybay-leading-none loyaltybay-px-[5px] loyaltybay-self-start -loyaltybay-mt-[5px] -loyaltybay-mr-[5px] -loyaltybay-mb-[5px] loyaltybay-ml-0"
         onClick={handleDismiss}
         aria-label="Dismiss"
       >

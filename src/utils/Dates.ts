@@ -4,7 +4,7 @@ import {
   humanTimeDiff,
   getSettings as getDateSettings,
 } from "@wordpress/date";
-import { useWpabStore } from "../store/wpabStore";
+import { useLoyaltyBayStore } from "../store/loyaltybayStore";
 
 /**
  * Formats a given date-time string according to WordPress settings.
@@ -15,7 +15,7 @@ import { useWpabStore } from "../store/wpabStore";
  * @returns {string} The formatted date and time, or "—" if invalid.
  */
 export default function formatDateTime(dateTimeString: string | number | null | undefined): string {
-  const { wpSettings } = useWpabStore();
+  const { wpSettings } = useLoyaltyBayStore();
   const { timezone } = getDateSettings();
 
 
@@ -42,7 +42,7 @@ export default function formatDateTime(dateTimeString: string | number | null | 
  * @returns {string} The formatted date, or "—" if invalid.
  */
 export function formatDate(dateTimeString: string | number | null | undefined): string {
-  const { wpSettings } = useWpabStore();
+  const { wpSettings } = useLoyaltyBayStore();
   const { timezone } = getDateSettings();
   if (
     !dateTimeString ||
@@ -93,7 +93,7 @@ export function timeDiff(dateTimeString: string | number | null | undefined): st
 
 export function currentDateTime() {
   const { timezone } = getDateSettings();
-  const { wpSettings } = useWpabStore();
+  const { wpSettings } = useLoyaltyBayStore();
   const localTime = new Date(new Date().setDate(new Date().getDate()));
   const format = `${wpSettings?.dateFormat} ${wpSettings?.timeFormat}`;
   // @ts-ignore

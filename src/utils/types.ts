@@ -38,7 +38,7 @@ export interface PluginSettings {
 /**
  * The main store type, matching the data passed by PHP's wp_localize_script().
  */
-export interface BoilerplateStore {
+export interface LoyaltyBayStore {
     version: string;
     root_id: string;
     nonce: string;

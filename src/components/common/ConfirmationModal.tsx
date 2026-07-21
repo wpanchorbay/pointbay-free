@@ -54,31 +54,31 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div
-      className={`lb-fixed lb-inset-0 lb-z-[60000] lb-flex lb-items-center lb-justify-center lb-bg-black/50 lb-backdrop-blur-sm lb-transition-opacity ${
+      className={`loyaltybay-fixed loyaltybay-inset-0 loyaltybay-z-[60000] loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-bg-black/50 loyaltybay-backdrop-blur-sm loyaltybay-transition-opacity ${
         classNames.overlay || ""
       }`}
     >
       <div
-        className={`lb-bg-white lb-rounded-lg lb-shadow-xl lb-pt-6 lb-pb-3 lb-px-8 lb-max-w-sm lb-w-full lb-mx-4 lb-transform lb-transition-all lb-scale-100 ${
+        className={`loyaltybay-bg-white loyaltybay-rounded-lg loyaltybay-shadow-xl loyaltybay-pt-6 loyaltybay-pb-3 loyaltybay-px-8 loyaltybay-max-w-sm loyaltybay-w-full loyaltybay-mx-4 loyaltybay-transform loyaltybay-transition-all loyaltybay-scale-100 ${
           classNames.content || ""
         }`}
       >
         <h3
-          className={`lb-text-lg lb-font-bold lb-text-gray-900 lb-mb-2 lb-text-nowrap ${
+          className={`loyaltybay-text-lg loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 loyaltybay-text-nowrap ${
             classNames.title || ""
           }`}
         >
           {title}
         </h3>
         <p
-          className={`lb-text-gray-600 lb-mb-6 lb-text-sm lb-leading-relaxed ${
+          className={`loyaltybay-text-gray-600 loyaltybay-mb-6 loyaltybay-text-sm loyaltybay-leading-relaxed ${
             classNames.message || ""
           }`}
         >
           {message}
         </p>
         <div
-          className={`lb-flex lb-justify-end lb-gap-3 ${
+          className={`loyaltybay-flex loyaltybay-justify-end loyaltybay-gap-3 ${
             classNames.footer || ""
           }`}
         >

@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  prefix: "lb-",
+  prefix: "loyaltybay-",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
 
   plugins: [

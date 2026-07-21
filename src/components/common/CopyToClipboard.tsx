@@ -26,7 +26,7 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({ text }) => {
   return (
     <button
       onClick={handleCopy}
-      className="lb-inline-flex lb-items-center lb-justify-center lb-cursor-pointer"
+      className="loyaltybay-inline-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-cursor-pointer"
       aria-label={`Copy "${text}" to clipboard`}
     >
       {copied ? (

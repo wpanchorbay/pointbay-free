@@ -29,18 +29,18 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const sizeClasses = {
     small:
-      "lb-px-[8px] !lb-py-[7px] lb-text-[13px] lb-leading-[20px]",
+      "loyaltybay-px-[8px] !loyaltybay-py-[7px] loyaltybay-text-[13px] loyaltybay-leading-[20px]",
     medium:
-      "lb-px-[12px] !lb-py-[9px] !lb-text-[13px] !lb-leading-[20px]",
+      "loyaltybay-px-[12px] !loyaltybay-py-[9px] !loyaltybay-text-[13px] !loyaltybay-leading-[20px]",
     large:
-      "lb-px-[12px] !lb-py-[11px] lb-text-[13px] lb-leading-[20px]",
+      "loyaltybay-px-[12px] !loyaltybay-py-[11px] loyaltybay-text-[13px] loyaltybay-leading-[20px]",
   };
 
   return (
-    <div className={`lb-w-full ${classNames?.root || ""}`}>
+    <div className={`loyaltybay-w-full ${classNames?.root || ""}`}>
       {label && (
         <label
-          className={`lb-block lb-text-sm lb-font-bold lb-text-gray-900 lb-mb-2 ${
+          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 ${
             classNames?.label || ""
           }`}
         >
@@ -49,16 +49,16 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         className={`
-          lb-w-full lb-outline-none
-          lb-bg-white lb-border lb-rounded-[8px]
-          lb-text-[#1e1e1e] lb-placeholder-gray-400
+          loyaltybay-w-full loyaltybay-outline-none
+          loyaltybay-bg-white loyaltybay-border loyaltybay-rounded-[8px]
+          loyaltybay-text-[#1e1e1e] loyaltybay-placeholder-gray-400
           ${sizeClasses[size]}
           ${borderClasses}
           ${transitionClasses}
           ${error ? errorClasses : hoverClasses}
           ${
             props.disabled
-              ? "lb-opacity-50 lb-cursor-not-allowed"
+              ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed"
               : ""
           }
           ${className}
@@ -68,7 +68,7 @@ export const Input: React.FC<InputProps> = ({
       />
       {error && (
         <span
-          className={`lb-mt-1 lb-text-xs lb-text-red-500 ${
+          className={`loyaltybay-mt-1 loyaltybay-text-xs loyaltybay-text-red-500 ${
             classNames?.error || ""
           }`}
         >

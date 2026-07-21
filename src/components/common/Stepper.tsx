@@ -32,23 +32,23 @@ export const Stepper: React.FC<StepperProps> = ({
 
   return (
     <div
-      className={`lb-w-full lb-py-6 ${classNames?.root || ""}`}
+      className={`loyaltybay-w-full loyaltybay-py-6 ${classNames?.root || ""}`}
     >
       <div
-        className={`lb-flex lb-justify-between lb-items-start lb-relative ${
+        className={`loyaltybay-flex loyaltybay-justify-between loyaltybay-items-start loyaltybay-relative ${
           classNames?.container || ""
         }`}
       >
         {/* Background Grey Line */}
         {/* Positioned with left-16 and right-16 (4rem) to start/end at the center of the first/last circles (w-32 items) */}
         <div
-          className={`lb-absolute lb-top-5 lb-left-16 lb-right-16 lb-h-[2px] lb-bg-gray-200 lb-z-0 ${
+          className={`loyaltybay-absolute loyaltybay-top-5 loyaltybay-left-16 loyaltybay-right-16 loyaltybay-h-[2px] loyaltybay-bg-gray-200 loyaltybay-z-0 ${
             classNames?.backgroundLine || ""
           }`}
         >
           {/* Foreground Green Line */}
           <div
-            className={`lb-h-full lb-bg-green-500 lb-transition-all lb-duration-500 lb-ease-out ${
+            className={`loyaltybay-h-full loyaltybay-bg-green-500 loyaltybay-transition-all loyaltybay-duration-500 loyaltybay-ease-out ${
               classNames?.progressLine || ""
             }`}
             style={{ width: `${progressPercentage}%` }}
@@ -63,31 +63,31 @@ export const Stepper: React.FC<StepperProps> = ({
           return (
             <div
               key={step}
-              className={`lb-flex lb-flex-col lb-items-center lb-relative lb-z-10 lb-w-32  ${
+              className={`loyaltybay-flex loyaltybay-flex-col loyaltybay-items-center loyaltybay-relative loyaltybay-z-10 loyaltybay-w-32  ${
                 classNames?.stepContainer || ""
               }`}
             >
               <div
                 onClick={isCompleted ? () => setStep(stepNum) : undefined}
                 className={`
-                  lb-w-10 lb-h-10 lb-rounded-full lb-flex lb-items-center lb-justify-center
-                  lb-transition-colors lb-duration-300 lb-border-2
+                  loyaltybay-w-10 loyaltybay-h-10 loyaltybay-rounded-full loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
+                  loyaltybay-transition-colors loyaltybay-duration-300 loyaltybay-border-2
                   ${
                     isCompleted
-                      ? "lb-cursor-pointer"
-                      : "lb-cursor-not-allowed"
+                      ? "loyaltybay-cursor-pointer"
+                      : "loyaltybay-cursor-not-allowed"
                   }
                   ${
                     isCompleted || isActive
-                      ? "lb-bg-green-500 lb-border-green-500 lb-text-white"
-                      : "lb-bg-gray-300 lb-border-gray-300 lb-text-white"
+                      ? "loyaltybay-bg-green-500 loyaltybay-border-green-500 loyaltybay-text-white"
+                      : "loyaltybay-bg-gray-300 loyaltybay-border-gray-300 loyaltybay-text-white"
                   }
                   ${classNames?.stepCircle || ""}
                 `}
               >
                 {isCompleted ? (
                   <svg
-                    className="lb-w-6 lb-h-6"
+                    className="loyaltybay-w-6 loyaltybay-h-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -100,16 +100,16 @@ export const Stepper: React.FC<StepperProps> = ({
                     />
                   </svg>
                 ) : (
-                  <span className="lb-text-sm lb-font-bold">
+                  <span className="loyaltybay-text-sm loyaltybay-font-bold">
                     {stepNum.toString().padStart(2, "0")}
                   </span>
                 )}
               </div>
               <div
-                className={`lb-mt-3 lb-text-xs lb-font-bold lb-text-center lb-transition-colors ${
+                className={`loyaltybay-mt-3 loyaltybay-text-xs loyaltybay-font-bold loyaltybay-text-center loyaltybay-transition-colors ${
                   isActive || isCompleted
-                    ? "lb-text-gray-900"
-                    : "lb-text-gray-500"
+                    ? "loyaltybay-text-gray-900"
+                    : "loyaltybay-text-gray-500"
                 } ${classNames?.stepLabel || ""}`}
               >
                 {step}

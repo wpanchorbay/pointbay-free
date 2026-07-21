@@ -32,7 +32,7 @@ export const ClassicFormField: React.FC<ClassicFormFieldProps> = ({
       {label && <label htmlFor={htmlFor}>{label}</label>}
       {children}
       {description && (
-        <p className="description lb-block lb-mt-1">
+        <p className="description loyaltybay-block loyaltybay-mt-1">
           {description}
         </p>
       )}

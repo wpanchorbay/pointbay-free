@@ -1,5 +1,5 @@
 {
-  "name": "loyaltybay",
+  "name": "loyaltybay-loyalty-points-referral-rewards-woo",
   "version": "1.0.0",
   "description": "LoyaltyBay - A modern WordPress plugin boilerplate with React/TypeScript admin UI.",
   "main": "index.js",
@@ -15,7 +15,7 @@
     "lint:js": "wp-scripts lint-js src",
     "lint:js:fix": "wp-scripts lint-js src --fix",
     "format": "wp-scripts format src",
-    "makepot": "wp i18n make-pot . languages/loyaltybay.pot --domain=loyaltybay --slug=loyaltybay --exclude='node_modules,vendor,src'",
+    "makepot": "wp i18n make-pot . languages/loyaltybay-loyalty-points-referral-rewards-woo.pot --domain=loyaltybay-loyalty-points-referral-rewards-woo --slug=loyaltybay-loyalty-points-referral-rewards-woo --exclude='node_modules,vendor,src'",
     "make-json": "wp i18n make-json languages --no-purge",
     "zip": "bash package.sh",
     "rebranding": "bash rename.sh",
@@ -61,7 +61,7 @@
     "react-router-dom": "^7.6.3"
   },
   "wp-i18n": {
-    "domain": "loyaltybay",
-    "potFile": "languages/loyaltybay.pot"
+    "domain": "loyaltybay-loyalty-points-referral-rewards-woo",
+    "potFile": "languages/loyaltybay-loyalty-points-referral-rewards-woo.pot"
   }
 }

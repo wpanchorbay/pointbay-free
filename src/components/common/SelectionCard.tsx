@@ -79,18 +79,18 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={`
-        lb-relative lb-p-[20px] lb-rounded-[8px] lb-transition-all lb-duration-200
-        lb-flex lb-items-start lb-gap-[10px]
+        loyaltybay-relative loyaltybay-p-[20px] loyaltybay-rounded-[8px] loyaltybay-transition-all loyaltybay-duration-200
+        loyaltybay-flex loyaltybay-items-start loyaltybay-gap-[10px]
         ${
           isDisabled
-            ? "lb-bg-gray-50 lb-border lb-border-gray-200 lb-cursor-not-allowed"
-            : "lb-cursor-pointer"
+            ? "loyaltybay-bg-gray-50 loyaltybay-border loyaltybay-border-gray-200 loyaltybay-cursor-not-allowed"
+            : "loyaltybay-cursor-pointer"
         }
         ${
           !isDisabled && selected
-            ? "lb-bg-primary lb-border lb-border-primary lb-shadow-sm lb-shadow-primary/20"
+            ? "loyaltybay-bg-primary loyaltybay-border loyaltybay-border-primary loyaltybay-shadow-sm loyaltybay-shadow-primary/20"
             : !isDisabled
-            ? "lb-bg-white lb-border lb-border-gray-100 hover:lb-border-gray-300"
+            ? "loyaltybay-bg-white loyaltybay-border loyaltybay-border-gray-100 hover:loyaltybay-border-gray-300"
             : ""
         }
         ${classNames?.root || ""}
@@ -99,35 +99,35 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
       {/* Badges */}
       {isPro && (
         <div
-          className="lb-absolute lb-top-3 lb-right-3"
+          className="loyaltybay-absolute loyaltybay-top-3 loyaltybay-right-3"
           title="Upgrade to Pro"
         >
-          <LockKeyhole className="lb-w-5 lb-h-5 lb-text-[#f02a74]" />
+          <LockKeyhole className="loyaltybay-w-5 loyaltybay-h-5 loyaltybay-text-[#f02a74]" />
         </div>
       )}
       {isComingSoon && (
-        <div className="lb-absolute lb-top-3 lb-right-3">
-          <span className="lb-bg-pink-100 lb-text-pink-600 lb-px-2 lb-py-0.5 lb-rounded-full lb-text-[10px] lb-font-bold lb-uppercase lb-flex lb-items-center lb-gap-1">
-            <Hourglass className="lb-w-3 lb-h-3" />
+        <div className="loyaltybay-absolute loyaltybay-top-3 loyaltybay-right-3">
+          <span className="loyaltybay-bg-pink-100 loyaltybay-text-pink-600 loyaltybay-px-2 loyaltybay-py-0.5 loyaltybay-rounded-full loyaltybay-text-[10px] loyaltybay-font-bold loyaltybay-uppercase loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1">
+            <Hourglass className="loyaltybay-w-3 loyaltybay-h-3" />
             Soon
           </span>
         </div>
       )}
 
-      <div className={`lb-mt-1 ${classNames?.iconWrapper || ""}`}>
+      <div className={`loyaltybay-mt-1 ${classNames?.iconWrapper || ""}`}>
         <div
           className={`
-            lb-w-5 lb-h-5 lb-rounded-full lb-border-2 lb-flex lb-items-center lb-justify-center
+            loyaltybay-w-5 loyaltybay-h-5 loyaltybay-rounded-full loyaltybay-border-2 loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
             ${
               isDisabled
-                ? "lb-border-gray-300 lb-bg-gray-100"
+                ? "loyaltybay-border-gray-300 loyaltybay-bg-gray-100"
                 : ""
             }
             ${
               !isDisabled && selected
-                ? "lb-border-white"
+                ? "loyaltybay-border-white"
                 : !isDisabled
-                ? "lb-border-gray-300"
+                ? "loyaltybay-border-gray-300"
                 : ""
             }
             ${classNames?.circle || ""}
@@ -135,7 +135,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
         >
           {!isDisabled && selected && (
             <div
-              className={`lb-w-2.5 lb-h-2.5 lb-bg-white lb-rounded-full ${
+              className={`loyaltybay-w-2.5 loyaltybay-h-2.5 loyaltybay-bg-white loyaltybay-rounded-full ${
                 classNames?.dot || ""
               }`}
             />
@@ -144,22 +144,22 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
       </div>
       <div className={classNames?.textWrapper || ""}>
         <h3
-          className={`lb-text-[15px] lb-leading-[24px] lb-font-[700] lb-mb-1 ${
+          className={`loyaltybay-text-[15px] loyaltybay-leading-[24px] loyaltybay-font-[700] loyaltybay-mb-1 ${
             !isDisabled && selected
-              ? "lb-text-white"
-              : "lb-text-gray-900"
-          } ${isDisabled ? "!lb-text-gray-400" : ""} ${
+              ? "loyaltybay-text-white"
+              : "loyaltybay-text-gray-900"
+          } ${isDisabled ? "!loyaltybay-text-gray-400" : ""} ${
             classNames?.title || ""
           }`}
         >
           {title}
         </h3>
         <p
-          className={`lb-text-[13px] lb-leading-[20px] ${
+          className={`loyaltybay-text-[13px] loyaltybay-leading-[20px] ${
             !isDisabled && selected
-              ? "lb-text-blue-100"
-              : "lb-text-gray-500"
-          } ${isDisabled ? "!lb-text-gray-400" : ""} ${
+              ? "loyaltybay-text-blue-100"
+              : "loyaltybay-text-gray-500"
+          } ${isDisabled ? "!loyaltybay-text-gray-400" : ""} ${
             classNames?.description || ""
           }`}
         >

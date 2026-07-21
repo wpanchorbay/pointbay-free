@@ -110,7 +110,7 @@ class Admin {
 	 * @return void
 	 */
 	public function add_admin_menu() {
-		loyaltybay_log( 'Admin: Registering Boilerplate menus', 'INFO' );
+		loyaltybay_log( 'Admin: Registering LoyaltyBay menus', 'INFO' );
 
 		$config      = $this->get_config();
 		$menu_config = $config['menu'] ?? array();
@@ -283,8 +283,8 @@ class Admin {
 	 */
 	public function add_setting_root_div() {
 		echo '<div id="' . esc_attr( \LOYALTYBAY_PLUGIN_NAME ) . '">
-			<div class="lb-loader-container">
-				<p>' . esc_html__( 'Loading...', 'loyaltybay' ) . '</p>
+			<div class="loyaltybay-loader-container">
+				<p>' . esc_html__( 'Loading...', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</p>
 			</div>
 		</div>';
 	}
@@ -346,12 +346,12 @@ class Admin {
 			)
 		);
 
-		wp_localize_script( $handle, 'loyaltyBay_Localize', $localize );
+		wp_localize_script( $handle, 'loyaltybay_Localize', $localize );
 
 		$path_to_check = \LOYALTYBAY_PATH . 'languages';
 		wp_set_script_translations(
 			$handle,
-			'loyaltybay',
+			'loyaltybay-loyalty-points-referral-rewards-woo',
 			$path_to_check
 		);
 	}
@@ -394,7 +394,7 @@ class Admin {
 		$loader->add_filter( 'admin_body_class', $this, 'add_has_sticky_header' );
 		$loader->add_action( 'admin_enqueue_scripts', $this, 'enqueue_resources' );
 
-		$plugin_basename = plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay.php' );
+		$plugin_basename = plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay-loyalty-points-referral-rewards-woo.php' );
 		$loader->add_filter( 'plugin_action_links_' . $plugin_basename, $this, 'add_plugin_action_links', 10, 1 );
 	}
 }

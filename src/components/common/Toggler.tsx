@@ -39,9 +39,9 @@ export const Toggler: React.FC<TogglerProps> = ({
 
   // Size configuration
   const sizeClasses = {
-    small: "lb-px-[8px] lb-py-[2px] lb-text-[11px]",
-    medium: "lb-px-[18px] lb-py-[5px] lb-text-default",
-    large: "lb-px-[20px] lb-py-[12px] lb-text-[15px]",
+    small: "loyaltybay-px-[8px] loyaltybay-py-[2px] loyaltybay-text-[11px]",
+    medium: "loyaltybay-px-[18px] loyaltybay-py-[5px] loyaltybay-text-default",
+    large: "loyaltybay-px-[20px] loyaltybay-py-[12px] loyaltybay-text-[15px]",
   };
 
   useEffect(() => {
@@ -61,13 +61,13 @@ export const Toggler: React.FC<TogglerProps> = ({
   return (
     <div
       className={`
-        lb-relative lb-inline-flex lb-items-center
-        lb-bg-white lb-border ${borderClasses} lb-rounded-[8px]
-        lb-p-[4px] lb-select-none
-        ${fullWidth ? "lb-flex lb-w-full" : ""}
+        loyaltybay-relative loyaltybay-inline-flex loyaltybay-items-center
+        loyaltybay-bg-white loyaltybay-border ${borderClasses} loyaltybay-rounded-[8px]
+        loyaltybay-p-[4px] loyaltybay-select-none
+        ${fullWidth ? "loyaltybay-flex loyaltybay-w-full" : ""}
         ${
           disabled
-            ? "lb-opacity-50 lb-cursor-not-allowed lb-pointer-events-none"
+            ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed loyaltybay-pointer-events-none"
             : ""
         }
         ${className}
@@ -79,10 +79,10 @@ export const Toggler: React.FC<TogglerProps> = ({
       {/* Sliding Background Pill */}
       <div
         className={`
-            lb-absolute lb-top-[4px] lb-bottom-[4px]
-            lb-bg-primary lb-rounded-[6px] lb-shadow-sm
-            lb-transition-all lb-duration-300 lb-ease-[cubic-bezier(0.4,0,0.2,1)]
-            lb-pointer-events-none
+            loyaltybay-absolute loyaltybay-top-[4px] loyaltybay-bottom-[4px]
+            loyaltybay-bg-primary loyaltybay-rounded-[6px] loyaltybay-shadow-sm
+            loyaltybay-transition-all loyaltybay-duration-300 loyaltybay-ease-[cubic-bezier(0.4,0,0.2,1)]
+            loyaltybay-pointer-events-none
             ${classNames.pill || ""}
         `}
         style={{
@@ -104,15 +104,15 @@ export const Toggler: React.FC<TogglerProps> = ({
             disabled={disabled}
             onClick={() => !disabled && onChange(option.value)}
             className={`
-              lb-relative lb-z-10 lb-flex-1
-              lb-font-medium lb-text-nowrap lb-rounded-[6px]
-              lb-transition-colors lb-duration-300
-              focus:lb-outline-none focus-visible:lb-ring-2 focus-visible:lb-ring-primary/20
+              loyaltybay-relative loyaltybay-z-10 loyaltybay-flex-1
+              loyaltybay-font-medium loyaltybay-text-nowrap loyaltybay-rounded-[6px]
+              loyaltybay-transition-colors loyaltybay-duration-300
+              focus:loyaltybay-outline-none focus-visible:loyaltybay-ring-2 focus-visible:loyaltybay-ring-primary/20
               ${sizeClasses[size]}
               ${
                 isSelected
-                  ? "lb-text-white"
-                  : "lb-text-secondary hover:lb-text-gray-700"
+                  ? "loyaltybay-text-white"
+                  : "loyaltybay-text-secondary hover:loyaltybay-text-gray-700"
               }
               ${classNames.button || ""}
             `}

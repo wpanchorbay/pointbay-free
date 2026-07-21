@@ -7,14 +7,14 @@ import React, {
   useRef,
 } from "react";
 import apiFetch from "@wordpress/api-fetch";
-import { BoilerplateStore, PluginSettings } from "../utils/types";
+import { LoyaltyBayStore, PluginSettings } from "../utils/types";
 import { date, getSettings as getDateSettings } from "@wordpress/date";
 
-interface WpabStoreContextType {
-  store: BoilerplateStore;
-  updateStore: <K extends keyof BoilerplateStore>(
+interface LoyaltyBayStoreContextType {
+  store: LoyaltyBayStore;
+  updateStore: <K extends keyof LoyaltyBayStore>(
     key: K,
-    value: BoilerplateStore[K],
+    value: LoyaltyBayStore[K],
   ) => void;
   updateSettings: <K extends keyof PluginSettings>(
     key: K,
@@ -24,19 +24,19 @@ interface WpabStoreContextType {
   serverDateLoaded: boolean;
 }
 
-const WpabStoreContext = createContext<WpabStoreContextType | null>(null);
+const LoyaltyBayStoreContext = createContext<LoyaltyBayStoreContextType | null>(null);
 
-declare const loyaltyBay_Localize: BoilerplateStore;
+declare const loyaltybay_Localize: LoyaltyBayStore;
 
-export const WpabProvider: React.FC<{ children: ReactNode }> = ({
+export const LoyaltyBayProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const initialValue: BoilerplateStore =
-    typeof loyaltyBay_Localize !== "undefined"
-      ? loyaltyBay_Localize
-      : ({} as BoilerplateStore);
+  const initialValue: LoyaltyBayStore =
+    typeof loyaltybay_Localize !== "undefined"
+      ? loyaltybay_Localize
+      : ({} as LoyaltyBayStore);
 
-  const [store, setStore] = useState<BoilerplateStore>(initialValue);
+  const [store, setStore] = useState<LoyaltyBayStore>(initialValue);
   const isInitialized = useRef(false);
 
   const [serverDate, setServerDate] = useState(new Date());
@@ -72,9 +72,9 @@ export const WpabProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [initialValue.nonce, initialValue.rest_url]);
 
-  const updateStore = <K extends keyof BoilerplateStore>(
+  const updateStore = <K extends keyof LoyaltyBayStore>(
     key: K,
-    value: BoilerplateStore[K],
+    value: LoyaltyBayStore[K],
   ) => {
     setStore((prev) => ({
       ...prev,
@@ -95,7 +95,7 @@ export const WpabProvider: React.FC<{ children: ReactNode }> = ({
     }));
   };
 
-  const contextValue: WpabStoreContextType = {
+  const contextValue: LoyaltyBayStoreContextType = {
     store,
     updateStore,
     updateSettings,
@@ -104,27 +104,27 @@ export const WpabProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   return (
-    <WpabStoreContext.Provider value={contextValue}>
+    <LoyaltyBayStoreContext.Provider value={contextValue}>
       {children}
-    </WpabStoreContext.Provider>
+    </LoyaltyBayStoreContext.Provider>
   );
 };
 
-export const useWpabStore = (): BoilerplateStore => {
-  const context = useContext(WpabStoreContext);
+export const useLoyaltyBayStore = (): LoyaltyBayStore => {
+  const context = useContext(LoyaltyBayStoreContext);
 
   if (!context) {
-    throw new Error("useWpabStore must be used within a WpabProvider");
+    throw new Error("useLoyaltyBayStore must be used within a LoyaltyBayProvider");
   }
 
   return context.store;
 };
 
-export const useWpabStoreActions = () => {
-  const context = useContext(WpabStoreContext);
+export const useLoyaltyBayStoreActions = () => {
+  const context = useContext(LoyaltyBayStoreContext);
 
   if (!context) {
-    throw new Error("useWpabStoreActions must be used within a WpabProvider");
+    throw new Error("useLoyaltyBayStoreActions must be used within a LoyaltyBayProvider");
   }
 
   return {
@@ -136,4 +136,4 @@ export const useWpabStoreActions = () => {
   };
 };
 
-export default WpabStoreContext;
+export default LoyaltyBayStoreContext;

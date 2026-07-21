@@ -1,7 +1,7 @@
 import { useState, useEffect, FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
-import { useWpabStore } from "../../store/wpabStore";
+import { useLoyaltyBayStore } from "../../store/loyaltybayStore";
 
 interface MenuLink {
   label: string;
@@ -11,28 +11,28 @@ interface MenuLink {
 const Navbar: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const store = useWpabStore();
+  const store = useLoyaltyBayStore();
 
   const menus: MenuLink[] = [
     {
-      label: __("Dashboard", "loyaltybay"),
+      label: __("Dashboard", "loyaltybay-loyalty-points-referral-rewards-woo"),
       path: "/",
     },
     // Add your menu items here
     {
-      label: __("Logs", "loyaltybay"),
+      label: __("Logs", "loyaltybay-loyalty-points-referral-rewards-woo"),
       path: "/logs",
     },
     {
-      label: __("Components", "loyaltybay"),
+      label: __("Components", "loyaltybay-loyalty-points-referral-rewards-woo"),
       path: "/components",
     },
     {
-      label: __("Components (Classic)", "loyaltybay"),
+      label: __("Components (Classic)", "loyaltybay-loyalty-points-referral-rewards-woo"),
       path: "/components-classic",
     },
     // {
-    //   label: __("Settings", "loyaltybay"),
+    //   label: __("Settings", "loyaltybay-loyalty-points-referral-rewards-woo"),
     //   path: "/settings",
     // },
   ];
@@ -48,29 +48,29 @@ const Navbar: FC = () => {
 
   return (
     <>
-      <div className="lb-bg-white lb-p-0 !lb-border-0 !lb-border-b !lb-border-gray-300 lb-z-50 lb-relative">
-        <div className="lb-flex lb-px-[12px] lb-justify-between lb-items-center lb-flex-wrap md:lb-flex-nowrap lb-gap-[4px] lb-relative">
-          <div className="lb-flex lb-items-center lb-gap-[4px] lb-py-[12px]">
-            <span className="lb-font-[700] lb-text-[16px] lb-text-gray-900">
+      <div className="loyaltybay-bg-white loyaltybay-p-0 !loyaltybay-border-0 !loyaltybay-border-b !loyaltybay-border-gray-300 loyaltybay-z-50 loyaltybay-relative">
+        <div className="loyaltybay-flex loyaltybay-px-[12px] loyaltybay-justify-between loyaltybay-items-center loyaltybay-flex-wrap md:loyaltybay-flex-nowrap loyaltybay-gap-[4px] loyaltybay-relative">
+          <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-gap-[4px] loyaltybay-py-[12px]">
+            <span className="loyaltybay-font-[700] loyaltybay-text-[16px] loyaltybay-text-gray-900">
               {store.pluginData?.plugin_name || "LoyaltyBay"}
             </span>
           </div>
           <div
-            className={`lb-flex-1 md:lb-flex-none lb-flex-col md:lb-flex-row lb-justify-stretch md:lb-items-center lb-absolute md:lb-relative lb-top-[102%] md:lb-top-auto lb-left-0 lb-w-full md:lb-w-auto lb-gap-0 md:lb-gap-[6px] lb-bg-white !lb-border-0 ${
+            className={`loyaltybay-flex-1 md:loyaltybay-flex-none loyaltybay-flex-col md:loyaltybay-flex-row loyaltybay-justify-stretch md:loyaltybay-items-center loyaltybay-absolute md:loyaltybay-relative loyaltybay-top-[102%] md:loyaltybay-top-auto loyaltybay-left-0 loyaltybay-w-full md:loyaltybay-w-auto loyaltybay-gap-0 md:loyaltybay-gap-[6px] loyaltybay-bg-white !loyaltybay-border-0 ${
               isMobileMenuOpen
-                ? "lb-flex"
-                : "lb-hidden md:lb-flex"
+                ? "loyaltybay-flex"
+                : "loyaltybay-hidden md:loyaltybay-flex"
             }`}
           >
-            <nav className="lb-items-stretch md:lb-items-center lb-gap-0 lb-flex lb-flex-col md:lb-flex-row lb-w-full">
+            <nav className="loyaltybay-items-stretch md:loyaltybay-items-center loyaltybay-gap-0 loyaltybay-flex loyaltybay-flex-col md:loyaltybay-flex-row loyaltybay-w-full">
               {menus.map((menu) => (
                 <span
                   key={menu.path}
-                  className={`lb-text-default lb-font-[700]
-                    lb-cursor-pointer lb-py-[8px] lb-px-[16px] lb-border-b md:lb-border-b-0 lb-border-gray-300 last:lb-border-gray-300 ${
+                  className={`loyaltybay-text-default loyaltybay-font-[700]
+                    loyaltybay-cursor-pointer loyaltybay-py-[8px] loyaltybay-px-[16px] loyaltybay-border-b md:loyaltybay-border-b-0 loyaltybay-border-gray-300 last:loyaltybay-border-gray-300 ${
                       activeTab === menu.path
-                        ? "lb-text-blue-800 lb-bg-gray-100 lb-rounded-[0] md:lb-rounded-[8px]"
-                        : "lb-text-gray-800 hover:lb-text-blue-800"
+                        ? "loyaltybay-text-blue-800 loyaltybay-bg-gray-100 loyaltybay-rounded-[0] md:loyaltybay-rounded-[8px]"
+                        : "loyaltybay-text-gray-800 hover:loyaltybay-text-blue-800"
                     }`}
                   onClick={() => {
                     navigate(menu.path);
@@ -83,7 +83,7 @@ const Navbar: FC = () => {
             </nav>
           </div>
           <button
-            className="lb-flex md:lb-hidden lb-items-center lb-gap-[2px] lb-text-gray-800 hover:lb-text-blue-800"
+            className="loyaltybay-flex md:loyaltybay-hidden loyaltybay-items-center loyaltybay-gap-[2px] loyaltybay-text-gray-800 hover:loyaltybay-text-blue-800"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
@@ -94,7 +94,7 @@ const Navbar: FC = () => {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="lb-transition-all lb-duration-300 lb-ease-in-out"
+              className="loyaltybay-transition-all loyaltybay-duration-300 loyaltybay-ease-in-out"
               aria-hidden="true"
             >
               {isMobileMenuOpen ? (
@@ -145,7 +145,7 @@ const Navbar: FC = () => {
       </div>
       {isMobileMenuOpen && (
         <div
-          className="lb-fixed lb-top-0 lb-left-0 lb-w-full lb-h-full lb-bg-black lb-opacity-60 lb-z-40 md:lb-hidden"
+          className="loyaltybay-fixed loyaltybay-top-0 loyaltybay-left-0 loyaltybay-w-full loyaltybay-h-full loyaltybay-bg-black loyaltybay-opacity-60 loyaltybay-z-40 md:loyaltybay-hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

@@ -49,14 +49,14 @@ export const ClassicTooltip: React.FC<ClassicTooltipProps> = ({
           setVisible(false);
         }}
         tabIndex={0}
-        className={`lb-cursor-help lb-inline-flex lb-items-center lb-justify-center lb-w-[16px] lb-h-[16px] lb-rounded-full lb-bg-[#72777c] hover:lb-bg-[#50575e] lb-text-white lb-transition-colors lb-ml-1 ${className}`}
+        className={`loyaltybay-cursor-help loyaltybay-inline-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-w-[16px] loyaltybay-h-[16px] loyaltybay-rounded-full loyaltybay-bg-[#72777c] hover:loyaltybay-bg-[#50575e] loyaltybay-text-white loyaltybay-transition-colors loyaltybay-ml-1 ${className}`}
       >
         <CircleQuestionMarkIcon />
       </span>
       {visible &&
         createPortal(
           <div
-            className="lb-fixed lb-z-[999999] lb-bg-[#333] lb-text-white lb-px-2 lb-py-1 lb-rounded lb-text-xs lb-leading-snug lb-max-w-[200px] lb-text-center lb-pointer-events-none lb-shadow-sm"
+            className="loyaltybay-fixed loyaltybay-z-[999999] loyaltybay-bg-[#333] loyaltybay-text-white loyaltybay-px-2 loyaltybay-py-1 loyaltybay-rounded loyaltybay-text-xs loyaltybay-leading-snug loyaltybay-max-w-[200px] loyaltybay-text-center loyaltybay-pointer-events-none loyaltybay-shadow-sm"
             style={{
               top: coords.top,
               left: coords.left,
@@ -65,7 +65,7 @@ export const ClassicTooltip: React.FC<ClassicTooltipProps> = ({
           >
             {tip}
             <div
-              className="lb-absolute lb-border-[5px] lb-border-solid lb-border-t-[#333] lb-border-x-transparent lb-border-b-transparent"
+              className="loyaltybay-absolute loyaltybay-border-[5px] loyaltybay-border-solid loyaltybay-border-t-[#333] loyaltybay-border-x-transparent loyaltybay-border-b-transparent"
               style={{
                 top: "100%",
                 left: "50%",

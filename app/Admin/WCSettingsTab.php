@@ -1,6 +1,6 @@
 <?php
 /**
- * WC Settings Tab — integrates boilerplate settings into WooCommerce settings.
+ * WC Settings Tab — integrates LoyaltyBay settings into WooCommerce settings.
  *
  * @since      1.0.0
  * @package    LoyaltyBay
@@ -24,7 +24,7 @@ class WCSettingsTab extends \WC_Settings_Page {
 	 */
 	public function __construct() {
 		$this->id    = \LOYALTYBAY_PLUGIN_NAME;
-		$this->label = __( 'Loyalty Points', 'loyaltybay' );
+		$this->label = __( 'Loyalty Points', 'loyaltybay-loyalty-points-referral-rewards-woo' );
 
 		parent::__construct();
 	}

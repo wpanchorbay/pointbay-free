@@ -53,7 +53,7 @@ const EarnNoticeBlock = () => {
                 <div className="wc-block-components-totals-item">
                     <span className="wc-block-components-totals-item__label" style={{ color: '#374151' }}>
                         {sprintf(
-                            __('Create an account to earn %d points on this order!', 'loyaltybay'),
+                            __('Create an account to earn %d points on this order!', 'loyaltybay-loyalty-points-referral-rewards-woo'),
                             points_to_award
                         )}
                     </span>
@@ -67,7 +67,7 @@ const EarnNoticeBlock = () => {
             <div className="wc-block-components-totals-item">
                 <span className="wc-block-components-totals-item__label" style={{ color: '#111827', fontWeight: 500 }}>
                     {sprintf(
-                        __('Complete this order to earn %d points!', 'loyaltybay'),
+                        __('Complete this order to earn %d points!', 'loyaltybay-loyalty-points-referral-rewards-woo'),
                         points_to_award
                     )}
                 </span>

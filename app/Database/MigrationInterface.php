@@ -11,12 +11,12 @@
 namespace LoyaltyBay\Database;
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-interface MigrationInterface
-{
+interface MigrationInterface {
+
 	/**
 	 * Run the migrations.
 	 *

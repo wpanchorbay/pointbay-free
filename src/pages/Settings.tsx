@@ -63,7 +63,7 @@ const Settings: React.FC = () => {
 				);
 			}
 		} catch ( error ) {
-			addToast( __( 'Failed to load settings.', 'loyaltybay' ), 'error' );
+			addToast( __( 'Failed to load settings.', 'loyaltybay-loyalty-points-referral-rewards-woo' ), 'error' );
 		} finally {
 			setIsLoading( false );
 		}
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
 					JSON.parse( JSON.stringify( response.data ) )
 				);
 				addToast(
-					__( 'Settings saved successfully.', 'loyaltybay' ),
+					__( 'Settings saved successfully.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 					'success'
 				);
 
@@ -97,7 +97,7 @@ const Settings: React.FC = () => {
 				window.onbeforeunload = null;
 			}
 		} catch ( error ) {
-			addToast( __( 'Failed to save settings.', 'loyaltybay' ), 'error' );
+			addToast( __( 'Failed to save settings.', 'loyaltybay-loyalty-points-referral-rewards-woo' ), 'error' );
 		} finally {
 			setIsSaving( false );
 			const nativeSaveButton = document.querySelector(
@@ -123,7 +123,7 @@ const Settings: React.FC = () => {
 
 	if ( isLoading ) {
 		return (
-			<div className="lb-p-page-default">
+			<div className="loyaltybay-p-page-default">
 				<SkeletonSettings />
 			</div>
 		);
@@ -131,14 +131,14 @@ const Settings: React.FC = () => {
 
 	if ( ! settings ) {
 		return (
-			<div className="lb-p-page-default">
-				<p>{ __( 'Failed to load settings.', 'loyaltybay' ) }</p>
+			<div className="loyaltybay-p-page-default">
+				<p>{ __( 'Failed to load settings.', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="lb-p-page-default lb-ignore-preflight">
+		<div className="loyaltybay-p-page-default loyaltybay-ignore-preflight">
 			<input
 				type="hidden"
 				name="loyaltybay_has_changes"
@@ -147,15 +147,15 @@ const Settings: React.FC = () => {
 			<TopProgressBar isSaving={ isSaving } />
 
 			<ClassicSettingsTable
-				title={ __( 'Earning Points', 'loyaltybay' ) }
+				title={ __( 'Earning Points', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
 				description={ __(
 					'Configure how customers earn loyalty points.',
-					'loyaltybay'
+					'loyaltybay-loyalty-points-referral-rewards-woo'
 				) }
 				fields={ [
 					{
 						id: 'earning_pointsPerDollar',
-						label: __( 'Points Per Dollar', 'loyaltybay' ),
+						label: __( 'Points Per Dollar', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicInput
 								type="number"
@@ -170,7 +170,7 @@ const Settings: React.FC = () => {
 								}
 								description={ __(
 									'How many points the customer earns for every $1 spent.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 								size="small"
 							/>
@@ -178,7 +178,7 @@ const Settings: React.FC = () => {
 					},
 					{
 						id: 'earning_pointsForRegistration',
-						label: __( 'Points for Registration', 'loyaltybay' ),
+						label: __( 'Points for Registration', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicInput
 								type="number"
@@ -193,7 +193,7 @@ const Settings: React.FC = () => {
 								}
 								description={ __(
 									'Give new users this many points when they register.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 								size="small"
 							/>
@@ -201,7 +201,7 @@ const Settings: React.FC = () => {
 					},
 					{
 						id: 'earning_pointsForReview',
-						label: __( 'Points for Product Review', 'loyaltybay' ),
+						label: __( 'Points for Product Review', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicInput
 								type="number"
@@ -216,7 +216,7 @@ const Settings: React.FC = () => {
 								}
 								description={ __(
 									'Reward points for an approved product review.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 								size="small"
 							/>
@@ -224,7 +224,7 @@ const Settings: React.FC = () => {
 					},
 					{
 						id: 'earning_orderStatusTrigger',
-						label: __( 'Order Status Trigger', 'loyaltybay' ),
+						label: __( 'Order Status Trigger', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicSelect
 								value={
@@ -248,7 +248,7 @@ const Settings: React.FC = () => {
 								] }
 								description={ __(
 									'The WooCommerce order status that triggers points crediting.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
 						),
@@ -257,15 +257,15 @@ const Settings: React.FC = () => {
 			/>
 
 			<ClassicSettingsTable
-				title={ __( 'Redemption Rules', 'loyaltybay' ) }
+				title={ __( 'Redemption Rules', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
 				description={ __(
 					'Configure how points are converted to discounts.',
-					'loyaltybay'
+					'loyaltybay-loyalty-points-referral-rewards-woo'
 				) }
 				fields={ [
 					{
 						id: 'redemption_pointsValue',
-						label: __( 'Point Value ($)', 'loyaltybay' ),
+						label: __( 'Point Value ($)', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicInput
 								type="number"
@@ -282,7 +282,7 @@ const Settings: React.FC = () => {
 								}
 								description={ __(
 									'The monetary value of a single point.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 								size="small"
 							/>
@@ -290,7 +290,7 @@ const Settings: React.FC = () => {
 					},
 					{
 						id: 'redemption_mode',
-						label: __( 'Redemption Mode', 'loyaltybay' ),
+						label: __( 'Redemption Mode', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicSelect
 								value={ settings.redemption_mode }
@@ -304,28 +304,28 @@ const Settings: React.FC = () => {
 									{
 										label: __(
 											'Cart Fee (WC_Fee)',
-											'loyaltybay'
+											'loyaltybay-loyalty-points-referral-rewards-woo'
 										),
 										value: 'fee',
 									},
 									{
 										label: __(
 											'Virtual Coupon (WC_Coupon)',
-											'loyaltybay'
+											'loyaltybay-loyalty-points-referral-rewards-woo'
 										),
 										value: 'coupon',
 									},
 								] }
 								description={ __(
 									'How the discount is applied to the cart.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
 						),
 					},
 					{
 						id: 'redemption_minPoints',
-						label: __( 'Minimum Points to Redeem', 'loyaltybay' ),
+						label: __( 'Minimum Points to Redeem', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicInput
 								type="number"
@@ -340,7 +340,7 @@ const Settings: React.FC = () => {
 								}
 								description={ __(
 									'The minimum amount of points needed before the redemption form is shown.',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 								size="small"
 							/>
@@ -350,15 +350,15 @@ const Settings: React.FC = () => {
 			/>
 
 			<ClassicSettingsTable
-				title={ __( 'Display & System', 'loyaltybay' ) }
+				title={ __( 'Display & System', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
 				description={ __(
 					'Additional display and maintenance options.',
-					'loyaltybay'
+					'loyaltybay-loyalty-points-referral-rewards-woo'
 				) }
 				fields={ [
 					{
 						id: 'display_guestNoticeEnabled',
-						label: __( 'Guest Notice', 'loyaltybay' ),
+						label: __( 'Guest Notice', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicCheckbox
 								checked={ settings.display_guestNoticeEnabled }
@@ -370,14 +370,14 @@ const Settings: React.FC = () => {
 								}
 								label={ __(
 									'Show login/register prompt on checkout',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
 						),
 					},
 					{
 						id: 'advanced_deleteAllOnUninstall',
-						label: __( 'Delete Data on Uninstall', 'loyaltybay' ),
+						label: __( 'Delete Data on Uninstall', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 						render: () => (
 							<ClassicCheckbox
 								checked={
@@ -391,7 +391,7 @@ const Settings: React.FC = () => {
 								}
 								label={ __(
 									'Purge all ledger data upon deletion',
-									'loyaltybay'
+									'loyaltybay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
 						),

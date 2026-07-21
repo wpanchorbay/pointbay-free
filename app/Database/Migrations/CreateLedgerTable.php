@@ -1,15 +1,38 @@
 <?php
+/**
+ * Migration for the ledger table.
+ *
+ * @package    LoyaltyBay
+ * @subpackage Database
+ * @since      1.0.0
+ * @author     LoyaltyBay <loyaltybay@gmail.com>
+ */
+
 namespace LoyaltyBay\Database\Migrations;
 
 use LoyaltyBay\Database\MigrationInterface;
 
+/**
+ * Creates the points ledger database table.
+ *
+ * @since      1.0.0
+ * @package    LoyaltyBay
+ * @subpackage LoyaltyBay/Database
+ * @author     LoyaltyBay <loyaltybay@gmail.com>
+ */
 class CreateLedgerTable implements MigrationInterface {
-    public function up() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'loyaltybay_ledger';
-        $charset_collate = $wpdb->get_charset_collate();
+	/**
+	 * Create the table.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function up() {
+		global $wpdb;
+		$table_name      = $wpdb->prefix . 'loyaltybay_ledger';
+		$charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE $table_name (
+		$sql = "CREATE TABLE $table_name (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             user_id bigint(20) unsigned NOT NULL,
             transaction_type varchar(20) NOT NULL,
@@ -25,13 +48,20 @@ class CreateLedgerTable implements MigrationInterface {
             KEY idx_user_created (user_id, created_at)
         ) $charset_collate;";
 
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $sql );
-    }
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
 
-    public function down() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'loyaltybay_ledger';
-        $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
-    }
+	/**
+	 * Drop the table.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function down() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'loyaltybay_ledger';
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
+		$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
+	}
 }

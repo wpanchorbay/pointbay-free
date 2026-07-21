@@ -2,9 +2,9 @@ import { z } from "zod";
 import { __ } from "@wordpress/i18n";
 
 export const conditionRuleSchema = z.object({
-  target_field_id: z.string().min(1, { message: __("Target field is required", "loyaltybay") }),
+  target_field_id: z.string().min(1, { message: __("Target field is required", "loyaltybay-loyalty-points-referral-rewards-woo") }),
   operator: z.string(),
-  value: z.string().min(1, { message: __("Rule value is required", "loyaltybay") }),
+  value: z.string().min(1, { message: __("Rule value is required", "loyaltybay-loyalty-points-referral-rewards-woo") }),
 });
 
 export const fieldConditionsSchema = z.object({
@@ -16,15 +16,15 @@ export const fieldConditionsSchema = z.object({
   if (data.status === "active" && data.rules.length === 0) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: __("At least one rule is required when logic is active", "loyaltybay"),
+      message: __("At least one rule is required when logic is active", "loyaltybay-loyalty-points-referral-rewards-woo"),
       path: ["rules"],
     });
   }
 });
 
 export const fieldOptionSchema = z.object({
-  label: z.string().min(1, { message: __("Choice label is required", "loyaltybay") }),
-  value: z.string().min(1, { message: __("Choice value is required", "loyaltybay") }),
+  label: z.string().min(1, { message: __("Choice label is required", "loyaltybay-loyalty-points-referral-rewards-woo") }),
+  value: z.string().min(1, { message: __("Choice value is required", "loyaltybay-loyalty-points-referral-rewards-woo") }),
   price_type: z.string().optional(),
   price: z.number().optional(),
   weight: z.number().optional(),
@@ -33,7 +33,7 @@ export const fieldOptionSchema = z.object({
 export const fieldDefinitionSchema = z.object({
   id: z.string(),
   type: z.string(),
-  label: z.string().min(1, { message: __("Field label is required", "loyaltybay") }),
+  label: z.string().min(1, { message: __("Field label is required", "loyaltybay-loyalty-points-referral-rewards-woo") }),
   description: z.string().optional(),
   placeholder: z.string().optional(),
   required: z.boolean(),
@@ -55,7 +55,7 @@ export const fieldDefinitionSchema = z.object({
     if (!data.options || data.options.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: __("At least one choice is required", "loyaltybay"),
+        message: __("At least one choice is required", "loyaltybay-loyalty-points-referral-rewards-woo"),
         path: ["options"],
       });
     }
@@ -70,7 +70,7 @@ export const assignmentSchema = z.object({
 });
 
 export const addonGroupSchema = z.object({
-  title: z.string().min(1, { message: __("Group Title is required", "loyaltybay") }),
+  title: z.string().min(1, { message: __("Group Title is required", "loyaltybay-loyalty-points-referral-rewards-woo") }),
   status: z.enum(["publish", "draft"]),
   schema: z.array(fieldDefinitionSchema),
   assignments: z.array(assignmentSchema),
