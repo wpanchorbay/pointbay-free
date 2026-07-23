@@ -8,9 +8,13 @@ VERSION=${1:-1.0.0}
 
 echo "Starting build process for version $VERSION..."
 
-# 1. Run npm run build
+# 1. Run npm run build (regenerate BOTH the modern and legacy bundles from source).
+# wp-scripts builds with clean:false, so the legacy target must be rebuilt explicitly
+# or its *-legacy.js files go stale and drift from src/ (they must match, since src/ ships).
 echo "Running npm run build..."
 npm run build
+echo "Running npm run build:legacy..."
+npm run build:legacy
 
 # 4. Add headers
 # List of files to edit

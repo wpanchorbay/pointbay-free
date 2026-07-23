@@ -151,12 +151,6 @@ class Plugin {
 	public function enqueue_public_styles() {
 		$handle = \LOYALTYBAY_OPTION_NAME . '_public';
 		wp_enqueue_style( $handle, \LOYALTYBAY_URL . 'assets/css/public.css', array(), \LOYALTYBAY_VERSION );
-
-		// Load and inject custom CSS from settings
-		$custom_css = \LoyaltyBay\Core\Settings::get_instance()->get_settings( 'appearance_customCss' );
-		if ( ! empty( $custom_css ) ) {
-			wp_add_inline_style( $handle, $custom_css );
-		}
 	}
 
 	/**

@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, Lock, Hourglass } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { SelectOption } from '../common/Select';
 
 // Hook for click outside
@@ -100,19 +100,8 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
   // Portal coordinates
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
 
-  // Tooltip state for the locked variant
-  const [tooltipState, setTooltipState] = useState<{
-    visible: boolean;
-    top: number;
-    left: number;
-    width: number | 'max-content';
-    text: string;
-  } | null>(null);
-  const hoverTimeoutRef = useRef<number | null>(null);
-
   useClickOutside([containerRef, dropdownRef], () => {
     setIsOpen(false);
-    setTooltipState(null);
   });
 
   const selectedOption = useMemo(
@@ -165,7 +154,6 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
       interactionType.current = 'keyboard';
     } else {
       setSearchQuery('');
-      setTooltipState(null);
     }
   }, [isOpen, value, enableSearch, filteredOptions.length]);
 
@@ -193,17 +181,12 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
   }, [highlightedIndex, isOpen]);
 
   const handleSelect = (option: SelectOption) => {
-    if (
-      option.disabled ||
-      option.variant === 'buy_pro' ||
-      option.variant === 'coming_soon'
-    ) {
+    if (option.disabled) {
       return;
     }
     onChange(option.value);
     setIsOpen(false);
     setSearchQuery('');
-    setTooltipState(null);
   };
 
   const handleTriggerKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -284,35 +267,9 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
     }
   };
 
-  const handleOptionHover = (
-    e: React.MouseEvent<HTMLLIElement>,
-    index: number,
-    option: SelectOption
-  ) => {
+  const handleOptionHover = (index: number) => {
     interactionType.current = 'mouse';
     setHighlightedIndex(index);
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-
-    if (
-      option.variant === 'buy_pro' ||
-      option.variant === 'coming_soon'
-    ) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setTooltipState({
-        visible: true,
-        top: rect.top,
-        left: rect.left + rect.width / 2,
-        width: rect.width,
-        text:
-          option.variant === 'buy_pro'
-            ? 'Locked'
-            : 'Coming Soon',
-      });
-    } else {
-      setTooltipState(null);
-    }
   };
 
   const selectId =
@@ -449,36 +406,14 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
                       selectedOption?.value === opt.value;
                     const isHighlighted =
                       highlightedIndex === index;
-                    const isPro = opt.variant === 'buy_pro';
-                    const isComingSoon =
-                      opt.variant === 'coming_soon';
-                    const isDisabled =
-                      opt.disabled ||
-                      isPro ||
-                      isComingSoon;
+                    const isDisabled = opt.disabled;
 
                     return (
                       <li
                         key={opt.value}
                         role="option"
                         aria-selected={isSelected}
-                        onMouseEnter={(e) =>
-                          handleOptionHover(
-                            e,
-                            index,
-                            opt
-                          )
-                        }
-                        onMouseLeave={() => {
-                          hoverTimeoutRef.current =
-                            window.setTimeout(
-                              () =>
-                                setTooltipState(
-                                  null
-                                ),
-                              150
-                            );
-                        }}
+                        onMouseEnter={() => handleOptionHover(index)}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelect(opt);
@@ -506,31 +441,6 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
                             ? renderOption(opt)
                             : opt.label}
                         </span>
-
-                        { /* Icons for variants */}
-                        {isPro && (
-                          <span
-                            className={`loyaltybay-flex ${isHighlighted
-                              ? 'loyaltybay-text-white'
-                              : 'loyaltybay-text-[#ffb900]'
-                              }`}
-                          >
-                            <Lock size={14} />
-                          </span>
-                        )}
-                        {isComingSoon && (
-                          <span
-                            className={`loyaltybay-text-[10px] loyaltybay-uppercase loyaltybay-px-1.5 loyaltybay-py-0.5 loyaltybay-rounded-[10px] loyaltybay-font-semibold loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 ${isHighlighted
-                              ? 'loyaltybay-bg-white/20 loyaltybay-text-white'
-                              : 'loyaltybay-bg-[#f0f0f1] loyaltybay-text-[#646970]'
-                              }`}
-                          >
-                            <Hourglass
-                              size={10}
-                            />
-                            Soon
-                          </span>
-                        )}
                       </li>
                     );
                   })
@@ -548,22 +458,6 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
         >
           {description}
         </p>
-      )}
-
-      { /* Portal Tooltip or absolute Tooltip for variants */}
-      {tooltipState?.visible && (
-        <div
-          className="loyaltybay-fixed loyaltybay-bg-[#1d2327] loyaltybay-text-white loyaltybay-px-2.5 loyaltybay-py-1 loyaltybay-rounded-[3px] loyaltybay-text-[12px] loyaltybay-pointer-events-none loyaltybay-z-[100000] loyaltybay-whitespace-nowrap"
-          style={{
-            top: tooltipState.top - 8,
-            left: tooltipState.left,
-            transform: 'translate(-50%, -100%)',
-          }}
-        >
-          {tooltipState.text}
-          { /* Tooltip caret */}
-          <div className="loyaltybay-absolute -loyaltybay-bottom-1 loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-x-4 loyaltybay-border-t-4 loyaltybay-border-x-transparent loyaltybay-border-b-transparent loyaltybay-border-t-[#1d2327]" />
-        </div>
       )}
     </div>
   );

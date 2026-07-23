@@ -59,7 +59,6 @@ loyaltybay_run();
  * @since 1.0.0
  */
 function loyaltybay_activate() {
-	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	\LoyaltyBay\Core\Activator::activate();
 }
 

@@ -24,13 +24,17 @@ export interface WpSettings {
 
 /**
  * Plugin settings as stored in the WordPress option.
- * Must match the PHP default settings in Common.php.
+ * Must match the PHP default settings in config/settings.php.
  */
 export interface PluginSettings {
-    general_isEnabled: boolean;
-    general_apiToken: string;
-    appearance_primaryColor: string;
-    appearance_customCss: string;
+    earning_pointsPerDollar: number;
+    earning_pointsForRegistration: number;
+    earning_pointsForReview: number;
+    earning_orderStatusTrigger: string;
+    redemption_pointsValue: number;
+    redemption_mode: string;
+    redemption_minPoints: number;
+    display_guestNoticeEnabled: boolean;
     advanced_deleteAllOnUninstall: boolean;
     debug_enableMode: boolean;
 }

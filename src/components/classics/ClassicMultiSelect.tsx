@@ -5,7 +5,7 @@ import React, {
   KeyboardEvent,
   useMemo,
 } from "react";
-import { ChevronDown, X, Lock, Hourglass } from "lucide-react";
+import { ChevronDown, X, Hourglass } from "lucide-react";
 import { MultiSelectOption } from "../common/MultiSelect";
 import apiFetch from "@wordpress/api-fetch";
 
@@ -78,18 +78,9 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const interactionType = useRef<"mouse" | "keyboard">("keyboard");
 
-  const [tooltipState, setTooltipState] = useState<{
-    visible: boolean;
-    top: number;
-    left: number;
-    text: string;
-  } | null>(null);
-  const hoverTimeoutRef = useRef<number | null>(null);
-
   useClickOutside(containerRef, () => {
     setIsOpen(false);
     setSearchQuery("");
-    setTooltipState(null);
   });
 
   // Merge fetched options into allSeenOptions so selected items keep their labels
@@ -182,7 +173,6 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
       interactionType.current = "keyboard";
     } else {
       setSearchQuery("");
-      setTooltipState(null);
     }
   }, [isOpen, enableSearch, filteredOptions.length]);
 
@@ -208,10 +198,7 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
   }, [highlightedIndex, isOpen]);
 
   const handleSelect = (option: MultiSelectOption) => {
-    // @ts-ignore - sharing variant types from Select for consistency
-    const variant = option.variant;
-    if (option.disabled || variant === "buy_pro" || variant === "coming_soon")
-      return;
+    if (option.disabled) return;
 
     if (value.includes(option.value)) {
       onChange(value.filter((v) => v !== option.value));
@@ -408,34 +395,17 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                   filteredOptions.map((opt, index) => {
                     const isSelected = value.includes(opt.value);
                     const isHighlighted = highlightedIndex === index;
-                    // @ts-ignore
-                    const variant = opt.variant;
-                    const isPro = variant === "buy_pro";
-                    const isComingSoon = variant === "coming_soon";
-                    const isDisabled = opt.disabled || isPro || isComingSoon;
+                    const isDisabled = opt.disabled;
 
                     return (
                       <li
                         key={opt.value}
                         role="option"
                         aria-selected={isSelected}
-                        onMouseEnter={(e) => {
+                        onMouseEnter={() => {
                           interactionType.current = "mouse";
                           setHighlightedIndex(index);
-                          if (isPro || isComingSoon) {
-                            const rect =
-                              e.currentTarget.getBoundingClientRect();
-                            setTooltipState({
-                              visible: true,
-                              top: rect.top,
-                              left: rect.left + rect.width / 2,
-                              text: isPro ? "Locked" : "Coming Soon",
-                            });
-                          } else {
-                            setTooltipState(null);
-                          }
                         }}
-                        onMouseLeave={() => setTooltipState(null)}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelect(opt);
@@ -487,29 +457,6 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                             {renderOption ? renderOption(opt) : opt.label}
                           </span>
                         </div>
-
-                        {/* Icons for variants */}
-                        {isPro && (
-                          <span
-                            className={`loyaltybay-flex ${isHighlighted
-                              ? "loyaltybay-text-white"
-                              : "loyaltybay-text-[#ffb900]"
-                              }`}
-                          >
-                            <Lock size={14} />
-                          </span>
-                        )}
-                        {isComingSoon && (
-                          <span
-                            className={`loyaltybay-text-[10px] loyaltybay-uppercase loyaltybay-px-1.5 loyaltybay-py-0.5 loyaltybay-rounded-[10px] loyaltybay-font-semibold loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 ${isHighlighted
-                              ? "loyaltybay-bg-white/20 loyaltybay-text-white"
-                              : "loyaltybay-bg-[#f0f0f1] loyaltybay-text-[#646970]"
-                              }`}
-                          >
-                            <Hourglass size={10} />
-                            Soon
-                          </span>
-                        )}
                       </li>
                     );
                   })
@@ -522,20 +469,6 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
 
       {description && (
         <p className="description loyaltybay-mt-1">{description}</p>
-      )}
-
-      {tooltipState?.visible && (
-        <div
-          className="loyaltybay-fixed loyaltybay-bg-[#1d2327] loyaltybay-text-white loyaltybay-px-2.5 loyaltybay-py-1 loyaltybay-rounded-[3px] loyaltybay-text-[12px] loyaltybay-pointer-events-none loyaltybay-z-[100000] loyaltybay-whitespace-nowrap"
-          style={{
-            top: tooltipState.top - 8,
-            left: tooltipState.left,
-            transform: "translate(-50%, -100%)",
-          }}
-        >
-          {tooltipState.text}
-          <div className="loyaltybay-absolute -loyaltybay-bottom-1 loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-x-4 loyaltybay-border-t-4 loyaltybay-border-x-transparent loyaltybay-border-b-transparent loyaltybay-border-t-[#1d2327]" />
-        </div>
       )}
     </div>
   );

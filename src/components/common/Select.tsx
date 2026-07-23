@@ -5,7 +5,6 @@ import React, {
   KeyboardEvent,
   useMemo,
 } from "react";
-import { createPortal } from "react-dom";
 import { useClickOutside } from "./hooks/useClickOutside";
 import {
   borderClasses,
@@ -31,41 +30,6 @@ const ChevronDown = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const LockKeyhole = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <circle cx="12" cy="16" r="1" />
-    <rect x="3" y="10" width="18" height="12" rx="2" />
-    <path d="M7 10V7a5 5 0 0 1 10 0v3" />
-  </svg>
-);
-
-const Hourglass = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M5 22h14" />
-    <path d="M5 2h14" />
-    <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
-    <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
-  </svg>
-);
-
 export interface SelectOption {
   value: string | number;
   label: string;
@@ -75,10 +39,6 @@ export interface SelectOption {
    */
   className?: string;
   disabled?: boolean;
-  /**
-   * Special variants for the option that render a disabled, locked state.
-   */
-  variant?: "buy_pro" | "coming_soon";
 }
 
 export interface SelectProps {
@@ -200,34 +160,16 @@ const Select: React.FC<SelectProps> = ({
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Tooltip state
-  const [tooltipState, setTooltipState] = useState<{
-    visible: boolean;
-    top: number;
-    left: number;
-    width: number;
-    index: number;
-  } | null>(null);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const hoverTimeoutRef = useRef<number | null>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
 
   // Track interaction type to prevent auto-scrolling on mouse hover
   const interactionType = useRef<"mouse" | "keyboard">("keyboard");
 
   // Close dropdown when clicking outside
-  useClickOutside(containerRef, (event) => {
-    if (
-      tooltipRef.current &&
-      tooltipRef.current.contains(event.target as Node)
-    ) {
-      return;
-    }
+  useClickOutside(containerRef, () => {
     setIsOpen(false);
-    setTooltipState(null);
   });
 
   const selectedOption = useMemo(() => {
@@ -264,7 +206,6 @@ const Select: React.FC<SelectProps> = ({
     } else {
       // Clear search when closed
       setSearchQuery("");
-      setTooltipState(null);
     }
   }, [isOpen, value, enableSearch, filteredOptions.length]);
 
@@ -294,16 +235,10 @@ const Select: React.FC<SelectProps> = ({
   }, [highlightedIndex, isOpen]);
 
   const handleSelect = (option: SelectOption) => {
-    if (
-      option.disabled ||
-      option.variant === "buy_pro" ||
-      option.variant === "coming_soon"
-    )
-      return;
+    if (option.disabled) return;
     onChange(option.value);
     setIsOpen(false);
     setSearchQuery("");
-    setTooltipState(null);
   };
 
   // Keyboard handler for the Main Trigger Div
@@ -405,53 +340,10 @@ const Select: React.FC<SelectProps> = ({
     }
   };
 
-  // Handle showing tooltip with delay logic
-  const handleOptionMouseEnter = (
-    e: React.MouseEvent<HTMLLIElement>,
-    index: number,
-    isPro: boolean,
-  ) => {
+  // Track hover highlight for mouse interaction
+  const handleOptionMouseEnter = (index: number) => {
     interactionType.current = "mouse";
     setHighlightedIndex(index);
-
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-
-    if (isPro) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setTooltipState({
-        visible: true,
-        top: rect.top,
-        left: rect.left + rect.width / 2,
-        width: rect.width,
-        index: index,
-      });
-    } else {
-      // If moving to a non-locked item, close tooltip immediately
-      setTooltipState(null);
-    }
-  };
-
-  const handleOptionMouseLeave = () => {
-    // Delay hiding tooltip to allow moving mouse into the tooltip itself
-    hoverTimeoutRef.current = window.setTimeout(() => {
-      setTooltipState(null);
-    }, 150);
-  };
-
-  const handleTooltipMouseEnter = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-  };
-
-  const handleTooltipMouseLeave = () => {
-    hoverTimeoutRef.current = window.setTimeout(() => {
-      setTooltipState(null);
-    }, 150);
   };
   return (
     <div
@@ -561,7 +453,6 @@ const Select: React.FC<SelectProps> = ({
             id="custom-select-list"
             role="listbox"
             tabIndex={-1}
-            onScroll={() => setTooltipState(null)} // Hide tooltip on scroll to prevent detachment
             className={`loyaltybay-max-h-60 loyaltybay-overflow-auto focus:loyaltybay-outline-none loyaltybay-scrollbar-hide loyaltybay-relative ${color} loyaltybay-font-[${fontWeight}] loyaltybay-text-[${fontSize}px]`}
             style={{ scrollbarWidth: "none" }}
           >
@@ -572,13 +463,8 @@ const Select: React.FC<SelectProps> = ({
             ) : (
               filteredOptions.map((option, index) => {
                 const isSelected = selectedOption?.value === option.value;
-                // Highlight if matched index OR if it's the item keeping the tooltip open
-                const isHighlighted =
-                  highlightedIndex === index ||
-                  (tooltipState?.visible && tooltipState.index === index);
-                const isPro = option.variant === "buy_pro";
-                const isComingSoon = option.variant === "coming_soon";
-                const isDisabled = option.disabled || isPro;
+                const isHighlighted = highlightedIndex === index;
+                const isDisabled = option.disabled;
 
                 return (
                   <li
@@ -586,10 +472,7 @@ const Select: React.FC<SelectProps> = ({
                     id={`option-${index}`}
                     role="option"
                     aria-selected={isSelected}
-                    onMouseEnter={(e) =>
-                      handleOptionMouseEnter(e, index, !!isPro)
-                    }
-                    onMouseLeave={handleOptionMouseLeave}
+                    onMouseEnter={() => handleOptionMouseEnter(index)}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSelect(option);
@@ -599,11 +482,6 @@ const Select: React.FC<SelectProps> = ({
                       ${
                         isDisabled
                           ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed loyaltybay-text-gray-500 loyaltybay-bg-gray-200"
-                          : ""
-                      }
-                      ${
-                        isComingSoon
-                          ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed !loyaltybay-text-pink-500 hover:!loyaltybay-text-pink-600 loyaltybay-bg-gray-200"
                           : ""
                       }
                       ${
@@ -631,23 +509,10 @@ const Select: React.FC<SelectProps> = ({
                       >
                         {renderOption ? renderOption(option) : option.label}
                       </span>
-
-                      {/* Lock icon for the locked variant */}
-                      {isPro && (
-                        <LockKeyhole className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-[#f02a74]" />
-                      )}
-                      {isComingSoon && (
-                        <span className="loyaltybay-bg-pink-600 loyaltybay-text-white loyaltybay-p-1 loyaltybay-px-2 loyaltybay-rounded-full loyaltybay-text-xs loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-flex-nowrap">
-                          <Hourglass className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-white" />
-                          <span className="loyaltybay-whitespace-nowrap">
-                            Coming Soon
-                          </span>
-                        </span>
-                      )}
                     </div>
 
                     {/* Checkmark for selected item */}
-                    {isSelected && !isPro && !isComingSoon && (
+                    {isSelected && (
                       <span
                         className={`loyaltybay-px-3 loyaltybay-pr-0 loyaltybay-flex-nowrap loyaltybay-flex loyaltybay-items-center loyaltybay-pr-4 ${
                           isHighlighted && !isDisabled
@@ -677,30 +542,6 @@ const Select: React.FC<SelectProps> = ({
           </ul>
         </div>
       )}
-
-      {/* Tooltip Portal - Renders to body to avoid clipping and stacking issues */}
-      {isOpen &&
-        tooltipState?.visible &&
-        createPortal(
-          <div
-            ref={tooltipRef}
-            className="loyaltybay-fixed loyaltybay-z-[50001] loyaltybay-flex loyaltybay-flex-col loyaltybay-items-center loyaltybay-gap-1.5 loyaltybay-bg-gray-900 loyaltybay-text-white loyaltybay-text-xs loyaltybay-p-2 loyaltybay-min-w-[140px] loyaltybay-rounded-md loyaltybay-shadow-lg"
-            style={{
-              top: tooltipState.top + 5, // Adjusted to user preference
-              left: tooltipState.left,
-              transform: "translate(-50%, -100%)",
-            }}
-            onMouseEnter={handleTooltipMouseEnter}
-            onMouseLeave={handleTooltipMouseLeave}
-          >
-            <span className="loyaltybay-font-medium loyaltybay-whitespace-nowrap">
-              Locked
-            </span>
-            {/* Tooltip Arrow */}
-            <div className="loyaltybay-absolute loyaltybay-top-full loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-4 loyaltybay-border-transparent loyaltybay-border-t-gray-900"></div>
-          </div>,
-          document.body,
-        )}
     </div>
   );
 };

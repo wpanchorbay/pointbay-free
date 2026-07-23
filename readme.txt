@@ -80,3 +80,16 @@ Every customer gets a **My Rewards** section under **My Account** showing their 
 
 = 1.0.0 =
 *   Initial release: earn points on purchases, registration, and reviews; redeem points at checkout (fee or coupon); Points History ledger; and a My Rewards account area.
+
+== Development ==
+
+LoyaltyBay is fully open source. The complete, human-readable source — the React/TypeScript admin interface in the `src/` directory that compiles to the minified files in `build/`, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`) — ships inside the plugin, so it can be rebuilt from the downloaded plugin alone. The same source is also published publicly at:
+
+https://github.com/wpanchorbay/loyaltybay-free
+
+The admin interface is built with @wordpress/scripts (webpack + Babel). To regenerate the compiled assets from source, from the plugin directory:
+
+1.  Run `npm install` to install the build tooling.
+2.  Run `npm run build` to produce the production bundles in `build/` (or `npm run build:legacy` for the legacy target).
+
+PHP dependencies are managed with Composer (`composer install`); third-party libraries live under `vendor/`. React and ReactDOM are provided by WordPress core and are not bundled. For a byte-for-byte reproducible build, the public repository above also includes the pinned `package-lock.json`.
