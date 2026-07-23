@@ -76,8 +76,7 @@ export interface SelectOption {
   className?: string;
   disabled?: boolean;
   /**
-   * Special variants for the option.
-   * 'buy_pro' will disable the option and show a tooltip.
+   * Special variants for the option that render a disabled, locked state.
    */
   variant?: "buy_pro" | "coming_soon";
 }
@@ -430,7 +429,7 @@ const Select: React.FC<SelectProps> = ({
         index: index,
       });
     } else {
-      // If moving to a non-pro item, close tooltip immediately
+      // If moving to a non-locked item, close tooltip immediately
       setTooltipState(null);
     }
   };
@@ -633,7 +632,7 @@ const Select: React.FC<SelectProps> = ({
                         {renderOption ? renderOption(option) : option.label}
                       </span>
 
-                      {/* Lock Icon for Buy Pro */}
+                      {/* Lock icon for the locked variant */}
                       {isPro && (
                         <LockKeyhole className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-[#f02a74]" />
                       )}
@@ -695,16 +694,8 @@ const Select: React.FC<SelectProps> = ({
             onMouseLeave={handleTooltipMouseLeave}
           >
             <span className="loyaltybay-font-medium loyaltybay-whitespace-nowrap">
-              Upgrade to unlock
+              Locked
             </span>
-            <a
-              href="#"
-              target="_blank"
-              onClick={(e) => e.preventDefault()}
-              className="loyaltybay-w-full loyaltybay-bg-[#f02a74] hover:!loyaltybay-bg-[#e71161] loyaltybay-text-white hover:!loyaltybay-text-white loyaltybay-font-bold loyaltybay-py-1.5 loyaltybay-px-3 loyaltybay-transition-colors focus:loyaltybay-outline-none focus:loyaltybay-ring-0 loyaltybay-cursor-pointer loyaltybay-text-center loyaltybay-rounded"
-            >
-              Buy Pro
-            </a>
             {/* Tooltip Arrow */}
             <div className="loyaltybay-absolute loyaltybay-top-full loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-4 loyaltybay-border-transparent loyaltybay-border-t-gray-900"></div>
           </div>,

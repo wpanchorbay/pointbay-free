@@ -100,7 +100,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
   // Portal coordinates
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
 
-  // Tooltip state for buy_pro
+  // Tooltip state for the locked variant
   const [tooltipState, setTooltipState] = useState<{
     visible: boolean;
     top: number;
@@ -307,7 +307,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
         width: rect.width,
         text:
           option.variant === 'buy_pro'
-            ? 'Available in Pro Version'
+            ? 'Locked'
             : 'Coming Soon',
       });
     } else {

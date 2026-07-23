@@ -12,10 +12,10 @@ import CustomModal from './components/common/CustomModal';
 import { useToast } from './store/toast/use-toast';
 
 /**
- * Shared components exposed for add-on plugins (e.g. loyaltybaypro) to reuse
- * instead of bundling their own copies. Read by pro at component-render
- * time, so assignment order relative to pro's script only matters for the
- * WordPress hooks addFilter/applyFilters calls, not this object.
+ * Shared components exposed on `window.loyaltybay` so any other plugin can
+ * reuse them instead of bundling their own copies. Read at component-render
+ * time, so assignment order relative to a consuming script only matters for
+ * the WordPress hooks addFilter/applyFilters calls, not this object.
  */
 export function registerLoyaltyBayRegistry() {
 	( window as any ).loyaltybay = {

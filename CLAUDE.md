@@ -33,13 +33,5 @@ There is no PHPUnit or Jest setup — testing is E2E/QIT-based:
 ## Conventions
 
 - Text domain: `loyaltybay`. Custom capability: `manage_loyaltybay`. Prefixes: `loyaltybay` / `LOYALTYBAY` / `LoyaltyBay`.
-- PHP classes generally follow a Singleton `get_instance()` pattern (e.g. `Plugin`, `LicenseManager`).
+- PHP classes generally follow a Singleton `get_instance()` pattern (e.g. `Plugin`, `Settings`).
 - `phpcs.xml.dist` excludes `vendor/`, `node_modules/`, `dist/`, `build/`, `assets/` — don't lint-fix generated output.
-
-## Licensing infrastructure
-
-This plugin already has license-check/update infrastructure built in (not yet split into free/pro siblings like other WPAnchorBay plugins):
-- `app/Core/LicenseManager.php` — singleton; calls `wpanchorbay.com/wp-json/license-server/v1/{activate,check,update-check}`. Local testing of license flows needs that remote reachable or mocked.
-- `vendor/plugin-update-checker/` is manually vendored (not in `composer.json`), wired via `LicenseManager::init_update_checker()` from `app/Core/Plugin.php`.
-- `app/Api/LicenseController.php` exposes the REST endpoints for activation.
-- If asked to split this into free + pro plugins, or extend the license/update-checker wiring, use the `wpanchorbay-freemium-split` skill rather than improvising — it encodes the working pattern from sibling plugins (campaignbay/optionbay).

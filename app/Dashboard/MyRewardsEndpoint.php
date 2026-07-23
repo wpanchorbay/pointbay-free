@@ -120,7 +120,8 @@ class MyRewardsEndpoint {
 
 		/**
 		 * Filters in a tier-progress badge/summary block (HTML string) for the
-		 * customer dashboard. Returns '' by default (no tier module installed).
+		 * customer dashboard. Returns '' by default; any other plugin can hook
+		 * in to supply the markup.
 		 *
 		 * @since 1.0.0
 		 * @hook loyaltybay_tier_progress_html
@@ -134,7 +135,8 @@ class MyRewardsEndpoint {
 
 		/**
 		 * Filters in a "Refer a Friend" block (HTML string) for the customer
-		 * dashboard. Returns '' by default (no referrals module installed).
+		 * dashboard. Returns '' by default; any other plugin can hook in to
+		 * supply the markup.
 		 *
 		 * @since 1.0.0
 		 * @hook loyaltybay_referral_html

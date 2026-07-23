@@ -597,7 +597,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       </span>
                     </div>
 
-                    {/* Lock Icon for Buy Pro */}
+                    {/* Lock icon for the locked variant */}
                     {isPro && (
                       <LockKeyhole className="loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-text-[#f02a74] loyaltybay-flex-shrink-0" />
                     )}
@@ -633,16 +633,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             onMouseLeave={handleTooltipMouseLeave}
           >
             <span className="loyaltybay-font-medium loyaltybay-whitespace-nowrap">
-              Upgrade to unlock
+              Locked
             </span>
-            <a
-              href="#"
-              target="_blank"
-              onClick={(e) => e.preventDefault()}
-              className="loyaltybay-w-full loyaltybay-bg-[#f02a74] hover:!loyaltybay-bg-[#e71161] loyaltybay-text-white hover:!loyaltybay-text-white loyaltybay-font-bold loyaltybay-py-1.5 loyaltybay-px-3 loyaltybay-transition-colors focus:loyaltybay-outline-none focus:loyaltybay-ring-0 loyaltybay-cursor-pointer loyaltybay-text-center loyaltybay-rounded"
-            >
-              Buy Pro
-            </a>
             {/* Tooltip Arrow */}
             <div className="loyaltybay-absolute loyaltybay-top-full loyaltybay-left-1/2 -loyaltybay-translate-x-1/2 loyaltybay-border-4 loyaltybay-border-transparent loyaltybay-border-t-gray-900"></div>
           </div>,

@@ -9,6 +9,11 @@
  * @since      1.0.0
  */
 
+// Prevent direct access.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 return array(
 	'defaults' => array(
 		'earning_pointsPerDollar'       => 1,

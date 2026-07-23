@@ -100,7 +100,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
       {isPro && (
         <div
           className="loyaltybay-absolute loyaltybay-top-3 loyaltybay-right-3"
-          title="Upgrade to Pro"
+          title="Locked"
         >
           <LockKeyhole className="loyaltybay-w-5 loyaltybay-h-5 loyaltybay-text-[#f02a74]" />
         </div>

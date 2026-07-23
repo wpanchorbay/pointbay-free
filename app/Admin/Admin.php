@@ -134,11 +134,11 @@ class Admin {
 		/**
 		 * Filters the list of WooCommerce sub-menu pages this plugin registers.
 		 *
-		 * Lets an add-on (e.g. loyaltybaypro) register its own submenu page
-		 * without free needing any prior knowledge of it. Each entry supports
-		 * the same shape as the built-in config/admin.php entries, plus an
+		 * Lets any other plugin register its own submenu page without this
+		 * plugin needing any prior knowledge of it. Each entry supports the
+		 * same shape as the built-in config/admin.php entries, plus an
 		 * optional 'callback' (defaults to add_setting_root_div) so an add-on
-		 * can render its own root div / mount point instead of free's.
+		 * can render its own root div / mount point instead of the default.
 		 *
 		 * @since 1.0.0
 		 * @hook loyaltybay_admin_sub_menus
@@ -252,7 +252,8 @@ class Admin {
 
 		// 3. Handle WooCommerce Settings tab
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( 'woocommerce_page_wc-settings' === $base && isset( $_GET['tab'] ) && \LOYALTYBAY_PLUGIN_NAME === $_GET['tab'] ) {
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : '';
+		if ( 'woocommerce_page_wc-settings' === $base && \LOYALTYBAY_PLUGIN_NAME === $current_tab ) {
 			return true;
 		}
 

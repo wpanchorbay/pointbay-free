@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       LoyaltyBay
+ * Plugin Name:       LoyaltyBay - Loyalty Points and Rewards for WooCommerce
  * Plugin URI:        https://wpanchorbay.com/plugins/loyaltybay
  * Description:       A WooCommerce loyalty and rewards points system.
  * Requires at least: 5.6
@@ -31,7 +31,6 @@ define( 'LOYALTYBAY_VERSION', '1.0.0' );
 define( 'LOYALTYBAY_PLUGIN_NAME', 'loyaltybay' );
 define( 'LOYALTYBAY_TEXT_DOMAIN', 'loyaltybay' );
 define( 'LOYALTYBAY_OPTION_NAME', 'loyaltybay' );
-define( 'LOYALTYBAY_REMOTE_URL', 'https://wpanchorbay.com/wp-json/' );
 
 // Composer autoloader.
 if ( file_exists( LOYALTYBAY_PATH . 'vendor/autoload.php' ) ) {

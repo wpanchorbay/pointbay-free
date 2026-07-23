@@ -429,7 +429,7 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                               visible: true,
                               top: rect.top,
                               left: rect.left + rect.width / 2,
-                              text: isPro ? "Available in Pro" : "Coming Soon",
+                              text: isPro ? "Locked" : "Coming Soon",
                             });
                           } else {
                             setTooltipState(null);

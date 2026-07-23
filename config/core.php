@@ -12,6 +12,11 @@
  * @author     LoyaltyBay <loyaltybay@gmail.com>
  */
 
+// Prevent direct access.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 return array(
 	\LoyaltyBay\Admin\Admin::class,
 	\LoyaltyBay\Core\Settings::class,

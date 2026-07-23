@@ -11,6 +11,11 @@
  * @author     LoyaltyBay <loyaltybay@gmail.com>
  */
 
+// Prevent direct access.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 return array(
 	\LoyaltyBay\Database\Migrations\CreateLedgerTable::class,
 	\LoyaltyBay\Database\Migrations\CreateLedgerCacheTable::class,

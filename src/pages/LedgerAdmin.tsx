@@ -31,15 +31,20 @@ const REFERENCE_TYPE_LABELS: Record< string, string > = {
 	order_reversal: 'Order Reversal',
 	refund: 'Refund',
 	review: 'Review',
-	referral: 'Referral',
-	referral_signup: 'Referral Signup',
-	referral_reversal: 'Referral Reversal',
-	referral_signup_reversal: 'Referral Signup Reversal',
 	admin: 'Manual Adjustment',
 };
 
+// Turns an unmapped snake_case reference type into a readable label,
+// e.g. 'referral_signup' -> 'Referral Signup'.
+const toTitleCase = ( value: string ) =>
+	value
+		.split( '_' )
+		.filter( Boolean )
+		.map( ( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ) )
+		.join( ' ' );
+
 const referenceTypeLabel = ( value: string ) =>
-	REFERENCE_TYPE_LABELS[ value ] || value;
+	REFERENCE_TYPE_LABELS[ value ] || toTitleCase( value ) || value;
 
 const LedgerAdmin: FC = () => {
 	const [ data, setData ] = useState< LedgerEntry[] >( [] );
