@@ -1,7 +1,7 @@
-=== LoyaltyBay - Loyalty Points and Rewards for WooCommerce ===
+=== Loyaltybay - Loyalty Points & Referral Rewards for Woocommerce ===
 Contributors: wpanchorbay, sankarsan
 Tags: woocommerce, loyalty, rewards, points, loyalty program
-Requires at least: 5.6
+Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.0
 Stable tag: 1.0.0

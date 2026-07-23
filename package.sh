@@ -14,12 +14,17 @@ echo "------------------------------------------------------"
 echo "  Packaging $PLUGIN_SLUG..."
 echo "------------------------------------------------------"
 
-# 1. Run the build script
-echo "Step 1: Running build process..."
+# 1. Regenerate translation template (and JS translation JSON) before building
+echo "Step 1: Generating translations (makepot + make-json)..."
+npm run makepot
+npm run make-json
+
+# 2. Run the build script
+echo "Step 2: Running build process..."
 bash build.sh
 
 # 2. Cleanup previous distribution if exists
-echo "Step 2: Cleaning up old files..."
+echo "Step 3: Cleaning up old files..."
 rm -rf dist
 rm -f $ZIP_NAME
 
@@ -63,12 +68,12 @@ copy_plugin_files() {
 }
 
 # 4. Copy files to both staging areas
-echo "Step 3: Copying folders and files..."
+echo "Step 4: Copying folders and files..."
 copy_plugin_files "dist/wordpress/$PLUGIN_SLUG"
 copy_plugin_files "dist/woocommerce/$PLUGIN_SLUG"
 
 # 5. Create WordPress Zip
-echo "Step 4: Creating WordPress zip..."
+echo "Step 5: Creating WordPress zip..."
 cd dist/wordpress
 zip -r "$ZIP_NAME" "$PLUGIN_SLUG" > /dev/null
 # Remove the folder after zipping to leave only the zip in the subfolder
@@ -76,7 +81,7 @@ rm -rf "$PLUGIN_SLUG"
 cd ../..
 
 # 6. Create WooCommerce Zip
-echo "Step 5: Creating WooCommerce zip..."
+echo "Step 6: Creating WooCommerce zip..."
 cd dist/woocommerce
 zip -r "$ZIP_NAME" "$PLUGIN_SLUG" > /dev/null
 # Remove the folder after zipping to leave only the zip in the subfolder

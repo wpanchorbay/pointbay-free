@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       LoyaltyBay - Loyalty Points and Rewards for WooCommerce
- * Plugin URI:        https://wpanchorbay.com/plugins/loyaltybay
- * Description:       A WooCommerce loyalty and rewards points system.
- * Requires at least: 5.6
+ * Plugin Name:       Loyaltybay - Loyalty Points & Referral Rewards for Woocommerce
+ * Plugin URI:        https://wpanchorbay.com/plugins/loyaltybay-loyalty-points-referral-rewards-for-woocommerce
+ * Description:       Reward WooCommerce customers with loyalty points they earn on purchases and redeem for discounts at checkout.
+ * Requires at least: 6.8
  * Requires PHP:      7.0
  * Requires Plugins:  woocommerce
  * WC requires at least: 6.1
