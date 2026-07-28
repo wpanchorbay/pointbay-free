@@ -67,25 +67,18 @@ class LedgerController extends ApiController {
 		$orderby          = in_array( $orderby, self::SORTABLE_COLUMNS, true ) ? $orderby : 'id';
 		$order            = strtoupper( (string) $request->get_param( 'order' ) ) === 'ASC' ? 'ASC' : 'DESC';
 
-		$where = '1=1';
-		$args  = array();
+		// Unrecognised filter values are reduced to the "no filter" state rather
+		// than being passed through, so the queries below never see them.
+		$transaction_type = in_array( $transaction_type, array( 'credit', 'debit' ), true ) ? $transaction_type : '';
+		$reference_type   = in_array( $reference_type, self::REFERENCE_TYPES, true ) ? $reference_type : '';
 
-		if ( $user_id > 0 ) {
-			$where .= ' AND user_id = %d';
-			$args[] = $user_id;
-		}
+		// Resolve a name/email search to the matching user IDs. They travel into
+		// the query as ONE bound comma-separated string tested with FIND_IN_SET,
+		// rather than as a generated "IN (%d, %d, ...)" fragment -- that keeps the
+		// SQL a fixed string no matter how many users match.
+		$search_ids = '';
 
-		if ( in_array( $transaction_type, array( 'credit', 'debit' ), true ) ) {
-			$where .= ' AND transaction_type = %s';
-			$args[] = $transaction_type;
-		}
-
-		if ( in_array( $reference_type, self::REFERENCE_TYPES, true ) ) {
-			$where .= ' AND reference_type = %s';
-			$args[] = $reference_type;
-		}
-
-		if ( $search !== '' ) {
+		if ( '' !== $search ) {
 			$matching_users = get_users(
 				array(
 					'search'         => '*' . $search . '*',
@@ -94,40 +87,81 @@ class LedgerController extends ApiController {
 				)
 			);
 
-			if ( empty( $matching_users ) ) {
-				$matching_users = array( 0 );
-			}
+			// No match must return no rows, so fall back to an ID that cannot exist.
+			$search_ids = implode( ',', array_map( 'absint', $matching_users ) );
 
-			$placeholders = implode( ',', array_fill( 0, count( $matching_users ), '%d' ) );
-			$where       .= " AND user_id IN ({$placeholders})";
-			$args         = array_merge( $args, $matching_users );
+			if ( '' === $search_ids ) {
+				$search_ids = '0';
+			}
 		}
 
-		// The sort direction is one of two hard-coded literals and the sort column
-		// is bound as an identifier placeholder, so neither is concatenated in.
-		$order_sql = 'ASC' === $order ? 'ORDER BY %i ASC' : 'ORDER BY %i DESC';
+		/*
+		 * Each filter is a self-cancelling condition: a bound flag of 0 makes the
+		 * left side of the OR true and the filter drops out. That lets both queries
+		 * be FIXED strings -- no fragment is concatenated or interpolated, so every
+		 * value, the table and the sort column arrive purely as bound parameters.
+		 */
+		$has_type   = '' === $transaction_type ? 0 : 1;
+		$has_ref    = '' === $reference_type ? 0 : 1;
+		$has_search = '' === $search_ids ? 0 : 1;
 
-		// $where and $order_sql are assembled from placeholders only (%d/%s for
-		// values, %i for identifiers) -- no request data is ever concatenated into
-		// the SQL. The table name, the sort column and every filter value are
-		// bound through $wpdb->prepare() in the same call that runs the query.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the admin ledger list must show live data.
-		$items = $wpdb->get_results(
-			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The sniff cannot count the placeholders inside $where/$order_sql; the counts do match at runtime.
-			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where/$order_sql contain placeholders only; every value is bound here.
-				"SELECT * FROM %i WHERE {$where} {$order_sql} LIMIT %d OFFSET %d",
-				array_merge( array( $table ), $args, array( $orderby, $per_page, $offset ) )
-			)
-		);
+		// The sort direction cannot be a bound parameter, so each direction gets
+		// its own complete literal query instead of a concatenated fragment. Every
+		// replacement is passed individually rather than as one array, so the
+		// placeholder count is verifiable by reading the call.
+		if ( 'ASC' === $order ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the admin ledger list must show live data.
+			$items = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT * FROM %i WHERE ( %d = 0 OR user_id = %d ) AND ( %d = 0 OR transaction_type = %s ) AND ( %d = 0 OR reference_type = %s ) AND ( %d = 0 OR FIND_IN_SET( user_id, %s ) > 0 ) ORDER BY %i ASC LIMIT %d OFFSET %d',
+					$table,
+					$user_id,
+					$user_id,
+					$has_type,
+					$transaction_type,
+					$has_ref,
+					$reference_type,
+					$has_search,
+					$search_ids,
+					$orderby,
+					$per_page,
+					$offset
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the admin ledger list must show live data.
+			$items = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT * FROM %i WHERE ( %d = 0 OR user_id = %d ) AND ( %d = 0 OR transaction_type = %s ) AND ( %d = 0 OR reference_type = %s ) AND ( %d = 0 OR FIND_IN_SET( user_id, %s ) > 0 ) ORDER BY %i DESC LIMIT %d OFFSET %d',
+					$table,
+					$user_id,
+					$user_id,
+					$has_type,
+					$transaction_type,
+					$has_ref,
+					$reference_type,
+					$has_search,
+					$search_ids,
+					$orderby,
+					$per_page,
+					$offset
+				)
+			);
+		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the row count must match the list above.
 		$total = $wpdb->get_var(
-			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The sniff cannot count the placeholders inside $where; the counts do match at runtime.
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where contains placeholders only; every value is bound here.
-				"SELECT COUNT(*) FROM %i WHERE {$where}",
-				array_merge( array( $table ), $args )
+				'SELECT COUNT(*) FROM %i WHERE ( %d = 0 OR user_id = %d ) AND ( %d = 0 OR transaction_type = %s ) AND ( %d = 0 OR reference_type = %s ) AND ( %d = 0 OR FIND_IN_SET( user_id, %s ) > 0 )',
+				$table,
+				$user_id,
+				$user_id,
+				$has_type,
+				$transaction_type,
+				$has_ref,
+				$reference_type,
+				$has_search,
+				$search_ids
 			)
 		);
 
