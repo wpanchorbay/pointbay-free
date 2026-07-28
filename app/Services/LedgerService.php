@@ -131,6 +131,7 @@ class LedgerService {
 			if ( $existing ) {
 				return new \WP_Error( 'duplicate_transaction', 'A transaction for this reference already exists.' );
 			}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 			$wpdb->query( 'BEGIN' );
 		}
 
@@ -142,6 +143,7 @@ class LedgerService {
 			$existing_locked = LedgerEntry::find_by_reference( $user_id, $ref_type, $ref_id, $txn_type );
 			if ( $existing_locked ) {
 				if ( ! $in_transaction ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 					$wpdb->query( 'ROLLBACK' );
 				}
 				return new \WP_Error( 'duplicate_transaction', 'A transaction for this reference already exists.' );
@@ -151,6 +153,7 @@ class LedgerService {
 
 			if ( $txn_type === 'debit' && ! $allow_negative && $current_balance < $amount ) {
 				if ( ! $in_transaction ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 					$wpdb->query( 'ROLLBACK' );
 				}
 				return new \WP_Error( 'insufficient_balance', 'User does not have enough points for this debit.' );
@@ -190,6 +193,7 @@ class LedgerService {
 			update_user_meta( $user_id, 'loyaltybay_balance', $new_balance );
 
 			if ( ! $in_transaction ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 				$wpdb->query( 'COMMIT' );
 			}
 
@@ -203,6 +207,7 @@ class LedgerService {
 
 		} catch ( \Exception $e ) {
 			if ( ! $in_transaction ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 				$wpdb->query( 'ROLLBACK' );
 			}
 			return new \WP_Error( 'transaction_failed', $e->getMessage() );

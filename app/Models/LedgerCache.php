@@ -42,10 +42,11 @@ class LedgerCache extends Model {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table; an atomic upsert has no core API equivalent.
 		$result = $wpdb->query(
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-				"INSERT INTO {$table} (user_id, balance) VALUES (%d, %s) ON DUPLICATE KEY UPDATE balance = VALUES(balance)",
+				'INSERT INTO %i (user_id, balance) VALUES (%d, %s) ON DUPLICATE KEY UPDATE balance = VALUES(balance)',
+				$table,
 				$this->attributes['user_id'],
 				$this->attributes['balance']
 			)
@@ -67,12 +68,16 @@ class LedgerCache extends Model {
 		$instance = new static();
 		$table    = $instance->get_table();
 
-		$sql = "SELECT balance FROM {$table} WHERE user_id = %d";
+		// Two literal queries rather than one built by concatenation, so the SQL
+		// handed to $wpdb->prepare() is always a hard-coded string.
 		if ( $for_update ) {
-			$sql .= ' FOR UPDATE';
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table; a locking read must never be served from cache.
+			$balance = $wpdb->get_var( $wpdb->prepare( 'SELECT balance FROM %i WHERE user_id = %d FOR UPDATE', $table, $user_id ) );
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; balance must reflect the latest ledger write.
+			$balance = $wpdb->get_var( $wpdb->prepare( 'SELECT balance FROM %i WHERE user_id = %d', $table, $user_id ) );
 		}
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table name is safe (from $wpdb->prefix); user value uses a %d placeholder.
-		$balance = $wpdb->get_var( $wpdb->prepare( $sql, $user_id ) );
+
 		return $balance !== null ? (float) $balance : 0.00;
 	}
 
@@ -89,9 +94,9 @@ class LedgerCache extends Model {
 		$instance = new static();
 		$table    = $instance->get_table();
 
-		// This will block until the lock is acquired
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-		$balance = $wpdb->get_var( $wpdb->prepare( "SELECT balance FROM {$table} WHERE user_id = %d FOR UPDATE", $user_id ) );
+		// This will block until the lock is acquired.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table; a locking read must never be served from cache.
+		$balance = $wpdb->get_var( $wpdb->prepare( 'SELECT balance FROM %i WHERE user_id = %d FOR UPDATE', $table, $user_id ) );
 		return $balance !== null ? (float) $balance : 0.00;
 	}
 }

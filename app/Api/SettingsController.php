@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Api
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Api;
@@ -26,7 +26,7 @@ use WP_REST_Server;
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Api
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class SettingsController extends ApiController {
 

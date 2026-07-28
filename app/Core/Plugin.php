@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Core
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Core;
@@ -27,7 +27,7 @@ use LoyaltyBay\Helper\Loader;
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Core
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Plugin {
 
@@ -178,23 +178,6 @@ class Plugin {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Changes the plugin's display name on the plugins page.
-	 *
-	 * @since 1.0.0
-	 * @param array $plugins The array of all plugin data.
-	 * @return array The modified array of plugin data.
-	 */
-	public function change_plugin_display_name( $plugins ) {
-		$plugin_basename = plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay-loyalty-points-referral-rewards-woo.php' );
-
-		if ( isset( $plugins[ $plugin_basename ] ) ) {
-			$plugins[ $plugin_basename ]['Name'] = 'LoyaltyBay';
-		}
-
-		return $plugins;
 	}
 
 	/**

@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Core
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Core;
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Core
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Cron {
 
@@ -48,20 +48,22 @@ class Cron {
 	const HOOK_PREFIX = 'loyaltybay_cron_';
 
 	/**
-	 * Transient key for the merged-logs cache.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const LOG_CACHE_KEY = 'loyaltybay_logs_cache';
-
-	/**
 	 * Option key that stores the last-run timestamps for fallback detection.
 	 *
 	 * @since 1.0.0
 	 * @var string
 	 */
 	const LAST_RUN_OPTION = 'loyaltybay_cron_last_run';
+
+	/**
+	 * Transient key left behind by the retired file-based logging subsystem.
+	 *
+	 * Kept only so upgrading sites can have it cleaned up.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const RETIRED_LOG_CACHE_KEY = 'loyaltybay_logs_cache';
 
 	/**
 	 * Registry of dynamically scheduled callbacks.
@@ -74,14 +76,6 @@ class Cron {
 	 * @var array<string, callable>
 	 */
 	private $dynamic_callbacks = array();
-
-	/**
-	 * Number of days to retain log files.
-	 *
-	 * @since 1.0.0
-	 * @var int
-	 */
-	const LOG_RETENTION_DAYS = 30;
 
 	/**
 	 * Grace period (in seconds) before a missed job triggers the fallback.
@@ -132,21 +126,7 @@ class Cron {
 		 * @param array $jobs The array of cron job definitions.
 		 * @return array
 		 */
-		return apply_filters(
-			'loyaltybay_cron_jobs',
-			array(
-				array(
-					'hook'     => self::HOOK_PREFIX . 'purge_old_logs',
-					'interval' => 'daily',
-					'callback' => 'purge_old_logs',
-				),
-				array(
-					'hook'     => self::HOOK_PREFIX . 'rebuild_log_cache',
-					'interval' => 'daily',
-					'callback' => 'rebuild_log_cache',
-				),
-			)
-		);
+		return apply_filters( 'loyaltybay_cron_jobs', array() );
 	}
 
 	/**
@@ -157,6 +137,8 @@ class Cron {
 	 * @return void
 	 */
 	public function schedule_events() {
+		self::clear_retired_log_events();
+
 		$jobs = $this->get_jobs();
 		foreach ( $jobs as $job ) {
 			if ( ! wp_next_scheduled( $job['hook'] ) ) {
@@ -327,97 +309,70 @@ class Cron {
 	 * @return void
 	 */
 	public function unschedule_all() {
-		$jobs = $this->get_jobs();
-		foreach ( $jobs as $job ) {
-			$timestamp = wp_next_scheduled( $job['hook'] );
-			if ( $timestamp ) {
-				wp_unschedule_event( $timestamp, $job['hook'] );
+		/*
+		 * Sweep every event registered under the plugin's hook prefix rather
+		 * than only the ones get_jobs() currently returns. That also catches
+		 * dynamically scheduled events, events added through the
+		 * loyaltybay_cron_jobs filter, and leftovers from earlier versions —
+		 * none of which get_jobs() knows about at deactivation time.
+		 *
+		 * Same prefix convention maybe_run_missed() uses.
+		 */
+		$crons = _get_cron_array();
+		if ( is_array( $crons ) ) {
+			foreach ( $crons as $timestamp => $hooks ) {
+				foreach ( $hooks as $hook => $events ) {
+					if ( strpos( $hook, 'loyaltybay_' ) !== 0 ) {
+						continue;
+					}
+
+					foreach ( $events as $event ) {
+						$args = isset( $event['args'] ) ? $event['args'] : array();
+						wp_unschedule_event( $timestamp, $hook, $args );
+					}
+				}
 			}
 		}
 
-		// Also clear any dynamically scheduled events.
-		foreach ( array_keys( $this->dynamic_callbacks ) as $hook ) {
-			$timestamp = wp_next_scheduled( $hook );
-			if ( $timestamp ) {
-				wp_unschedule_event( $timestamp, $hook );
-			}
-		}
 		$this->dynamic_callbacks = array();
 
+		delete_transient( self::RETIRED_LOG_CACHE_KEY );
 		delete_option( self::LAST_RUN_OPTION );
-		delete_transient( self::LOG_CACHE_KEY );
+	}
+
+	/**
+	 * Remove leftovers from the retired file-based logging subsystem.
+	 *
+	 * Logging moved to the WooCommerce logger, so the daily log-maintenance
+	 * events and their transient cache no longer have callbacks. Sites that
+	 * ran an earlier version still have them scheduled, so clear them once.
+	 *
+	 * Runs on every request via schedule_events(), so it only reads the
+	 * cached cron array and writes nothing unless there is something to clear.
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @return void
+	 */
+	private static function clear_retired_log_events() {
+		$cleared = false;
+
+		foreach ( array( 'purge_old_logs', 'rebuild_log_cache' ) as $retired ) {
+			$hook = self::HOOK_PREFIX . $retired;
+			if ( wp_next_scheduled( $hook ) ) {
+				wp_clear_scheduled_hook( $hook );
+				$cleared = true;
+			}
+		}
+
+		if ( $cleared ) {
+			delete_transient( self::RETIRED_LOG_CACHE_KEY );
+		}
 	}
 
 	// ------------------------------------------------------------------
 	// Cron Job Callbacks
 	// ------------------------------------------------------------------
-
-	/**
-	 * Purge log files older than the retention period.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return void
-	 */
-	public function purge_old_logs() {
-		$log_dir = $this->get_log_dir();
-		if ( ! is_dir( $log_dir ) ) {
-			$this->record_last_run( 'purge_old_logs' );
-			return;
-		}
-
-		$files = glob( $log_dir . 'plugin-log-*.log' );
-		if ( empty( $files ) ) {
-			$this->record_last_run( 'purge_old_logs' );
-			return;
-		}
-
-		$cutoff = gmdate( 'Y-m-d', strtotime( '-' . self::LOG_RETENTION_DAYS . ' days' ) );
-
-		foreach ( $files as $file ) {
-			// Extract the date from the filename: plugin-log-YYYY-MM-DD.log
-			$basename = basename( $file, '.log' );
-			$date     = str_replace( 'plugin-log-', '', $basename );
-
-			if ( $date < $cutoff ) {
-				wp_delete_file( $file );
-			}
-		}
-
-		$this->record_last_run( 'purge_old_logs' );
-	}
-
-	/**
-	 * Rebuild the merged-logs transient cache.
-	 *
-	 * Reads the last 29 days of log files (excluding today), merges them
-	 * into a single string, and stores it in a transient. The REST API
-	 * endpoint only needs to concatenate this cache with today's live file.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return void
-	 */
-	public function rebuild_log_cache() {
-		$log_dir = $this->get_log_dir();
-		$merged  = '';
-
-		// Go from oldest (29 days ago) to yesterday.
-		for ( $i = self::LOG_RETENTION_DAYS - 1; $i >= 1; $i-- ) {
-			$date = gmdate( 'Y-m-d', strtotime( '-' . $i . ' days' ) );
-			$file = $log_dir . 'plugin-log-' . $date . '.log';
-
-			if ( file_exists( $file ) ) {
-				$content = file_get_contents($file); // phpcs:ignore
-				if ( ! empty( $content ) ) {
-					$merged .= $content;
-				}
-			}
-		}
-
-		set_transient( self::LOG_CACHE_KEY, $merged, DAY_IN_SECONDS );
-		$this->record_last_run( 'rebuild_log_cache' );
-	}
 
 	/**
 	 * Test job callback.
@@ -428,68 +383,6 @@ class Cron {
 	 */
 	public function test_job() {
 		loyaltybay_log( 'Test cron job executed successfully.', 'error' );
-	}
-
-	// ------------------------------------------------------------------
-	// Helpers
-	// ------------------------------------------------------------------
-
-	/**
-	 * Get the log directory path.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string
-	 */
-	public function get_log_dir() {
-		$upload_dir = wp_upload_dir();
-		return $upload_dir['basedir'] . '/' . \LOYALTYBAY_TEXT_DOMAIN . '-logs/';
-	}
-
-	/**
-	 * Get the merged logs for the REST API response.
-	 *
-	 * Returns the transient cache (last 29 days) + today's live log file.
-	 * If the transient is expired / missing, it rebuilds it first.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string
-	 */
-	public function get_merged_logs() {
-		$cached = get_transient( self::LOG_CACHE_KEY );
-
-		// If cache is missing, rebuild it on-demand.
-		if ( false === $cached ) {
-			$this->rebuild_log_cache();
-			$cached = get_transient( self::LOG_CACHE_KEY );
-			if ( false === $cached ) {
-				$cached = '';
-			}
-		}
-
-		// Append today's log.
-		$today_file = $this->get_log_dir() . 'plugin-log-' . gmdate( 'Y-m-d' ) . '.log';
-		$today_log  = '';
-		if ( file_exists( $today_file ) ) {
-			$today_log = file_get_contents($today_file); // phpcs:ignore
-		}
-
-		return $cached . $today_log;
-	}
-
-	/**
-	 * Record the last-run timestamp for a job.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 * @param string $job_name The callback name of the job.
-	 * @return void
-	 */
-	private function record_last_run( $job_name ) {
-		$last_runs              = get_option( self::LAST_RUN_OPTION, array() );
-		$last_runs[ $job_name ] = time();
-		update_option( self::LAST_RUN_OPTION, $last_runs );
 	}
 
 	/**

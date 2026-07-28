@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Core
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Core;
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage Core
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Activator {
 
@@ -63,9 +63,6 @@ class Activator {
 		// Flush rewrite rules.
 		flush_rewrite_rules();
 
-		// Secure the log directory.
-		self::secure_log_directory();
-
 		// Add custom capabilities.
 		self::add_plugin_roles_and_capabilities();
 
@@ -97,40 +94,6 @@ class Activator {
 	 */
 	private static function create_custom_tables() {
 		DbManager::get_instance()->create_tables();
-	}
-
-	/**
-	 * Secures the log directory by creating an .htaccess file and an index.php file.
-	 *
-	 * @since    1.0.0
-	 * @access private
-	 * @return void
-	 */
-	private static function secure_log_directory() {
-		$upload_dir = wp_upload_dir();
-		$log_dir    = $upload_dir['basedir'] . '/' . \LOYALTYBAY_TEXT_DOMAIN . '-logs/';
-
-		if ( ! is_dir( $log_dir ) ) {
-			wp_mkdir_p( $log_dir );
-		}
-
-		$htaccess_file = $log_dir . '.htaccess';
-		if ( ! file_exists( $htaccess_file ) ) {
-			$htaccess_content = '
-			# Protect log files from direct access
-			<Files *.log>
-				Order allow,deny
-				Deny from all
-			</Files>
-			';
-			file_put_contents( $htaccess_file, $htaccess_content ); // phpcs:ignore
-		}
-
-		$index_file = $log_dir . 'index.php';
-		if ( ! file_exists( $index_file ) ) {
-			$index_content = "<?php\n// Silence is golden.\n";
-			file_put_contents( $index_file, $index_content ); // phpcs:ignore
-		}
 	}
 
 	/**

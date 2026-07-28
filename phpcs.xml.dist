@@ -40,8 +40,10 @@
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" />
     </rule>
 
-    <!-- Minimum supported WP version -->
-    <config name="minimum_supported_wp_version" value="6.0"/>
+    <!-- Minimum supported WP version. Must match "Requires at least" in both the
+         plugin header and readme.txt: the queries bind identifiers with the %i
+         placeholder, which needs WP 6.2 or newer. -->
+    <config name="minimum_supported_wp_version" value="6.8"/>
 
     <rule ref="WordPress.WP.I18n">
         <properties>

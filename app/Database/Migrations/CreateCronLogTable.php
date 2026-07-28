@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Database
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Database\Migrations;
@@ -18,7 +18,7 @@ use LoyaltyBay\Database\MigrationInterface;
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Database
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class CreateCronLogTable implements MigrationInterface {
 	/**
@@ -58,7 +58,7 @@ class CreateCronLogTable implements MigrationInterface {
 	public function down() {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'loyaltybay_cron_log';
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-		$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Dropping this plugin's own table on rollback; no core API exists and the result is not cacheable.
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
 	}
 }

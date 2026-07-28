@@ -36,17 +36,18 @@ class LedgerEntry extends Model {
 		$instance = new static();
 		$table    = $instance->get_table();
 
-		$query = $wpdb->prepare(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-			"SELECT * FROM {$table} WHERE user_id = %d AND reference_type = %s AND reference_id = %d AND transaction_type = %s LIMIT 1",
-			$user_id,
-			$ref_type,
-			$ref_id,
-			$txn_type
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the idempotency check must read live data.
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE user_id = %d AND reference_type = %s AND reference_id = %d AND transaction_type = %s LIMIT 1',
+				$table,
+				$user_id,
+				$ref_type,
+				$ref_id,
+				$txn_type
+			),
+			ARRAY_A
 		);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
-		$row = $wpdb->get_row( $query, ARRAY_A );
 
 		if ( $row ) {
 			return new static( $row );

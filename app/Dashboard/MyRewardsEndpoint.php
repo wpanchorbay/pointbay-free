@@ -149,11 +149,12 @@ class MyRewardsEndpoint {
 		echo '<h3>' . esc_html__( 'Recent History', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</h3>';
 
 		global $wpdb;
-		$table   = $wpdb->prefix . 'loyaltybay_ledger';
+		$table = $wpdb->prefix . 'loyaltybay_ledger';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the customer's history must reflect the latest ledger write.
 		$history = $wpdb->get_results(
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-				"SELECT * FROM {$table} WHERE user_id = %d ORDER BY created_at DESC LIMIT 10",
+				'SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC LIMIT 10',
+				$table,
 				$user_id
 			)
 		);

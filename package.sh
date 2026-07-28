@@ -14,14 +14,23 @@ echo "------------------------------------------------------"
 echo "  Packaging $PLUGIN_SLUG..."
 echo "------------------------------------------------------"
 
-# 1. Regenerate translation template (and JS translation JSON) before building
-echo "Step 1: Generating translations (makepot + make-json)..."
+# 1. Run the build script
+# Pass the readme's Stable tag through as the version so the source links that
+# build.sh injects into build/*.js track the release instead of silently pinning
+# to build.sh's 1.0.0 default forever.
+PLUGIN_VERSION=$(awk '/^Stable tag:/ {print $3; exit}' readme.txt)
+echo "Step 1: Running build process (version ${PLUGIN_VERSION})..."
+bash build.sh "$PLUGIN_VERSION"
+
+# 2. Regenerate the translation template AFTER the build.
+# make-pot cannot parse src/*.tsx, so every JS string it finds comes out of
+# build/*.js. Running it first meant the .pot described the PREVIOUS build --
+# line references that no shipped file matched, which also breaks make-json
+# (its JSON filenames are keyed on a hash of the referenced JS file). Running
+# it here makes the .pot describe exactly the bundles in the zip.
+echo "Step 2: Generating translations (makepot + make-json)..."
 npm run makepot
 npm run make-json
-
-# 2. Run the build script
-echo "Step 2: Running build process..."
-bash build.sh
 
 # 2. Cleanup previous distribution if exists
 echo "Step 3: Cleaning up old files..."
@@ -52,6 +61,14 @@ copy_plugin_files() {
 
     # Strip source maps from the release build (dev-only, large, not for production).
     find "$DEST/build" -name '*.map' -delete
+
+    # Strip the legacy bundles. Nothing enqueues them (no PHP in this plugin or in
+    # the pro add-on references "legacy"), and unlike the modern target -- which
+    # takes React from WordPress core via window.React -- they compile in React,
+    # ReactDOM, scheduler and moment. Shipping them would put ~2.4 MB of minified
+    # third-party code in the zip for zero runtime benefit, and would contradict
+    # the readme's "React and ReactDOM are provided by WordPress core".
+    find "$DEST/build" \( -name '*-legacy.js' -o -name '*-legacy.js.LICENSE.txt' \) -delete
 
     # Strip dev-only metadata shipped inside composer packages (avoids "hidden files" flags).
     find "$DEST/vendor" \( -name '.gitignore' -o -name '.gitattributes' -o -name '.editorconfig' \

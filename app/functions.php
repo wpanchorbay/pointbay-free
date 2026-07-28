@@ -4,7 +4,7 @@
  *
  * @package    LoyaltyBay
  * @since 1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 // Exit if accessed directly.
@@ -18,42 +18,49 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! function_exists( 'loyaltybay_log' ) ) {
 	/**
-	 * Log messages to the debug log file.
+	 * Log a message through the WooCommerce logging system.
 	 *
-	 * @param mixed  $message  The message to log.
-	 * @param string $level    The log level (e.g., 'DEBUG', 'INFO', 'ERROR').
+	 * Entries are written by WooCommerce under the 'loyaltybay' source and are
+	 * viewable in WooCommerce > Status > Logs. WooCommerce owns the storage
+	 * location, file rotation and retention, so the plugin keeps no log files
+	 * of its own.
+	 *
+	 * Messages are only recorded when the 'debug_enableMode' setting is on,
+	 * except for the 'error' level, which is always recorded.
+	 *
+	 * @since 1.0.0
+	 * @param mixed  $message The message to log. Arrays/objects are JSON encoded.
+	 * @param string $level   A PSR-3 log level (e.g. 'debug', 'info', 'error').
+	 * @return void
 	 */
 	function loyaltybay_log( $message, $level = 'INFO' ) {
+		$level_lower = is_string( $level ) ? strtolower( $level ) : 'info';
+
 		$enable_logging = LoyaltyBay\Core\Settings::get_instance()->get_settings( 'debug_enableMode' );
-		$level_lower    = is_string( $level ) ? strtolower( $level ) : 'info';
 		if ( ! $enable_logging && $level_lower !== 'error' ) {
 			return;
 		}
-		$upload_dir = wp_upload_dir();
-		$log_dir    = $upload_dir['basedir'] . '/' . \LOYALTYBAY_TEXT_DOMAIN . '-logs/';
 
-		if ( ! is_dir( $log_dir ) ) {
-			wp_mkdir_p( $log_dir );
+		// WooCommerce is a hard requirement, but logging can be reached before
+		// WooCommerce has loaded, so degrade to a no-op rather than fatal.
+		if ( ! function_exists( 'wc_get_logger' ) ) {
+			return;
 		}
 
-		$log_file = $log_dir . 'plugin-log-' . gmdate( 'Y-m-d' ) . '.log';
+		$valid_levels = array( 'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug' );
+		if ( ! in_array( $level_lower, $valid_levels, true ) ) {
+			$level_lower = 'info';
+		}
 
-		$formatted_message = '';
 		if ( is_array( $message ) || is_object( $message ) ) {
-			$formatted_message = wp_json_encode( $message );
-		} else {
-			$formatted_message = $message;
+			$message = wp_json_encode( $message );
 		}
 
-		$log_level = is_string( $level ) ? strtoupper( $level ) : ( is_array( $level ) || is_object( $level ) ? wp_json_encode( $level ) : '' );
-		$log_entry = sprintf(
-			"[%s] [%s]: %s\n",
-			current_time( 'mysql' ),
-			$log_level,
-			$formatted_message
+		wc_get_logger()->log(
+			$level_lower,
+			(string) $message,
+			array( 'source' => \LOYALTYBAY_TEXT_DOMAIN )
 		);
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		file_put_contents( $log_file, $log_entry, FILE_APPEND | LOCK_EX );
 	}
 }
 

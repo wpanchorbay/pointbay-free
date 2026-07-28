@@ -8,7 +8,7 @@
  * @package    LoyaltyBay
  * @subpackage Config
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 // Prevent direct access.
@@ -77,16 +77,6 @@ return array(
 			'text' => __( 'Settings', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 			'url'  => admin_url( 'admin.php?page=wc-settings&tab=' . \LOYALTYBAY_PLUGIN_NAME ),
 		),
-		/**
-		 * EXAMPLE: Add a Support Link
-		 *
-		 * Uncomment and adapt the block below to add a support link:
-		 *
-		 * array(
-		 *     'text' => __( 'Support', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
-		 *     'url'  => 'https://example.com/support',
-		 * ),
-		 */
 	),
 
 	/**
@@ -98,12 +88,12 @@ return array(
 		'plugin_name' => esc_html__( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 		'short_name'  => esc_html__( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
 		'menu_label'  => esc_html__( 'LoyaltyBay', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
-		'custom_icon' => \LOYALTYBAY_URL . 'assets/img/icon.svg',
+		'custom_icon' => \LOYALTYBAY_URL . 'assets/img/logo-64px.png',
 		'menu_icon'   => 'dashicons-awards',
-		'author_name' => 'LoyaltyBay',
-		'author_uri'  => 'https://loyaltybay.com',
-		'support_uri' => 'https://loyaltybay.com/support',
-		'docs_uri'    => 'https://docs.loyaltybay.com/' . \LOYALTYBAY_PLUGIN_NAME . '/',
+		'author_name' => 'WPAnchorBay',
+		'author_uri'  => 'https://wpanchorbay.com',
+		'support_uri' => 'https://wpanchorbay.com/support',
+		'docs_uri'    => 'https://wpanchorbay.com/docs',
 		'position'    => 57,
 	),
 );

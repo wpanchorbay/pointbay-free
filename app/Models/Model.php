@@ -6,7 +6,7 @@
  * @package    LoyaltyBay
  * @subpackage Models
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Models;
@@ -124,6 +124,7 @@ abstract class Model {
 			$data = $this->attributes;
 			unset( $data[ $pk ] ); // Don't update primary key
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; writes must not be cached.
 			$result = $wpdb->update(
 				$table,
 				$data,
@@ -133,6 +134,7 @@ abstract class Model {
 			return false === $result ? false : true;
 		} else {
 			// Insert
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; writes must not be cached.
 			$result = $wpdb->insert(
 				$table,
 				$this->attributes
@@ -159,6 +161,7 @@ abstract class Model {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; deletes must not be cached.
 		$result = $wpdb->delete(
 			$this->get_table(),
 			array( $pk => $this->attributes[ $pk ] )
@@ -179,7 +182,8 @@ abstract class Model {
 		$table    = $instance->get_table();
 		$pk       = $instance->primary_key;
 
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE {$pk} = %d", $id ), ARRAY_A ); // phpcs:ignore
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; reads are request-scoped.
+		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE %i = %d', $table, $pk, $id ), ARRAY_A );
 
 		if ( $row ) {
 			return new static( $row );
@@ -198,7 +202,8 @@ abstract class Model {
 		$instance = new static();
 		$table    = $instance->get_table();
 
-		$results = $wpdb->get_results( "SELECT * FROM {$table}", ARRAY_A ); // phpcs:ignore
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; reads are request-scoped.
+		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i', $table ), ARRAY_A );
 
 		$models = array();
 		foreach ( $results as $row ) {
@@ -206,70 +211,5 @@ abstract class Model {
 		}
 
 		return $models;
-	}
-
-	/**
-	 * Paginate records.
-	 *
-	 * @param int   $page     Page number.
-	 * @param int   $per_page Items per page.
-	 * @param array $where    Optional simple WHERE clauses (e.g., ['status' => 'active']).
-	 * @param array $search   Optional search ['column' => 'value'].
-	 * @return array An array containing 'data', 'total', 'page', 'per_page'.
-	 */
-	public static function paginate( $page = 1, $per_page = 20, $where = array(), $search = array() ) {
-		global $wpdb;
-		$instance = new static();
-		$table    = $instance->get_table();
-
-		$page     = max( 1, absint( $page ) );
-		$per_page = max( 1, absint( $per_page ) );
-		$offset   = ( $page - 1 ) * $per_page;
-
-		$where_sql    = '1=1';
-		$where_values = array();
-
-		if ( ! empty( $where ) ) {
-			foreach ( $where as $col => $val ) {
-				$where_sql     .= " AND {$col} = %s";
-				$where_values[] = $val;
-			}
-		}
-
-		if ( ! empty( $search ) ) {
-			foreach ( $search as $col => $val ) {
-				$where_sql     .= " AND {$col} LIKE %s";
-				$where_values[] = '%' . $wpdb->esc_like( $val ) . '%';
-			}
-		}
-
-		// Count total
-		$count_query = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
-		if ( ! empty( $where_values ) ) {
-			$count_query = $wpdb->prepare( $count_query, $where_values ); // phpcs:ignore
-		}
-		$total = (int) $wpdb->get_var( $count_query ); // phpcs:ignore
-
-		// Get data
-		$data_query   = "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY {$instance->primary_key} DESC LIMIT %d OFFSET %d";
-		$query_values = array_merge( $where_values, array( $per_page, $offset ) );
-		$data_query = $wpdb->prepare( $data_query, $query_values ); // phpcs:ignore
-
-		$results = $wpdb->get_results( $data_query, ARRAY_A ); // phpcs:ignore
-
-		$models = array();
-		if ( $results ) {
-			foreach ( $results as $row ) {
-				$models[] = new static( $row );
-			}
-		}
-
-		return array(
-			'data'        => $models,
-			'total'       => $total,
-			'total_pages' => ceil( $total / $per_page ),
-			'page'        => $page,
-			'per_page'    => $per_page,
-		);
 	}
 }

@@ -58,8 +58,25 @@ function loyaltybay_delete_plugin_options() {
 	delete_option( LOYALTYBAY_OPTION_NAME . '_version' );
 
 	global $wpdb;
-	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_loyaltybay_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_loyaltybay_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	// The transient names are not known up front, so they are matched with a
+	// LIKE prefix. Both the table and the pattern are bound through prepare().
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off uninstall cleanup of this plugin's transients; no core API enumerates them.
+	$wpdb->query(
+		$wpdb->prepare(
+			'DELETE FROM %i WHERE option_name LIKE %s',
+			$wpdb->options,
+			$wpdb->esc_like( '_transient_loyaltybay_' ) . '%'
+		)
+	);
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off uninstall cleanup of this plugin's transients; no core API enumerates them.
+	$wpdb->query(
+		$wpdb->prepare(
+			'DELETE FROM %i WHERE option_name LIKE %s',
+			$wpdb->options,
+			$wpdb->esc_like( '_transient_timeout_loyaltybay_' ) . '%'
+		)
+	);
 }
 
 /**

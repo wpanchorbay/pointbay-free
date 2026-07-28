@@ -58,6 +58,14 @@ class BlockCartIntegration implements IntegrationInterface {
 			$version,
 			true
 		);
+
+		// Without this the block's __() strings stay untranslated even when a
+		// language pack is installed -- the script has no translation source.
+		wp_set_script_translations(
+			'loyaltybay-block-cart',
+			'loyaltybay-loyalty-points-referral-rewards-woo',
+			\LOYALTYBAY_PATH . 'languages'
+		);
 	}
 
 	/**

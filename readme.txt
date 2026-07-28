@@ -83,13 +83,24 @@ Every customer gets a **My Rewards** section under **My Account** showing their 
 
 == Development ==
 
-LoyaltyBay is fully open source. The complete, human-readable source — the React/TypeScript admin interface in the `src/` directory that compiles to the minified files in `build/`, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`) — ships inside the plugin, so it can be rebuilt from the downloaded plugin alone. The same source is also published publicly at:
+LoyaltyBay is fully open source. The complete, human-readable source — the React/TypeScript admin interface and the Sass stylesheets in the `src/` directory that compile to the minified files in `build/`, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`) — ships inside the plugin, so it can be rebuilt from the downloaded plugin alone. The same source is also published publicly at:
 
 https://github.com/wpanchorbay/loyaltybay-free
 
-The admin interface is built with @wordpress/scripts (webpack + Babel). To regenerate the compiled assets from source, from the plugin directory:
+The admin interface is built with @wordpress/scripts (webpack + Babel); the stylesheets are compiled from Sass with Tailwind CSS via PostCSS by the same build. To regenerate the compiled assets from source, from the plugin directory:
 
 1.  Run `npm install` to install the build tooling.
-2.  Run `npm run build` to produce the production bundles in `build/` (or `npm run build:legacy` for the legacy target).
+2.  Run `npm run build` to produce the production bundles in `build/`.
 
 PHP dependencies are managed with Composer (`composer install`); third-party libraries live under `vendor/`. React and ReactDOM are provided by WordPress core and are not bundled. For a byte-for-byte reproducible build, the public repository above also includes the pinned `package-lock.json`.
+
+**Uncompressed source of the minified files**
+
+Every minified file in `build/` is compiled from our own source, which is available uncompressed at:
+
+https://github.com/wpanchorbay/loyaltybay-free/tree/1.0.0/src
+
+*   `build/admin.js`, `build/settings.js`, `build/block-cart.js`, `build/block-checkout.js` are compiled from the React/TypeScript entry points in `src/` (see `src/AdminApp.tsx`, `src/SettingsApp.tsx` and `src/blocks/`).
+*   `build/admin.css`, `build/settings.css` and their `-rtl` variants are compiled from `src/styles/index.scss` (Sass + Tailwind CSS via PostCSS).
+
+Each compiled file also carries a header comment pointing back to this source. The uncompressed `src/` directory ships inside the plugin zip as well, so the build is reproducible from the download alone with `npm install && npm run build`. The front-end scripts and styles in `assets/` are not compiled — they ship as the original, human-readable source.

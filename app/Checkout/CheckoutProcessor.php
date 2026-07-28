@@ -124,6 +124,7 @@ class CheckoutProcessor {
 		$order_id = $order->get_id();
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 		$wpdb->query( 'BEGIN' );
 
 		try {
@@ -141,9 +142,11 @@ class CheckoutProcessor {
 				throw new \Exception( 'LoyaltyBay Error: Failed to debit points. ' . $result->get_error_message() );
 			}
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 			$wpdb->query( 'COMMIT' );
 			$redemption_manager->remove_points_discount();
 		} catch ( \Exception $e ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 			$wpdb->query( 'ROLLBACK' );
 			throw $e;
 		}

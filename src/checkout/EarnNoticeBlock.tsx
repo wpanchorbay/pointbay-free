@@ -1,6 +1,10 @@
 // @ts-nocheck
+// Imported rather than destructured off window.wp.i18n: webpack renames a
+// destructured local, so `wp i18n make-pot` stops recognising the __() calls
+// and silently drops those strings from the .pot.
+import { __, sprintf } from '@wordpress/i18n';
+
 const { useSelect } = window.wp.data;
-const { __, sprintf } = window.wp.i18n;
 
 const EarnNoticeBlock = () => {
     // Get cart data from the WooCommerce data store

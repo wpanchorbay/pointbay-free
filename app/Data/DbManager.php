@@ -7,7 +7,7 @@
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Data
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Data;

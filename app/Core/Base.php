@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Core
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Core;

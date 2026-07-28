@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Core
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Core;
@@ -16,7 +16,7 @@ namespace LoyaltyBay\Core;
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Core
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class CronJobRunner {
 
@@ -33,10 +33,11 @@ class CronJobRunner {
 		global $wpdb;
 		$table = $wpdb->prefix . 'loyaltybay_cron_log';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; job state must be read live.
 		$existing = $wpdb->get_row(
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-				"SELECT * FROM {$table} WHERE job_name = %s AND status IN ('failed', 'running') AND retry_count < %d ORDER BY id DESC LIMIT 1",
+				"SELECT * FROM %i WHERE job_name = %s AND status IN ('failed', 'running') AND retry_count < %d ORDER BY id DESC LIMIT 1",
+				$table,
 				$job_name,
 				$max_retries
 			)
@@ -47,17 +48,19 @@ class CronJobRunner {
 			// Increment atomically in SQL rather than read-modify-write in PHP, so
 			// two overlapping executions of the same job_name can't both compute the
 			// same retry_count and silently lose an increment.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table; the atomic increment has no core API equivalent.
 			$wpdb->query(
 				$wpdb->prepare(
-					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-					"UPDATE {$table} SET status = 'running', retry_count = retry_count + 1 WHERE id = %d",
+					"UPDATE %i SET status = 'running', retry_count = retry_count + 1 WHERE id = %d",
+					$table,
 					$log_id
 				)
 			);
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe (from $wpdb->prefix); user values use placeholders.
-			$retry_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT retry_count FROM {$table} WHERE id = %d", $log_id ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table; must read back the value just written.
+			$retry_count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT retry_count FROM %i WHERE id = %d', $table, $log_id ) );
 		} else {
 			$payload_json = wp_json_encode( $payload );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; writes must not be cached.
 			$wpdb->insert(
 				$table,
 				array(
@@ -73,6 +76,7 @@ class CronJobRunner {
 		try {
 			$result = call_user_func( $callback, $payload );
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; writes must not be cached.
 			$wpdb->update(
 				$table,
 				array(
@@ -87,6 +91,7 @@ class CronJobRunner {
 		} catch ( \Throwable $e ) {
 			$status = ( $retry_count >= $max_retries ) ? 'dead_letter' : 'failed';
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; writes must not be cached.
 			$wpdb->update(
 				$table,
 				array(

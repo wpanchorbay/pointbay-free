@@ -41,7 +41,23 @@ if ( file_exists( LOYALTYBAY_PATH . 'vendor/autoload.php' ) ) {
 
 require_once LOYALTYBAY_PATH . 'app/functions.php';
 
-
+/*
+ * Declare WooCommerce feature compatibility.
+ *
+ * Orders are only ever read through the wc_get_order() CRUD layer and no data
+ * is stored in order meta — everything lives in this plugin's own tables — so
+ * High-Performance Order Storage is fully supported. The cart and checkout
+ * blocks are supported through the registered block integrations.
+ */
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
+		}
+	}
+);
 
 /**
  * Begins execution of the plugin.

@@ -7,8 +7,6 @@
     "start": "wp-scripts start",
     "build": "wp-scripts build",
     "build:prod": "bash build.sh",
-    "build:legacy": "cross-env BUILD_TARGET=legacy wp-scripts build",
-    "start:legacy": "cross-env BUILD_TARGET=legacy wp-scripts start",
     "lint": "npm-run-all lint:php lint:js",
     "lint:php": "phpcs --standard=phpcs.xml.dist",
     "lint:php:fix": "phpcbf --standard=phpcs.xml.dist",

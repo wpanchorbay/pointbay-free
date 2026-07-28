@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Admin
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Admin;
@@ -18,7 +18,7 @@ use LoyaltyBay\Api\ApiController;
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Admin
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class LedgerController extends ApiController {
 
@@ -103,22 +103,33 @@ class LedgerController extends ApiController {
 			$args         = array_merge( $args, $matching_users );
 		}
 
-		$order_sql = "ORDER BY {$orderby} {$order}";
+		// The sort direction is one of two hard-coded literals and the sort column
+		// is bound as an identifier placeholder, so neither is concatenated in.
+		$order_sql = 'ASC' === $order ? 'ORDER BY %i ASC' : 'ORDER BY %i DESC';
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
-		// $table is derived from $wpdb->prefix (not user input); $where/$order_sql are built only from %d/%s
-		// placeholders and values whitelisted against self::SORTABLE_COLUMNS/self::REFERENCE_TYPES/fixed enums above.
-		if ( ! empty( $args ) ) {
-			$query       = $wpdb->prepare( "SELECT * FROM {$table} WHERE {$where} {$order_sql} LIMIT %d OFFSET %d", array_merge( $args, array( $per_page, $offset ) ) );
-			$count_query = $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE {$where}", $args );
-		} else {
-			$query       = $wpdb->prepare( "SELECT * FROM {$table} {$order_sql} LIMIT %d OFFSET %d", $per_page, $offset );
-			$count_query = "SELECT COUNT(*) FROM {$table}";
-		}
+		// $where and $order_sql are assembled from placeholders only (%d/%s for
+		// values, %i for identifiers) -- no request data is ever concatenated into
+		// the SQL. The table name, the sort column and every filter value are
+		// bound through $wpdb->prepare() in the same call that runs the query.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the admin ledger list must show live data.
+		$items = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The sniff cannot count the placeholders inside $where/$order_sql; the counts do match at runtime.
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where/$order_sql contain placeholders only; every value is bound here.
+				"SELECT * FROM %i WHERE {$where} {$order_sql} LIMIT %d OFFSET %d",
+				array_merge( array( $table ), $args, array( $orderby, $per_page, $offset ) )
+			)
+		);
 
-		$items = $wpdb->get_results( $query );
-		$total = $wpdb->get_var( $count_query );
-		// phpcs:enable
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the row count must match the list above.
+		$total = $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The sniff cannot count the placeholders inside $where; the counts do match at runtime.
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where contains placeholders only; every value is bound here.
+				"SELECT COUNT(*) FROM %i WHERE {$where}",
+				array_merge( array( $table ), $args )
+			)
+		);
 
 		foreach ( $items as &$item ) {
 			$user             = get_userdata( $item->user_id );

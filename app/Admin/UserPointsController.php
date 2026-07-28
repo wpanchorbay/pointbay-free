@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Admin
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Admin;
@@ -19,7 +19,7 @@ use LoyaltyBay\Services\LedgerService;
  * @since      1.0.0
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Admin
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class UserPointsController extends ApiController {
 

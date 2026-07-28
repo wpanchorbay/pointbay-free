@@ -1,6 +1,10 @@
 // @ts-nocheck
+// Imported rather than destructured off window.wp.i18n: webpack renames a
+// destructured local, so `wp i18n make-pot` stops recognising the __() calls
+// and silently drops those strings from the .pot.
+import { __, sprintf } from '@wordpress/i18n';
+
 const { useState } = window.wp.element;
-const { __, sprintf } = window.wp.i18n;
 const { useDispatch } = window.wp.data;
 
 const RedemptionBlock = () => {

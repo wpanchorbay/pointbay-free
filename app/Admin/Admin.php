@@ -5,7 +5,7 @@
  * @package    LoyaltyBay
  * @subpackage Admin
  * @since      1.0.0
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
 namespace LoyaltyBay\Admin;
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @package    LoyaltyBay
  * @subpackage LoyaltyBay/Admin
- * @author     LoyaltyBay <loyaltybay@gmail.com>
+ * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Admin {
 
@@ -389,7 +389,6 @@ class Admin {
 	 */
 	public function run( $plugin ) {
 		$loader = $plugin->get_loader();
-		$loader->add_filter( 'all_plugins', $plugin, 'change_plugin_display_name' );
 		$loader->add_action( 'admin_menu', $this, 'add_admin_menu' );
 		$loader->add_filter( 'woocommerce_get_settings_pages', $this, 'add_wc_settings_tab' );
 		$loader->add_filter( 'admin_body_class', $this, 'add_has_sticky_header' );
