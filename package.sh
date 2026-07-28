@@ -106,17 +106,21 @@ copy_plugin_files "dist/wordpress/$PLUGIN_SLUG"
 copy_plugin_files "dist/woocommerce/$PLUGIN_SLUG"
 
 # 5. Create WordPress Zip
+# Zipped from INSIDE the staging dir so the plugin files sit at the top level
+# of the archive with no wrapping folder.
 echo "Step 5: Creating WordPress zip..."
-cd dist/wordpress
-zip -r "$ZIP_NAME" "$PLUGIN_SLUG" > /dev/null
+cd "dist/wordpress/$PLUGIN_SLUG"
+zip -r "../$ZIP_NAME" . > /dev/null
+cd ..
 # Remove the folder after zipping to leave only the zip in the subfolder
 rm -rf "$PLUGIN_SLUG"
 cd ../..
 
 # 6. Create WooCommerce Zip
 echo "Step 6: Creating WooCommerce zip..."
-cd dist/woocommerce
-zip -r "$ZIP_NAME" "$PLUGIN_SLUG" > /dev/null
+cd "dist/woocommerce/$PLUGIN_SLUG"
+zip -r "../$ZIP_NAME" . > /dev/null
+cd ..
 # Remove the folder after zipping to leave only the zip in the subfolder
 rm -rf "$PLUGIN_SLUG"
 cd ../..
@@ -126,5 +130,5 @@ echo "Done! Packages created successfully:"
 echo "- dist/wordpress/$ZIP_NAME"
 echo "- dist/woocommerce/$ZIP_NAME"
 echo ""
-echo "Note: The zip files now contain the required parent directory '$PLUGIN_SLUG'."
+echo "Note: The zip files contain the plugin files at the top level (no parent directory)."
 echo "------------------------------------------------------"
