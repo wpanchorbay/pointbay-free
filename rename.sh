@@ -39,8 +39,8 @@ if [ ${#ROOTS[@]} -eq 0 ]; then
     HERE="$(cd "$(dirname "$0")" && pwd)"
     PARENT="$(dirname "$HERE")"
     ROOTS=(
-        "$PARENT/loyaltybay-loyalty-points-referral-rewards-woo"
-        "$PARENT/loyaltybaypro"
+        "$PARENT/pointbay-loyalty-points-referral-rewards-woo"
+        "$PARENT/pointbaypro"
     )
 fi
 
