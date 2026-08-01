@@ -5,7 +5,7 @@
  * it keeps working regardless of when the block is rendered into the page.
  *
  * @package PointBay
- * @since   1.1.0
+ * @since   1.0.0
  */
 ( function () {
 	'use strict';

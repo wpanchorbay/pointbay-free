@@ -4,7 +4,7 @@ Tags: woocommerce, loyalty, rewards, points, referral
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,13 +99,13 @@ Every customer gets a **My Rewards** section under **My Account** showing their 
 
 == Changelog ==
 
-= 1.1.0 =
-*   New: referral program. Every customer gets a shareable referral link; the referrer earns bonus points once the customer they referred completes a first order, and the bonus is reversed if that order is cancelled or fully refunded.
-*   Improved: extension points on the My Rewards screen are now actions rather than HTML filters, so each add-on escapes its own output.
-*   Improved: the referral link copy button uses an enqueued script with a fallback for non-secure contexts, rather than inline JavaScript.
-
 = 1.0.0 =
-*   Initial release: earn points on purchases, registration, and reviews; redeem points at checkout (fee or coupon); Points History ledger; and a My Rewards account area.
+*   Initial release.
+*   Earn points on purchases, on registration, and for product reviews.
+*   Redeem points at checkout as an order fee (discount) or as a coupon, on both the classic checkout and the Cart & Checkout blocks.
+*   Referral program: every customer gets a shareable referral link, and the referrer earns bonus points once the customer they referred completes a first order. The bonus is reversed automatically if that order is cancelled, fails, or is refunded in full.
+*   A My Rewards area in My Account showing the points balance, referral link, and recent history.
+*   A Points History ledger in the admin for auditing every transaction.
 
 == Development ==
 
@@ -124,7 +124,7 @@ PHP dependencies are managed with Composer (`composer install`); third-party lib
 
 Every minified file in `build/` is compiled from our own source, which is available uncompressed at:
 
-https://github.com/wpanchorbay/pointbay-free/tree/1.1.0/src
+https://github.com/wpanchorbay/pointbay-free/tree/1.0.0/src
 
 *   `build/admin.js` and `build/settings.js` are compiled from the React/TypeScript entry points `src/admin.tsx` and `src/settings.tsx` (which mount `src/AdminApp.tsx` and `src/SettingsApp.tsx`); `build/block-cart.js` and `build/block-checkout.js` are compiled from `src/cart/index.tsx` and `src/checkout/index.tsx`.
 *   `build/admin.css`, `build/settings.css` and their `-rtl` variants are compiled from `src/styles/index.scss` (Sass + Tailwind CSS via PostCSS).

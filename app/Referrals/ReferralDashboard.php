@@ -4,7 +4,7 @@
  *
  * @package    PointBay
  * @subpackage Referrals
- * @since      1.1.0
+ * @since      1.0.0
  */
 
 namespace PointBay\Referrals;
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Customer-facing referral block and the script backing its copy button.
  *
- * @since 1.1.0
+ * @since 1.0.0
  */
 class ReferralDashboard {
 
@@ -38,7 +38,7 @@ class ReferralDashboard {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @return ReferralDashboard
 	 */
 	public static function get_instance() {
@@ -51,7 +51,7 @@ class ReferralDashboard {
 	/**
 	 * Register hooks.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param \PointBay\Core\Plugin $plugin The plugin instance.
 	 * @return void
 	 */
@@ -68,7 +68,7 @@ class ReferralDashboard {
 	 * drift out of sync with where the block actually appears, and costs
 	 * nothing on every other page of the site.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function register_assets() {
@@ -96,7 +96,7 @@ class ReferralDashboard {
 	/**
 	 * Render the referral block.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int $user_id The customer viewing the page.
 	 * @return void
 	 */

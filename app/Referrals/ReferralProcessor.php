@@ -7,7 +7,7 @@
  *
  * @package    PointBay
  * @subpackage Referrals
- * @since      1.1.0
+ * @since      1.0.0
  */
 
 namespace PointBay\Referrals;
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * hooks `pointbay_referral_awarded`, which keeps the reference types that
  * describe those rewards out of this plugin entirely.
  *
- * @since 1.1.0
+ * @since 1.0.0
  */
 class ReferralProcessor {
 
@@ -51,7 +51,7 @@ class ReferralProcessor {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @return ReferralProcessor
 	 */
 	public static function get_instance() {
@@ -67,7 +67,7 @@ class ReferralProcessor {
 	 * Priority 30 is deliberate: OrderHooks earns and reverses order points at
 	 * 20, and the referral reward should settle after the order's own points.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param \PointBay\Core\Plugin $plugin The plugin instance.
 	 * @return void
 	 */
@@ -81,7 +81,7 @@ class ReferralProcessor {
 	/**
 	 * Award the referrer once the customer they referred completes a first order.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int       $order_id The order that just completed.
 	 * @param \WC_Order $order    The order object.
 	 * @return void
@@ -158,7 +158,7 @@ class ReferralProcessor {
 		 * Fired after this plugin's own state is durable, so a callback that
 		 * fatals cannot leave a half-recorded referral behind.
 		 *
-		 * @since 1.1.0
+		 * @since 1.0.0
 		 * @hook pointbay_referral_awarded
 		 * @param int $referrer_id The user who referred.
 		 * @param int $buyer_id    The referred customer.
@@ -173,7 +173,7 @@ class ReferralProcessor {
 	 * Refunds do not travel through this hook; they arrive at
 	 * maybe_reverse_referral_on_refund() instead.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int       $order_id   The order.
 	 * @param string    $old_status Previous status.
 	 * @param string    $new_status New status.
@@ -190,7 +190,7 @@ class ReferralProcessor {
 	/**
 	 * Reverse the reward when the qualifying order is refunded in full.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int $order_id  The order.
 	 * @param int $refund_id The refund that was just created.
 	 * @return void
@@ -213,7 +213,7 @@ class ReferralProcessor {
 	/**
 	 * Claw back the referrer's bonus for a specific order.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int            $order_id The order triggering the reversal.
 	 * @param \WC_Order|null $order    The order object.
 	 * @return void
@@ -277,7 +277,7 @@ class ReferralProcessor {
 		 * Fired before the rewarded flag is cleared, so callbacks can still see
 		 * the state that qualified the referral.
 		 *
-		 * @since 1.1.0
+		 * @since 1.0.0
 		 * @hook pointbay_referral_reversing
 		 * @param int $referrer_id The user who referred.
 		 * @param int $buyer_id    The referred customer.

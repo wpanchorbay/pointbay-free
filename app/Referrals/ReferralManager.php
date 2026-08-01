@@ -4,7 +4,7 @@
  *
  * @package    PointBay
  * @subpackage Referrals
- * @since      1.1.0
+ * @since      1.0.0
  */
 
 namespace PointBay\Referrals;
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Owns a customer's referral code, the link built from it, and the attribution
  * of a new registration back to the referrer who sent them.
  *
- * @since 1.1.0
+ * @since 1.0.0
  */
 class ReferralManager {
 
@@ -54,7 +54,7 @@ class ReferralManager {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @return ReferralManager
 	 */
 	public static function get_instance() {
@@ -70,7 +70,7 @@ class ReferralManager {
 	 * `user_register` runs at 20 so it lands after RegistrationHooks (10),
 	 * which credits the signup bonus for the same user.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param \PointBay\Core\Plugin $plugin The plugin instance.
 	 * @return void
 	 */
@@ -83,7 +83,7 @@ class ReferralManager {
 	/**
 	 * Whether the referral programme is switched on.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	private function is_enabled() {
@@ -97,7 +97,7 @@ class ReferralManager {
 	 * returns the first match, so a duplicate would silently misattribute every
 	 * later referral for one of the two users.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int $user_id The user to get a code for.
 	 * @return string The referral code, or '' if one could not be generated.
 	 */
@@ -136,7 +136,7 @@ class ReferralManager {
 	/**
 	 * Build the shareable referral URL for a user.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int $user_id The referring user.
 	 * @return string The URL, or '' when no code could be generated.
 	 */
@@ -151,7 +151,7 @@ class ReferralManager {
 	/**
 	 * Resolve a referral code back to the user who owns it.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param string $code The referral code.
 	 * @return int|null The owning user ID, or null when unknown.
 	 */
@@ -182,7 +182,7 @@ class ReferralManager {
 	 * Gated on the feature being enabled: a disabled programme must not drop a
 	 * 30-day cookie on visitors, and nothing would ever read it back.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public function capture_referral_cookie() {
@@ -225,7 +225,7 @@ class ReferralManager {
 	/**
 	 * Attribute a newly registered user to the referrer who sent them.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int $new_user_id The user that was just created.
 	 * @return void
 	 */

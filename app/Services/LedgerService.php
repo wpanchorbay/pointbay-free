@@ -236,7 +236,7 @@ class LedgerService {
 	 * setting value, which may have changed since — without reaching into the
 	 * model layer. This service is the supported surface for that.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 * @param int    $user_id  The ID of the user the transaction belongs to.
 	 * @param string $ref_type The reference type for the transaction.
 	 * @param int    $ref_id   The reference ID for the transaction.

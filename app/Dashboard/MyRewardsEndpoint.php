@@ -125,7 +125,7 @@ class MyRewardsEndpoint {
 		 * its own markup, so nothing here has to trust — or sanitise — a string
 		 * built somewhere else. Callbacks print in priority order.
 		 *
-		 * @since 1.1.0
+		 * @since 1.0.0
 		 * @hook pointbay_tier_progress
 		 * @param int $user_id The current user's ID.
 		 */
@@ -139,7 +139,7 @@ class MyRewardsEndpoint {
 		 * Used by this plugin to render the referral block, and available to
 		 * others on the same terms: echo your own escaped markup.
 		 *
-		 * @since 1.1.0
+		 * @since 1.0.0
 		 * @hook pointbay_my_rewards_after_balance
 		 * @param int $user_id The current user's ID.
 		 */
