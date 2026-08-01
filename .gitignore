@@ -23,3 +23,6 @@ dist/
 .gemini
 .vscode
 graphify-out
+
+# Saved WP.org review correspondence — never commit
+Review in Progress_*.html
