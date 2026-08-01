@@ -229,6 +229,25 @@ class LedgerService {
 	}
 
 	/**
+	 * Fetch a single transaction by its reference.
+	 *
+	 * Exists so that other plugins reversing their own ledger entries can read
+	 * back the amount that was actually credited — rather than the current
+	 * setting value, which may have changed since — without reaching into the
+	 * model layer. This service is the supported surface for that.
+	 *
+	 * @since 1.1.0
+	 * @param int    $user_id  The ID of the user the transaction belongs to.
+	 * @param string $ref_type The reference type for the transaction.
+	 * @param int    $ref_id   The reference ID for the transaction.
+	 * @param string $txn_type The transaction type, either 'credit' or 'debit'.
+	 * @return \PointBay\Models\LedgerEntry|null The entry, or null if not found.
+	 */
+	public function get_transaction( $user_id, $ref_type, $ref_id, $txn_type ) {
+		return LedgerEntry::find_by_reference( $user_id, $ref_type, $ref_id, $txn_type );
+	}
+
+	/**
 	 * Get user balance.
 	 *
 	 * @since 1.0.0

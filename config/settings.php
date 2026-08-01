@@ -23,6 +23,8 @@ return array(
 		'redemption_pointsValue'        => 0.01,
 		'redemption_mode'               => 'fee',
 		'redemption_minPoints'          => 100,
+		'referrals_enabled'             => false,
+		'referrals_bonusPoints'         => 1000,
 		'display_guestNoticeEnabled'    => true,
 		'advanced_deleteAllOnUninstall' => false,
 		'debug_enableMode'              => false,
@@ -62,6 +64,15 @@ return array(
 			'type'              => 'integer',
 			'sanitize_callback' => 'absint',
 			'default'           => 100,
+		),
+		'referrals_enabled'             => array(
+			'type'    => 'boolean',
+			'default' => false,
+		),
+		'referrals_bonusPoints'         => array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+			'default'           => 1000,
 		),
 		'display_guestNoticeEnabled'    => array(
 			'type'    => 'boolean',

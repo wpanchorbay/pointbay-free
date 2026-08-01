@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
+import { applyFilters } from '@wordpress/hooks';
 import { ClassicTable } from '../components/classics/ClassicTable';
 import { ClassicButton } from '../components/classics/ClassicButton';
 import { ClassicInput } from '../components/classics/ClassicInput';
@@ -26,13 +27,21 @@ interface LedgerEntry {
 	created_at: string;
 }
 
-const REFERENCE_TYPE_LABELS: Record< string, string > = {
-	order: 'Order',
-	order_reversal: 'Order Reversal',
-	refund: 'Refund',
-	review: 'Review',
-	admin: 'Manual Adjustment',
-};
+// Drives both the display label and the filter dropdown options, so a type
+// missing here still renders (via toTitleCase) but cannot be filtered on.
+// Other plugins register the types they own through the filter below.
+const REFERENCE_TYPE_LABELS: Record< string, string > = applyFilters(
+	'pointbay_ledger_reference_labels',
+	{
+		order: 'Order',
+		order_reversal: 'Order Reversal',
+		refund: 'Refund',
+		review: 'Review',
+		referral: 'Referral Bonus',
+		referral_reversal: 'Referral Reversal',
+		admin: 'Manual Adjustment',
+	}
+) as Record< string, string >;
 
 // Turns an unmapped snake_case reference type into a readable label,
 // e.g. 'referral_signup' -> 'Referral Signup'.

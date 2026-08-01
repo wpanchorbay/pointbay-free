@@ -20,6 +20,8 @@ interface SettingsData {
 	redemption_pointsValue: number;
 	redemption_mode: string;
 	redemption_minPoints: number;
+	referrals_enabled: boolean;
+	referrals_bonusPoints: number;
 	display_guestNoticeEnabled: boolean;
 	advanced_deleteAllOnUninstall: boolean;
 	debug_enableMode: boolean;
@@ -347,6 +349,70 @@ const Settings: React.FC = () => {
 						),
 					},
 				] }
+			/>
+
+			<ClassicSettingsTable
+				title={ __( 'Referrals', 'pointbay-loyalty-points-referral-rewards-woo' ) }
+				description={ __(
+					'Reward customers for referring their friends.',
+					'pointbay-loyalty-points-referral-rewards-woo'
+				) }
+				fields={
+					applyFilters(
+						'pointbay_referral_settings_fields',
+						[
+							{
+								id: 'referrals_enabled',
+								label: __( 'Enable Referrals', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicCheckbox
+										checked={ settings.referrals_enabled }
+										onChange={ ( val ) =>
+											setSettings( {
+												...settings,
+												referrals_enabled: val,
+											} )
+										}
+										label={ __(
+											'Turn on the referral program',
+											'pointbay-loyalty-points-referral-rewards-woo'
+										) }
+										description={ __(
+											'Gives every customer a shareable link that credits them when a friend they refer completes a first order.',
+											'pointbay-loyalty-points-referral-rewards-woo'
+										) }
+									/>
+								),
+							},
+							{
+								id: 'referrals_bonusPoints',
+								label: __( 'Referral Bonus Points', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicInput
+										type="number"
+										min="0"
+										disabled={ ! settings.referrals_enabled }
+										value={ settings.referrals_bonusPoints }
+										onChange={ ( e ) =>
+											setSettings( {
+												...settings,
+												referrals_bonusPoints:
+													parseInt( e.target.value ) || 0,
+											} )
+										}
+										description={ __(
+											"Points awarded to the referrer after the new customer's first purchase.",
+											'pointbay-loyalty-points-referral-rewards-woo'
+										) }
+										size="small"
+									/>
+								),
+							},
+						],
+						settings,
+						setSettings
+					) as any[]
+				}
 			/>
 
 			<ClassicSettingsTable

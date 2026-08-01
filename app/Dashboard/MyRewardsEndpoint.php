@@ -119,32 +119,31 @@ class MyRewardsEndpoint {
 		echo '</div>';
 
 		/**
-		 * Filters in a tier-progress badge/summary block (HTML string) for the
-		 * customer dashboard. Returns '' by default; any other plugin can hook
-		 * in to supply the markup.
+		 * Fires inside the balance card, for a tier-progress badge or summary.
 		 *
-		 * @since 1.0.0
-		 * @hook pointbay_tier_progress_html
-		 * @param string $html    The HTML to render (empty by default).
-		 * @param int    $user_id The current user's ID.
-		 * @return string
+		 * An action rather than an HTML filter: each callback echoes and escapes
+		 * its own markup, so nothing here has to trust — or sanitise — a string
+		 * built somewhere else. Callbacks print in priority order.
+		 *
+		 * @since 1.1.0
+		 * @hook pointbay_tier_progress
+		 * @param int $user_id The current user's ID.
 		 */
-		echo apply_filters( 'pointbay_tier_progress_html', '', $user_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		do_action( 'pointbay_tier_progress', $user_id );
 
 		echo '</div>';
 
 		/**
-		 * Filters in a "Refer a Friend" block (HTML string) for the customer
-		 * dashboard. Returns '' by default; any other plugin can hook in to
-		 * supply the markup.
+		 * Fires directly beneath the balance card, before the history table.
 		 *
-		 * @since 1.0.0
-		 * @hook pointbay_referral_html
-		 * @param string $html    The HTML to render (empty by default).
-		 * @param int    $user_id The current user's ID.
-		 * @return string
+		 * Used by this plugin to render the referral block, and available to
+		 * others on the same terms: echo your own escaped markup.
+		 *
+		 * @since 1.1.0
+		 * @hook pointbay_my_rewards_after_balance
+		 * @param int $user_id The current user's ID.
 		 */
-		echo apply_filters( 'pointbay_referral_html', '', $user_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		do_action( 'pointbay_my_rewards_after_balance', $user_id );
 
 		echo '<h3>' . esc_html__( 'Recent History', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h3>';
 
