@@ -126,7 +126,7 @@ Every minified file in `build/` is compiled from our own source, which is availa
 
 https://github.com/wpanchorbay/pointbay-free/tree/1.1.0/src
 
-*   `build/admin.js`, `build/settings.js`, `build/block-cart.js`, `build/block-checkout.js` are compiled from the React/TypeScript entry points in `src/` (see `src/AdminApp.tsx`, `src/SettingsApp.tsx` and `src/blocks/`).
+*   `build/admin.js` and `build/settings.js` are compiled from the React/TypeScript entry points `src/admin.tsx` and `src/settings.tsx` (which mount `src/AdminApp.tsx` and `src/SettingsApp.tsx`); `build/block-cart.js` and `build/block-checkout.js` are compiled from `src/cart/index.tsx` and `src/checkout/index.tsx`.
 *   `build/admin.css`, `build/settings.css` and their `-rtl` variants are compiled from `src/styles/index.scss` (Sass + Tailwind CSS via PostCSS).
 
 Each compiled file also carries a header comment pointing back to this source. The uncompressed `src/` directory ships inside the plugin zip as well, so the build is reproducible from the download alone with `npm install && npm run build`. The front-end scripts and styles in `assets/` are not compiled — they ship as the original, human-readable source.
