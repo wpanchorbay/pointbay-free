@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name:       PointBay - Loyalty Points & Referral Rewards for Woocommerce
+ * Plugin Name:       PointBay - Loyalty Points & Referral Rewards for WooCommerce
  * Plugin URI:        https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-for-woocommerce
  * Description:       Reward WooCommerce customers with loyalty points they earn on purchases and redeem for discounts at checkout.
  * Requires at least: 6.8
  * Requires PHP:      7.0
  * Requires Plugins:  woocommerce
  * WC requires at least: 6.1
- * Version:           1.0.0
+ * Version:           1.1.0
  * Stable tag:        1.0.0
  * Author:            WPAnchorBay
  * Author URI:        https://wpanchorbay.com
@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'POINTBAY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'POINTBAY_DIR', plugin_dir_path( __FILE__ ) );
 define( 'POINTBAY_URL', plugin_dir_url( __FILE__ ) );
-define( 'POINTBAY_VERSION', '1.0.0' );
+define( 'POINTBAY_VERSION', '1.1.0' );
 define( 'POINTBAY_PLUGIN_NAME', 'pointbay' );
 define( 'POINTBAY_REST_NAMESPACE', 'pointbay' );
 define( 'POINTBAY_OPTION_NAME', 'pointbay' );

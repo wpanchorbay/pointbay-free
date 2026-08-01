@@ -1,18 +1,18 @@
-=== PointBay - Loyalty Points & Referral Rewards for Woocommerce ===
+=== PointBay - Loyalty Points & Referral Rewards for WooCommerce ===
 Contributors: wpanchorbay, sankarsan
-Tags: woocommerce, loyalty, rewards, points, loyalty program
+Tags: woocommerce, loyalty, rewards, points, referral
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Reward WooCommerce customers with loyalty points they earn on purchases and redeem for discounts at checkout.
+Reward WooCommerce customers with loyalty points they earn on purchases and referrals, and redeem for discounts at checkout.
 
 == Description ==
 
-**PointBay** is a loyalty and rewards points system for WooCommerce. Let your customers earn points when they shop and spend those points for instant savings at checkout. Everything is configured from a single settings screen, and customers can track their balance right inside their WooCommerce account.
+**PointBay** is a loyalty, rewards and referral system for WooCommerce. Let your customers earn points when they shop, invite their friends for a bonus, and spend those points for instant savings at checkout. Everything is configured from a single settings screen, and customers can track their balance right inside their WooCommerce account.
 
 **Earning points**
 
@@ -20,6 +20,14 @@ Reward WooCommerce customers with loyalty points they earn on purchases and rede
 *   Give bonus points when a customer creates an account.
 *   Reward customers with points for leaving a product review.
 *   Choose which order status triggers points (for example, *Completed* or *Processing*), so points are only granted once an order is confirmed.
+
+**Referrals**
+
+*   Every logged-in customer gets their own referral link, shown in the **My Rewards** area of their account with a one-click copy button.
+*   When someone follows that link and registers, they are attributed to the customer who referred them.
+*   The referrer is awarded bonus points once the person they referred completes their first order — not merely on signup, so the reward tracks a real sale.
+*   If that qualifying order is later cancelled, fails, or is refunded in full, the bonus is automatically clawed back.
+*   Referrals are off by default; switch them on and set the bonus from the settings screen.
 
 **Redeeming points**
 
@@ -30,7 +38,7 @@ Reward WooCommerce customers with loyalty points they earn on purchases and rede
 
 **For your customers**
 
-*   A dedicated **My Rewards** tab in the WooCommerce *My Account* area shows the current points balance and recent points history.
+*   A dedicated **My Rewards** tab in the WooCommerce *My Account* area shows the current points balance, the customer's referral link, and recent points history.
 *   An optional notice lets guests know they could be earning points by signing in.
 
 **For store owners**
@@ -64,19 +72,37 @@ At checkout, customers can apply their available points for a discount. You deci
 
 Yes. PointBay supports both the classic checkout and the block-based Cart and Checkout.
 
+= How do referrals work? =
+
+Each logged-in customer has a personal referral link, shown under **My Account > My Rewards**. When a visitor follows that link, the referral code is remembered so that if they register an account they are attributed to the customer who referred them. Once that new customer completes their first order, the referrer is awarded the bonus points you configured. If the qualifying order is later cancelled, fails, or is refunded in full, the bonus is taken back automatically.
+
+= Does the plugin set any cookies? =
+
+One, and only when referrals are enabled. If a visitor arrives on a referral link, the plugin stores that referral code in a cookie named `pointbay_ref` for 30 days, so the referral can still be credited if the visitor registers on a later visit. The cookie holds only the referral code — no personal data. It is never set while the referral feature is switched off, and nothing else in the plugin uses cookies.
+
+= Can a customer refer themselves? =
+
+No. If a customer follows their own referral link and registers a second account, the referral is ignored and no bonus is awarded.
+
 = Where can customers see their points balance? =
 
-Every customer gets a **My Rewards** section under **My Account** showing their current balance and recent points history.
+Every customer gets a **My Rewards** section under **My Account** showing their current balance, their referral link, and recent points history.
 
 == Screenshots ==
 
 1.  PointBay settings screen inside WooCommerce settings.
 2.  Earning rules: points per purchase, registration, and reviews.
-3.  Redemption applied at checkout.
-4.  The customer "My Rewards" area in My Account.
-5.  The admin Points History ledger.
+3.  Referral settings: enable referrals and set the referrer bonus.
+4.  Redemption applied at checkout.
+5.  The customer "My Rewards" area in My Account, including the referral link.
+6.  The admin Points History ledger.
 
 == Changelog ==
+
+= 1.1.0 =
+*   New: referral program. Every customer gets a shareable referral link; the referrer earns bonus points once the customer they referred completes a first order, and the bonus is reversed if that order is cancelled or fully refunded.
+*   Improved: extension points on the My Rewards screen are now actions rather than HTML filters, so each add-on escapes its own output.
+*   Improved: the referral link copy button uses an enqueued script with a fallback for non-secure contexts, rather than inline JavaScript.
 
 = 1.0.0 =
 *   Initial release: earn points on purchases, registration, and reviews; redeem points at checkout (fee or coupon); Points History ledger; and a My Rewards account area.
@@ -98,7 +124,7 @@ PHP dependencies are managed with Composer (`composer install`); third-party lib
 
 Every minified file in `build/` is compiled from our own source, which is available uncompressed at:
 
-https://github.com/wpanchorbay/pointbay-free/tree/1.0.0/src
+https://github.com/wpanchorbay/pointbay-free/tree/1.1.0/src
 
 *   `build/admin.js`, `build/settings.js`, `build/block-cart.js`, `build/block-checkout.js` are compiled from the React/TypeScript entry points in `src/` (see `src/AdminApp.tsx`, `src/SettingsApp.tsx` and `src/blocks/`).
 *   `build/admin.css`, `build/settings.css` and their `-rtl` variants are compiled from `src/styles/index.scss` (Sass + Tailwind CSS via PostCSS).

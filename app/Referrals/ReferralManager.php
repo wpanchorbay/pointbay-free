@@ -163,9 +163,9 @@ class ReferralManager {
 
 		$users = get_users(
 			array(
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_get_users_meta_key, WordPress.DB.SlowDBQuery.slow_db_get_users_meta_value -- Referral codes are only resolvable by meta; the lookup is capped at one row, runs once per registration, and the meta key is indexed by WordPress.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- A referral code is only resolvable through user meta; the lookup is capped at one row and runs once per registration.
 				'meta_key'    => self::META_REFERRAL_CODE,
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_get_users_meta_key, WordPress.DB.SlowDBQuery.slow_db_get_users_meta_value -- See above.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- See above.
 				'meta_value'  => $code,
 				'number'      => 1,
 				'fields'      => 'ID',

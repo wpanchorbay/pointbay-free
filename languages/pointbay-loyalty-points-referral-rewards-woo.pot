@@ -2,21 +2,21 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for Woocommerce 1.0.0\n"
+"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for WooCommerce 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pointbay-loyalty-points-referral-rewards-woo\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-01T09:37:17+00:00\n"
+"POT-Creation-Date: 2026-08-01T10:34:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
 
 #. Plugin Name of the plugin
 #: pointbay-loyalty-points-referral-rewards-woo.php
-msgid "PointBay - Loyalty Points & Referral Rewards for Woocommerce"
+msgid "PointBay - Loyalty Points & Referral Rewards for WooCommerce"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -81,7 +81,7 @@ msgid "Insufficient points balance. Your points may have been used elsewhere."
 msgstr ""
 
 #: app/Checkout/ClassicCheckoutUI.php:91
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 msgid "Redeem Loyalty Points"
 msgstr ""
 
@@ -102,7 +102,7 @@ msgid "You have %1$s points available. (Max %2$s points for this order)."
 msgstr ""
 
 #: app/Checkout/ClassicCheckoutUI.php:113
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 msgid "Slide to adjust points:"
 msgstr ""
 
@@ -162,23 +162,23 @@ msgid "Current Balance"
 msgstr ""
 
 #: app/Dashboard/MyRewardsEndpoint.php:118
-#: app/Dashboard/MyRewardsEndpoint.php:164
+#: app/Dashboard/MyRewardsEndpoint.php:163
 msgid "Points"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:149
+#: app/Dashboard/MyRewardsEndpoint.php:148
 msgid "Recent History"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:164
+#: app/Dashboard/MyRewardsEndpoint.php:163
 msgid "Date"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:164
+#: app/Dashboard/MyRewardsEndpoint.php:163
 msgid "Description"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:179
+#: app/Dashboard/MyRewardsEndpoint.php:178
 msgid "No activity yet."
 msgstr ""
 
@@ -226,18 +226,60 @@ msgstr ""
 msgid "Points awarded for product review."
 msgstr ""
 
+#: app/Referrals/ReferralDashboard.php:90
+msgid "Copied!"
+msgstr ""
+
+#: app/Referrals/ReferralDashboard.php:91
+msgid "Press Ctrl+C to copy"
+msgstr ""
+
+#: app/Referrals/ReferralDashboard.php:125
+msgid "Refer a Friend"
+msgstr ""
+
+#. translators: %d: number of bonus points awarded to the referrer.
+#: app/Referrals/ReferralDashboard.php:132
+#, php-format
+msgid "Share this link with your friends. When they make their first purchase, you get %d bonus points!"
+msgstr ""
+
+#: app/Referrals/ReferralDashboard.php:138
+msgid "Share this link with your friends."
+msgstr ""
+
+#: app/Referrals/ReferralDashboard.php:143
+msgid "Your referral link"
+msgstr ""
+
+#: app/Referrals/ReferralDashboard.php:158
+msgid "Copy URL"
+msgstr ""
+
+#. translators: %d: the referred customer's user ID.
+#: app/Referrals/ReferralProcessor.php:140
+#, php-format
+msgid "Referral bonus for referring user #%d."
+msgstr ""
+
+#. translators: %d: the order ID that was cancelled or refunded.
+#: app/Referrals/ReferralProcessor.php:265
+#, php-format
+msgid "Referral bonus reversed: order #%d was cancelled or refunded."
+msgstr ""
+
 #: config/admin.php:39
 #: config/admin.php:40
 #: config/admin.php:88
 #: config/admin.php:89
 #: config/admin.php:90
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "PointBay"
 msgstr ""
 
 #: config/admin.php:54
 #: config/admin.php:55
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Points History"
 msgstr ""
 
@@ -250,282 +292,310 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Select bulk action"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Bulk actions"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Export Selected"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Apply"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "1 item"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "items"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "First page"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Previous page"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Current Page"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "of"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Next page"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Last page"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "User"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Search users…"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Type"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Amount"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Reason"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Export to CSV"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Adjust Points"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Submit"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Search Ledger"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Search by user name or email"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Filter by type"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "All types"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Credit"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Debit"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Filter by reference"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "All references"
 msgstr ""
 
-#: build/admin.js:1
+#: build/admin.js:14
 msgid "Apply Filters"
 msgstr ""
 
-#: build/block-cart.js:1
-#: build/block-checkout.js:1
+#: build/block-cart.js:12
+#: build/block-checkout.js:12
 #, js-format
 msgid "Complete this order to earn %d points!"
 msgstr ""
 
-#: build/block-cart.js:1
-#: build/block-checkout.js:1
+#: build/block-cart.js:12
+#: build/block-checkout.js:12
 #, js-format
 msgid "Create an account to earn %d points on this order!"
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 #, js-format
 msgid "Awesome! You have redeemed %d points for a %s discount."
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 msgid "Removing..."
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 msgid "Remove"
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 #, js-format
 msgid "You have %d points available. (Max %d points for this order)."
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 #, js-format
 msgid "1 pt = %s"
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 msgid "Points to redeem"
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 msgid "Applying..."
 msgstr ""
 
-#: build/block-checkout.js:1
+#: build/block-checkout.js:12
 #, js-format
 msgid "Apply %s Discount"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Failed to load settings."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Settings saved successfully."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Failed to save settings."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Earning Points"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Configure how customers earn loyalty points."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Points Per Dollar"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "How many points the customer earns for every $1 spent."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Points for Registration"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Give new users this many points when they register."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Points for Product Review"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Reward points for an approved product review."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Order Status Trigger"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "The WooCommerce order status that triggers points crediting."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Redemption Rules"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Configure how points are converted to discounts."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Point Value ($)"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "The monetary value of a single point."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Redemption Mode"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Cart Fee (WC_Fee)"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Virtual Coupon (WC_Coupon)"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "How the discount is applied to the cart."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Minimum Points to Redeem"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "The minimum amount of points needed before the redemption form is shown."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
+msgid "Referrals"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Reward customers for referring their friends."
+msgstr ""
+
+#: build/settings.js:14
+msgid "Enable Referrals"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Turn on the referral program"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Gives every customer a shareable link that credits them when a friend they refer completes a first order."
+msgstr ""
+
+#: build/settings.js:14
+msgid "Referral Bonus Points"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Points awarded to the referrer after the new customer's first purchase."
+msgstr ""
+
+#: build/settings.js:14
 msgid "Display & System"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Additional display and maintenance options."
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Guest Notice"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Show login/register prompt on checkout"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: build/settings.js:1
+#: build/settings.js:14
 msgid "Purge all ledger data upon deletion"
 msgstr ""
