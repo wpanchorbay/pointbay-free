@@ -281,13 +281,13 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
   return (
     <div
       className={`${sizeClass} ${className} ${classNames?.container || ''
-        } loyaltybay-align-middle`.trim()}
+        } pointbay-align-middle`.trim()}
       ref={containerRef}
     >
       {label && (
         <label
           htmlFor={selectId}
-          className={`loyaltybay-block loyaltybay-mb-1 ${classNames?.label || ''
+          className={`pointbay-block pointbay-mb-1 ${classNames?.label || ''
             }`.trim()}
         >
           {label}
@@ -295,7 +295,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
       )}
 
       <div
-        className={`loyaltybay-relative ${classNames?.innerContainer}`}
+        className={`pointbay-relative ${classNames?.innerContainer}`}
         style={{ width: explicitWidth }}
       >
         { /* Trigger that looks like WP native select */}
@@ -307,27 +307,27 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           onKeyDown={handleTriggerKeyDown}
           className={`
-            loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between 
-            loyaltybay-min-h-[40px]
-            loyaltybay-appearance-none loyaltybay-border loyaltybay-border-[#8c8f94] 
-            loyaltybay-rounded-[3px] loyaltybay-px-2 loyaltybay-pr-6 loyaltybay-min-h-[30px] 
-            loyaltybay-leading-loose loyaltybay-transition-all loyaltybay-duration-100 
-            loyaltybay-select-none loyaltybay-relative loyaltybay-box-border loyaltybay-w-full 
+            pointbay-flex pointbay-items-center pointbay-justify-between 
+            pointbay-min-h-[40px]
+            pointbay-appearance-none pointbay-border pointbay-border-[#8c8f94] 
+            pointbay-rounded-[3px] pointbay-px-2 pointbay-pr-6 pointbay-min-h-[30px] 
+            pointbay-leading-loose pointbay-transition-all pointbay-duration-100 
+            pointbay-select-none pointbay-relative pointbay-box-border pointbay-w-full 
             ${disabled
-              ? `loyaltybay-cursor-not-allowed loyaltybay-bg-[#f0f0f1] loyaltybay-text-[#a7aaad] ${classNames?.triggerDisabled || ''
+              ? `pointbay-cursor-not-allowed pointbay-bg-[#f0f0f1] pointbay-text-[#a7aaad] ${classNames?.triggerDisabled || ''
               }`
-              : `loyaltybay-cursor-pointer loyaltybay-bg-white loyaltybay-text-[#2c3338]`
+              : `pointbay-cursor-pointer pointbay-bg-white pointbay-text-[#2c3338]`
             } 
             ${isOpen
-              ? `!loyaltybay-border-[#2271b1] loyaltybay-shadow-[0_0_0_1px_#2271b1] loyaltybay-outline-none ${classNames?.triggerOpen || ''
+              ? `!pointbay-border-[#2271b1] pointbay-shadow-[0_0_0_1px_#2271b1] pointbay-outline-none ${classNames?.triggerOpen || ''
               }`
-              : 'loyaltybay-shadow-none'
+              : 'pointbay-shadow-none'
             } 
             ${classNames?.trigger || ''}
           `.trim()}
         >
           <span
-            className={`loyaltybay-overflow-hidden loyaltybay-text-ellipsis loyaltybay-whitespace-nowrap loyaltybay-flex-1 ${classNames?.value || ''
+            className={`pointbay-overflow-hidden pointbay-text-ellipsis pointbay-whitespace-nowrap pointbay-flex-1 ${classNames?.value || ''
               }`.trim()}
           >
             {selectedOption
@@ -338,7 +338,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
           </span>
 
           { /* Native-looking arrow */}
-          <span className="loyaltybay-absolute loyaltybay-right-1.5 loyaltybay-flex loyaltybay-items-center loyaltybay-pointer-events-none">
+          <span className="pointbay-absolute pointbay-right-1.5 pointbay-flex pointbay-items-center pointbay-pointer-events-none">
             <ChevronDown size={14} color="#50575e" />
           </span>
         </div>
@@ -348,11 +348,11 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
           createPortal(
             <div
               ref={dropdownRef}
-              className={`loyaltybay-fixed loyaltybay-z-[999999] loyaltybay-bg-white loyaltybay-border-2 loyaltybay-border-[#2271b1] ${differentDropdownWidth
-                ? 'loyaltybay-rounded-[3px]'
-                : 'loyaltybay-border-t-0 loyaltybay-mt-[-3px] loyaltybay-rounded-b-[3px]'
+              className={`pointbay-fixed pointbay-z-[999999] pointbay-bg-white pointbay-border-2 pointbay-border-[#2271b1] ${differentDropdownWidth
+                ? 'pointbay-rounded-[3px]'
+                : 'pointbay-border-t-0 pointbay-mt-[-3px] pointbay-rounded-b-[3px]'
                 } 
-              loyaltybay-rounded-b-[3px] loyaltybay-shadow-[0_3px_5px_rgba(0,0,0,0.2)] loyaltybay-p-0 loyaltybay-box-border ${classNames?.dropdown || ''
+              pointbay-rounded-b-[3px] pointbay-shadow-[0_3px_5px_rgba(0,0,0,0.2)] pointbay-p-0 pointbay-box-border ${classNames?.dropdown || ''
                 }`.trim()}
               style={{
                 top: coords.top,
@@ -365,7 +365,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
             >
               {enableSearch && (
                 <div
-                  className={`loyaltybay-p-1.5 ${classNames?.searchContainer || ''
+                  className={`pointbay-p-1.5 ${classNames?.searchContainer || ''
                     }`.trim()}
                 >
                   <input
@@ -379,7 +379,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
                     onKeyDown={handleSearchKeyDown}
                     onClick={(e) => e.stopPropagation()}
                     placeholder="Search..."
-                    className={`loyaltybay-w-full loyaltybay-px-2 loyaltybay-leading-loose loyaltybay-min-h-[26px] loyaltybay-border loyaltybay-border-[#aaaaaa] loyaltybay-bg-[#fcfcfc] loyaltybay-rounded-[3px] loyaltybay-box-border loyaltybay-text-[13px] focus:loyaltybay-outline-none focus:loyaltybay-shadow-none ${classNames?.searchInput || ''
+                    className={`pointbay-w-full pointbay-px-2 pointbay-leading-loose pointbay-min-h-[26px] pointbay-border pointbay-border-[#aaaaaa] pointbay-bg-[#fcfcfc] pointbay-rounded-[3px] pointbay-box-border pointbay-text-[13px] focus:pointbay-outline-none focus:pointbay-shadow-none ${classNames?.searchInput || ''
                       }`.trim()}
                   />
                 </div>
@@ -388,14 +388,14 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
               <ul
                 ref={listRef}
                 role="listbox"
-                className={`loyaltybay-max-h-[220px] loyaltybay-overflow-y-auto loyaltybay-m-0 loyaltybay-p-0 loyaltybay-list-none ${classNames?.list || ''
+                className={`pointbay-max-h-[220px] pointbay-overflow-y-auto pointbay-m-0 pointbay-p-0 pointbay-list-none ${classNames?.list || ''
                   }`.trim()}
                 style={{
                   scrollbarWidth: 'thin',
                 }}
               >
                 {filteredOptions.length === 0 ? (
-                  <li className="loyaltybay-px-3 loyaltybay-py-1.5 loyaltybay-text-[#646970] loyaltybay-italic loyaltybay-text-[13px] loyaltybay-m-0">
+                  <li className="pointbay-px-3 pointbay-py-1.5 pointbay-text-[#646970] pointbay-italic pointbay-text-[13px] pointbay-m-0">
                     {searchQuery
                       ? 'No results found'
                       : 'No options available'}
@@ -419,24 +419,24 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
                           handleSelect(opt);
                         }}
                         className={`
-                        loyaltybay-px-3 loyaltybay-py-1.5 loyaltybay-flex loyaltybay-items-center 
-                        loyaltybay-justify-between loyaltybay-text-[13px] loyaltybay-m-0 
+                        pointbay-px-3 pointbay-py-1.5 pointbay-flex pointbay-items-center 
+                        pointbay-justify-between pointbay-text-[13px] pointbay-m-0 
                         ${isDisabled
-                            ? 'loyaltybay-cursor-not-allowed'
-                            : 'loyaltybay-cursor-pointer'
+                            ? 'pointbay-cursor-not-allowed'
+                            : 'pointbay-cursor-pointer'
                           } 
                         ${isHighlighted
-                            ? `loyaltybay-bg-[#2271b1] loyaltybay-text-white ${classNames?.optionHighlighted || ''
+                            ? `pointbay-bg-[#2271b1] pointbay-text-white ${classNames?.optionHighlighted || ''
                             }`
                             : isDisabled
-                              ? 'loyaltybay-bg-transparent loyaltybay-text-[#a7aaad]'
-                              : `loyaltybay-bg-transparent loyaltybay-text-[#2c3338]`
+                              ? 'pointbay-bg-transparent pointbay-text-[#a7aaad]'
+                              : `pointbay-bg-transparent pointbay-text-[#2c3338]`
                           } 
                         ${isSelected ? classNames?.optionSelected || '' : ''}
                         ${classNames?.option || ''}
                       `.trim()}
                       >
-                        <span className="loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2 loyaltybay-overflow-hidden loyaltybay-text-ellipsis loyaltybay-whitespace-nowrap">
+                        <span className="pointbay-flex pointbay-items-center pointbay-gap-2 pointbay-overflow-hidden pointbay-text-ellipsis pointbay-whitespace-nowrap">
                           {renderOption
                             ? renderOption(opt)
                             : opt.label}
@@ -453,7 +453,7 @@ export const ClassicSelect: React.FC<ClassicSelectProps> = ({
 
       {description && (
         <p
-          className={`description loyaltybay-mt-1 ${classNames?.description || ''
+          className={`description pointbay-mt-1 ${classNames?.description || ''
             }`.trim()}
         >
           {description}

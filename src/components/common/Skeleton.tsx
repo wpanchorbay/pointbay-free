@@ -16,18 +16,18 @@ const Skeleton: FC<SkeletonProps> = ({
   className,
 }) => {
   // Helpers to handle arbitrary values safely
-  const hClass = height ? (height.includes("[") ? `loyaltybay-h-${height}` : `loyaltybay-h-[${height}]`) : "";
-  const wClass = width ? (width.includes("[") ? `loyaltybay-w-${width}` : `loyaltybay-w-[${width}]`) : "";
-  const rClass = borderRadius ? (borderRadius.includes("[") ? `loyaltybay-rounded-${borderRadius}` : `loyaltybay-rounded-[${borderRadius}]`) : "loyaltybay-rounded-[6px]";
+  const hClass = height ? (height.includes("[") ? `pointbay-h-${height}` : `pointbay-h-[${height}]`) : "";
+  const wClass = width ? (width.includes("[") ? `pointbay-w-${width}` : `pointbay-w-[${width}]`) : "";
+  const rClass = borderRadius ? (borderRadius.includes("[") ? `pointbay-rounded-${borderRadius}` : `pointbay-rounded-[${borderRadius}]`) : "pointbay-rounded-[6px]";
 
   return (
     <div
       className={`
-        loyaltybay-block loyaltybay-bg-[#e9e9e9] loyaltybay-relative loyaltybay-overflow-hidden
-        loyaltybay-animate-shimmer
+        pointbay-block pointbay-bg-[#e9e9e9] pointbay-relative pointbay-overflow-hidden
+        pointbay-animate-shimmer
         ${hClass} ${wClass} ${rClass}
         ${className || ""}
-        [&>*]:loyaltybay-opacity-0
+        [&>*]:pointbay-opacity-0
       `}
     >
       {children}

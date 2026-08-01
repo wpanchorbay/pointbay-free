@@ -1,7 +1,7 @@
 jQuery(function($) {
     function formatPrice(amount) {
-        var pos = loyaltybay_checkout_data.currency_pos;
-        var sym = loyaltybay_checkout_data.currency_sym;
+        var pos = pointbay_checkout_data.currency_pos;
+        var sym = pointbay_checkout_data.currency_sym;
         var formatted = parseFloat(amount).toFixed(2);
         if (pos === 'left') return sym + formatted;
         if (pos === 'right') return formatted + sym;
@@ -10,14 +10,14 @@ jQuery(function($) {
         return sym + formatted;
     }
 
-    function initLoyaltyBay() {
-        var $wrapper = $('.loyaltybay-redemption-wrapper');
-        var $msg = $('#loyaltybay-redemption-message');
+    function initPointBay() {
+        var $wrapper = $('.pointbay-redemption-wrapper');
+        var $msg = $('#pointbay-redemption-message');
         
-        var $range = $('#loyaltybay-points-range');
-        var $input = $('#loyaltybay-points-input');
-        var $display = $('#loyaltybay-discount-display');
-        var pointsValue = parseFloat(loyaltybay_checkout_data.points_value || 0);
+        var $range = $('#pointbay-points-range');
+        var $input = $('#pointbay-points-input');
+        var $display = $('#pointbay-discount-display');
+        var pointsValue = parseFloat(pointbay_checkout_data.points_value || 0);
 
         function updateDiscountDisplay(points) {
             var discount = points * pointsValue;
@@ -44,9 +44,9 @@ jQuery(function($) {
             updateDiscountDisplay(val);
         });
 
-        $('#loyaltybay-apply-points').off('click').on('click', function(e) {
+        $('#pointbay-apply-points').off('click').on('click', function(e) {
             e.preventDefault();
-            var points = $('#loyaltybay-points-input').val();
+            var points = $('#pointbay-points-input').val();
             
             if (points === '' || isNaN(points) || points < 0) {
                 $msg.text('Please enter a valid amount of points.').show();
@@ -56,10 +56,10 @@ jQuery(function($) {
             $wrapper.css('opacity', '0.5');
 
             $.ajax({
-                url: loyaltybay_checkout_data.rest_url,
+                url: pointbay_checkout_data.rest_url,
                 method: 'POST',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader('X-WP-Nonce', loyaltybay_checkout_data.nonce);
+                    xhr.setRequestHeader('X-WP-Nonce', pointbay_checkout_data.nonce);
                 },
                 data: { points: points },
                 success: function(response) {
@@ -73,15 +73,15 @@ jQuery(function($) {
             });
         });
 
-        $('#loyaltybay-remove-points').off('click').on('click', function(e) {
+        $('#pointbay-remove-points').off('click').on('click', function(e) {
             e.preventDefault();
             $wrapper.css('opacity', '0.5');
 
             $.ajax({
-                url: loyaltybay_checkout_data.rest_url,
+                url: pointbay_checkout_data.rest_url,
                 method: 'DELETE',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader('X-WP-Nonce', loyaltybay_checkout_data.nonce);
+                    xhr.setRequestHeader('X-WP-Nonce', pointbay_checkout_data.nonce);
                 },
                 success: function() {
                     window.location.reload();
@@ -94,8 +94,8 @@ jQuery(function($) {
         });
     }
 
-    initLoyaltyBay();
+    initPointBay();
     $(document.body).on('updated_checkout', function() {
-        initLoyaltyBay();
+        initPointBay();
     });
 });

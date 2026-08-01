@@ -2,13 +2,13 @@
 /**
  * Checkout block UI registration for the WooCommerce Checkout block.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
 /**
- * Registers the LoyaltyBay integration with the WooCommerce Checkout block.
+ * Registers the PointBay integration with the WooCommerce Checkout block.
  *
  * @since 1.0.0
  */
@@ -17,7 +17,7 @@ class BlockCheckoutUI {
 	 * Register the hooks for the checkout block UI.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {

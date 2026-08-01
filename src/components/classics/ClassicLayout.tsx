@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { __ } from "@wordpress/i18n";
-import { useLoyaltyBayStore } from "../../store/loyaltybayStore";
+import { usePointBayStore } from "../../store/pointbayStore";
 
 interface ClassicLayoutProps {
   children: ReactNode;
@@ -8,23 +8,23 @@ interface ClassicLayoutProps {
 }
 
 const ClassicLayout: FC<ClassicLayoutProps> = ({ children, title }) => {
-  const store = useLoyaltyBayStore();
+  const store = usePointBayStore();
 
   const getPageTitle = () => {
     if (title) return title;
-    return store.pluginData?.plugin_name || __("LoyaltyBay", "loyaltybay-loyalty-points-referral-rewards-woo");
+    return store.pluginData?.plugin_name || __("PointBay", "pointbay-loyalty-points-referral-rewards-woo");
   };
 
-  const context = (window as any).loyaltybay_Localize?.context || "admin";
+  const context = (window as any).pointbay_Localize?.context || "admin";
 
   return (
     <div className="">
       {context !== "settings" && (
-        <h1 className="loyaltybay-ignore-preflight loyaltybay-font-[600] loyaltybay-text-[16px] loyaltybay-p-x-page-default loyaltybay-bg-white loyaltybay-m-0 loyaltybay-py-[18px]">
+        <h1 className="pointbay-ignore-preflight pointbay-font-[600] pointbay-text-[16px] pointbay-p-x-page-default pointbay-bg-white pointbay-m-0 pointbay-py-[18px]">
           {getPageTitle()}
         </h1>
       )}
-      <div className="loyaltybay-mt-2 loyaltybay-p-x-page-default">
+      <div className="pointbay-mt-2 pointbay-p-x-page-default">
         {children}
       </div>
     </div>

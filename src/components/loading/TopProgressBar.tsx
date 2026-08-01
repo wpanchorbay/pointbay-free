@@ -38,9 +38,9 @@ export const TopProgressBar: React.FC<TopProgressBarProps> = ({ isSaving }) => {
   if (!isSaving && progress === 0) return null;
 
   return (
-    <div className="loyaltybay-fixed loyaltybay-top-0 loyaltybay-left-0 loyaltybay-w-full loyaltybay-h-[3px] loyaltybay-z-[99999] loyaltybay-pointer-events-none">
+    <div className="pointbay-fixed pointbay-top-0 pointbay-left-0 pointbay-w-full pointbay-h-[3px] pointbay-z-[99999] pointbay-pointer-events-none">
       <div
-        className="loyaltybay-h-full loyaltybay-bg-[#2271b1] loyaltybay-transition-all loyaltybay-duration-300 loyaltybay-ease-out"
+        className="pointbay-h-full pointbay-bg-[#2271b1] pointbay-transition-all pointbay-duration-300 pointbay-ease-out"
         style={{ width: `${progress}%`, opacity: progress === 100 ? 0 : 1 }}
       />
     </div>

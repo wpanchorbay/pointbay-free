@@ -2,23 +2,23 @@
 /**
  * REST API controller for managing user points.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Admin
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Admin;
+namespace PointBay\Admin;
 
-use LoyaltyBay\Api\ApiController;
-use LoyaltyBay\Services\LedgerService;
+use PointBay\Api\ApiController;
+use PointBay\Services\LedgerService;
 
 /**
  * REST API controller for managing user points.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Admin
+ * @package    PointBay
+ * @subpackage PointBay/Admin
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class UserPointsController extends ApiController {

@@ -22,18 +22,18 @@ export const Radio: React.FC<RadioProps> = ({
 }) => {
   return (
     <label
-      className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-3 loyaltybay-cursor-pointer ${
-        disabled ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed" : ""
+      className={`pointbay-flex pointbay-items-center pointbay-gap-3 pointbay-cursor-pointer ${
+        disabled ? "pointbay-opacity-50 pointbay-cursor-not-allowed" : ""
       } ${classNames?.root || ""}`}
     >
       <div
         className={`
-        loyaltybay-relative loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
-        loyaltybay-w-5 loyaltybay-h-5 loyaltybay-rounded-full loyaltybay-border-2 loyaltybay-transition-all loyaltybay-duration-200
+        pointbay-relative pointbay-flex pointbay-items-center pointbay-justify-center
+        pointbay-w-5 pointbay-h-5 pointbay-rounded-full pointbay-border-2 pointbay-transition-all pointbay-duration-200
         ${
           checked
-            ? "loyaltybay-border-primary loyaltybay-bg-primary"
-            : "loyaltybay-border-gray-300 loyaltybay-bg-white hover:loyaltybay-border-primary"
+            ? "pointbay-border-primary pointbay-bg-primary"
+            : "pointbay-border-gray-300 pointbay-bg-white hover:pointbay-border-primary"
         }
         ${classNames?.circle || ""}
       `}
@@ -41,22 +41,22 @@ export const Radio: React.FC<RadioProps> = ({
         {/* Inner white dot for selected state */}
         <div
           className={`
-                loyaltybay-w-2 loyaltybay-h-2 loyaltybay-bg-white loyaltybay-rounded-full loyaltybay-transform loyaltybay-transition-transform loyaltybay-duration-200
-                ${checked ? "loyaltybay-scale-100" : "loyaltybay-scale-0"}
+                pointbay-w-2 pointbay-h-2 pointbay-bg-white pointbay-rounded-full pointbay-transform pointbay-transition-transform pointbay-duration-200
+                ${checked ? "pointbay-scale-100" : "pointbay-scale-0"}
                 ${classNames?.dot || ""}
             `}
         />
         <input
           type="radio"
-          className="loyaltybay-hidden"
+          className="pointbay-hidden"
           checked={checked}
           onChange={onChange}
           disabled={disabled}
         />
       </div>
       <span
-        className={`loyaltybay-text-[15px] loyaltybay-font-semibold ${
-          checked ? "loyaltybay-text-gray-900" : "loyaltybay-text-gray-700"
+        className={`pointbay-text-[15px] pointbay-font-semibold ${
+          checked ? "pointbay-text-gray-900" : "pointbay-text-gray-700"
         } ${classNames?.label || ""}`}
       >
         {label}

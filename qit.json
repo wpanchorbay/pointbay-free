@@ -1,6 +1,6 @@
 {
     "sut": {
-        "slug": "loyaltybay-loyalty-points-referral-rewards-woo",
+        "slug": "pointbay-loyalty-points-referral-rewards-woo",
         "type": "plugin",
         "source": {
             "type": "local",

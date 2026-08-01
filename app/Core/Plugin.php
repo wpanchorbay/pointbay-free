@@ -2,21 +2,21 @@
 /**
  * The core plugin class.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LoyaltyBay\Admin\Admin;
-use LoyaltyBay\Helper\Loader;
+use PointBay\Admin\Admin;
+use PointBay\Helper\Loader;
 
 /**
  * The core plugin class.
@@ -25,8 +25,8 @@ use LoyaltyBay\Helper\Loader;
  * public-facing site hooks.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Core
+ * @package    PointBay
+ * @subpackage PointBay/Core
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Plugin {
@@ -90,7 +90,7 @@ class Plugin {
 	 */
 	private function define_core_hooks() {
 		// Initialize API controllers from config
-		$api_controllers = include \LOYALTYBAY_PATH . 'config/api.php';
+		$api_controllers = include \POINTBAY_PATH . 'config/api.php';
 		if ( is_array( $api_controllers ) ) {
 			foreach ( $api_controllers as $controller ) {
 				if ( class_exists( $controller ) && method_exists( $controller, 'get_instance' ) ) {
@@ -149,8 +149,8 @@ class Plugin {
 	 * @return void
 	 */
 	public function enqueue_public_styles() {
-		$handle = \LOYALTYBAY_OPTION_NAME . '_public';
-		wp_enqueue_style( $handle, \LOYALTYBAY_URL . 'assets/css/public.css', array(), \LOYALTYBAY_VERSION );
+		$handle = \POINTBAY_OPTION_NAME . '_public';
+		wp_enqueue_style( $handle, \POINTBAY_URL . 'assets/css/public.css', array(), \POINTBAY_VERSION );
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Plugin {
 	 */
 	private function define_admin_hooks() {
 		// Initialize Core classes from config
-		$core_classes = include \LOYALTYBAY_PATH . 'config/core.php';
+		$core_classes = include \POINTBAY_PATH . 'config/core.php';
 		if ( is_array( $core_classes ) ) {
 			foreach ( $core_classes as $class ) {
 				if ( class_exists( $class ) ) {

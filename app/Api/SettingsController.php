@@ -2,20 +2,20 @@
 /**
  * REST API controller for managing settings.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Api
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Api;
+namespace PointBay\Api;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LoyaltyBay\Core\Settings;
+use PointBay\Core\Settings;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -24,8 +24,8 @@ use WP_REST_Server;
  * REST API controller for managing settings.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Api
+ * @package    PointBay
+ * @subpackage PointBay/Api
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class SettingsController extends ApiController {
@@ -131,7 +131,7 @@ class SettingsController extends ApiController {
 		return new WP_REST_Response(
 			array(
 				'success' => true,
-				'message' => __( 'Settings updated successfully.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+				'message' => __( 'Settings updated successfully.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				'data'    => $res,
 			),
 			200

@@ -6,7 +6,7 @@
  * Each class should implement a run($loader) method or similar logic
  * to register its hooks with the Loader.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Config
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
@@ -18,22 +18,22 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 return array(
-	\LoyaltyBay\Admin\Admin::class,
-	\LoyaltyBay\Core\Settings::class,
-	\LoyaltyBay\Core\Cron::class,
-	\LoyaltyBay\Hooks\OrderHooks::class,
-	\LoyaltyBay\Checkout\FeeRedemption::class,
-	\LoyaltyBay\Checkout\CouponRedemption::class,
-	\LoyaltyBay\Checkout\CheckoutProcessor::class,
-	\LoyaltyBay\Checkout\RedemptionController::class,
-	\LoyaltyBay\Checkout\ClassicCheckoutUI::class,
-	\LoyaltyBay\Hooks\RegistrationHooks::class,
-	\LoyaltyBay\Hooks\ReviewHooks::class,
-	\LoyaltyBay\Dashboard\MyRewardsEndpoint::class,
-	\LoyaltyBay\Admin\LedgerController::class,
-	\LoyaltyBay\Admin\UserPointsController::class,
-	\LoyaltyBay\Checkout\GuestNotice::class,
-	\LoyaltyBay\Checkout\EarnNotice::class,
-	\LoyaltyBay\Checkout\BlockCheckoutUI::class,
-	\LoyaltyBay\Checkout\BlockCartUI::class,
+	\PointBay\Admin\Admin::class,
+	\PointBay\Core\Settings::class,
+	\PointBay\Core\Cron::class,
+	\PointBay\Hooks\OrderHooks::class,
+	\PointBay\Checkout\FeeRedemption::class,
+	\PointBay\Checkout\CouponRedemption::class,
+	\PointBay\Checkout\CheckoutProcessor::class,
+	\PointBay\Checkout\RedemptionController::class,
+	\PointBay\Checkout\ClassicCheckoutUI::class,
+	\PointBay\Hooks\RegistrationHooks::class,
+	\PointBay\Hooks\ReviewHooks::class,
+	\PointBay\Dashboard\MyRewardsEndpoint::class,
+	\PointBay\Admin\LedgerController::class,
+	\PointBay\Admin\UserPointsController::class,
+	\PointBay\Checkout\GuestNotice::class,
+	\PointBay\Checkout\EarnNotice::class,
+	\PointBay\Checkout\BlockCheckoutUI::class,
+	\PointBay\Checkout\BlockCartUI::class,
 );

@@ -2,15 +2,15 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Admin
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Admin;
+namespace PointBay\Admin;
 
-use LoyaltyBay\Core\Settings;
+use PointBay\Core\Settings;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Admin
+ * @package    PointBay
+ * @subpackage PointBay/Admin
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Admin {
@@ -71,7 +71,7 @@ class Admin {
 	 */
 	private function get_config() {
 		if ( null === $this->config ) {
-			$this->config = include \LOYALTYBAY_PATH . 'config/admin.php';
+			$this->config = include \POINTBAY_PATH . 'config/admin.php';
 		}
 		return $this->config;
 	}
@@ -110,7 +110,7 @@ class Admin {
 	 * @return void
 	 */
 	public function add_admin_menu() {
-		loyaltybay_log( 'Admin: Registering LoyaltyBay menus', 'INFO' );
+		pointbay_log( 'Admin: Registering PointBay menus', 'INFO' );
 
 		$config      = $this->get_config();
 		$menu_config = $config['menu'] ?? array();
@@ -141,11 +141,11 @@ class Admin {
 		 * can render its own root div / mount point instead of the default.
 		 *
 		 * @since 1.0.0
-		 * @hook loyaltybay_admin_sub_menus
+		 * @hook pointbay_admin_sub_menus
 		 * @param array $sub_menus The array of sub-menu definitions.
 		 * @return array The filtered array of sub-menu definitions.
 		 */
-		$sub_menus = apply_filters( 'loyaltybay_admin_sub_menus', $menu_config['sub_menus'] ?? array() );
+		$sub_menus = apply_filters( 'pointbay_admin_sub_menus', $menu_config['sub_menus'] ?? array() );
 
 		if ( ! empty( $sub_menus ) ) {
 			foreach ( $sub_menus as $sub ) {
@@ -195,7 +195,7 @@ class Admin {
 		$menu_config = $config['menu'] ?? array();
 		$show_main   = $config['show_main_menu'] ?? true;
 
-		$slug = \LOYALTYBAY_PLUGIN_NAME;
+		$slug = \POINTBAY_PLUGIN_NAME;
 
 		if ( $show_main && ! empty( $menu_config['top_level']['menu_slug'] ) ) {
 			$slug = $menu_config['top_level']['menu_slug'];
@@ -239,7 +239,7 @@ class Admin {
 		}
 
 		// 2. Check all sub-menu slugs dynamically
-		$sub_menus = apply_filters( 'loyaltybay_admin_sub_menus', $menu_config['sub_menus'] ?? array() );
+		$sub_menus = apply_filters( 'pointbay_admin_sub_menus', $menu_config['sub_menus'] ?? array() );
 		if ( ! empty( $sub_menus ) ) {
 			foreach ( $sub_menus as $sub ) {
 				$sub_slug = $sub['menu_slug'];
@@ -253,7 +253,7 @@ class Admin {
 		// 3. Handle WooCommerce Settings tab
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : '';
-		if ( 'woocommerce_page_wc-settings' === $base && \LOYALTYBAY_PLUGIN_NAME === $current_tab ) {
+		if ( 'woocommerce_page_wc-settings' === $base && \POINTBAY_PLUGIN_NAME === $current_tab ) {
 			return true;
 		}
 
@@ -283,9 +283,9 @@ class Admin {
 	 * @return void
 	 */
 	public function add_setting_root_div() {
-		echo '<div id="' . esc_attr( \LOYALTYBAY_PLUGIN_NAME ) . '">
-			<div class="loyaltybay-loader-container">
-				<p>' . esc_html__( 'Loading...', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</p>
+		echo '<div id="' . esc_attr( \POINTBAY_PLUGIN_NAME ) . '">
+			<div class="pointbay-loader-container">
+				<p>' . esc_html__( 'Loading...', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</p>
 			</div>
 		</div>';
 	}
@@ -305,36 +305,36 @@ class Admin {
 		$screen = get_current_screen();
 
 		$context = ( isset( $screen->base ) && 'woocommerce_page_wc-settings' === $screen->base ) ? 'settings' : 'admin';
-		$handle  = \LOYALTYBAY_PLUGIN_NAME . '-' . $context;
+		$handle  = \POINTBAY_PLUGIN_NAME . '-' . $context;
 
-		loyaltybay_log( "Admin: Enqueueing resources for context: {$context}", 'DEBUG' );
+		pointbay_log( "Admin: Enqueueing resources for context: {$context}", 'DEBUG' );
 
-		$deps_file  = \LOYALTYBAY_PATH . "build/{$context}.asset.php";
+		$deps_file  = \POINTBAY_PATH . "build/{$context}.asset.php";
 		$dependency = array( 'wp-i18n' );
-		$version    = \LOYALTYBAY_VERSION;
+		$version    = \POINTBAY_VERSION;
 		if ( file_exists( $deps_file ) ) {
 			$deps_file  = require $deps_file;
 			$dependency = $deps_file['dependencies'];
 			$version    = $deps_file['version'];
 		}
 
-		$admin_script = apply_filters( "loyaltybay_admin_script_{$context}", \LOYALTYBAY_URL . "build/{$context}.js" );
+		$admin_script = apply_filters( "pointbay_admin_script_{$context}", \POINTBAY_URL . "build/{$context}.js" );
 		wp_enqueue_script( $handle, $admin_script, $dependency, $version, true );
 		wp_enqueue_editor();
 		wp_enqueue_media();
 
-		$admin_css = apply_filters( "loyaltybay_admin_css_{$context}", \LOYALTYBAY_URL . "build/{$context}.css" );
+		$admin_css = apply_filters( "pointbay_admin_css_{$context}", \POINTBAY_URL . "build/{$context}.css" );
 		wp_enqueue_style( $handle, $admin_css, array(), $version );
 		wp_style_add_data( $handle, 'rtl', 'replace' );
 
 		$localize = apply_filters(
-			'loyaltybay_admin_localize',
+			'pointbay_admin_localize',
 			array(
 				'version'         => $version,
-				'root_id'         => \LOYALTYBAY_PLUGIN_NAME,
+				'root_id'         => \POINTBAY_PLUGIN_NAME,
 				'nonce'           => wp_create_nonce( 'wp_rest' ),
-				'store'           => \LOYALTYBAY_PLUGIN_NAME,
-				'rest_url'        => get_rest_url( null, \LOYALTYBAY_TEXT_DOMAIN . '/v1' ),
+				'store'           => \POINTBAY_PLUGIN_NAME,
+				'rest_url'        => get_rest_url( null, \POINTBAY_REST_NAMESPACE . '/v1' ),
 				'pluginData'      => $this->get_plugin_data(),
 				'wpSettings'      => array(
 					'dateFormat' => get_option( 'date_format' ),
@@ -342,17 +342,17 @@ class Admin {
 				),
 				'plugin_settings' => Settings::get_instance()->get_settings(),
 				'products_url'    => admin_url( 'edit.php?post_type=product' ),
-				'settings_url'    => admin_url( 'admin.php?page=wc-settings&tab=' . \LOYALTYBAY_PLUGIN_NAME ),
+				'settings_url'    => admin_url( 'admin.php?page=wc-settings&tab=' . \POINTBAY_PLUGIN_NAME ),
 				'context'         => $context,
 			)
 		);
 
-		wp_localize_script( $handle, 'loyaltybay_Localize', $localize );
+		wp_localize_script( $handle, 'pointbay_Localize', $localize );
 
-		$path_to_check = \LOYALTYBAY_PATH . 'languages';
+		$path_to_check = \POINTBAY_PATH . 'languages';
 		wp_set_script_translations(
 			$handle,
-			'loyaltybay-loyalty-points-referral-rewards-woo',
+			'pointbay-loyalty-points-referral-rewards-woo',
 			$path_to_check
 		);
 	}
@@ -384,7 +384,7 @@ class Admin {
 	 * Register the hooks for the admin area.
 	 *
 	 * @since    1.0.0
-	 * @param    \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param    \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return   void
 	 */
 	public function run( $plugin ) {
@@ -394,7 +394,7 @@ class Admin {
 		$loader->add_filter( 'admin_body_class', $this, 'add_has_sticky_header' );
 		$loader->add_action( 'admin_enqueue_scripts', $this, 'enqueue_resources' );
 
-		$plugin_basename = plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay-loyalty-points-referral-rewards-woo.php' );
+		$plugin_basename = plugin_basename( \POINTBAY_PATH . 'pointbay-loyalty-points-referral-rewards-woo.php' );
 		$loader->add_filter( 'plugin_action_links_' . $plugin_basename, $this, 'add_plugin_action_links', 10, 1 );
 	}
 }

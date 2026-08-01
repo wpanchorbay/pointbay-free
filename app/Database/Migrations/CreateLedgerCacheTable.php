@@ -2,22 +2,22 @@
 /**
  * Migration for the ledger cache table.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Database
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Database\Migrations;
+namespace PointBay\Database\Migrations;
 
-use LoyaltyBay\Database\MigrationInterface;
+use PointBay\Database\MigrationInterface;
 
 /**
  * Creates the ledger cache database table.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Database
+ * @package    PointBay
+ * @subpackage PointBay/Database
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class CreateLedgerCacheTable implements MigrationInterface {
@@ -29,7 +29,7 @@ class CreateLedgerCacheTable implements MigrationInterface {
 	 */
 	public function up() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'loyaltybay_ledger_cache';
+		$table_name = $wpdb->prefix . 'pointbay_ledger_cache';
 
 		$charset_collate = $wpdb->get_charset_collate();
 
@@ -52,7 +52,7 @@ class CreateLedgerCacheTable implements MigrationInterface {
 	 */
 	public function down() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'loyaltybay_ledger_cache';
+		$table_name = $wpdb->prefix . 'pointbay_ledger_cache';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Dropping this plugin's own table on rollback; no core API exists and the result is not cacheable.
 		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
 	}

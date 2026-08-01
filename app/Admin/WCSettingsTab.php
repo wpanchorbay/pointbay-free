@@ -1,13 +1,13 @@
 <?php
 /**
- * WC Settings Tab — integrates LoyaltyBay settings into WooCommerce settings.
+ * WC Settings Tab — integrates PointBay settings into WooCommerce settings.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Admin
+ * @package    PointBay
+ * @subpackage PointBay/Admin
  */
 
-namespace LoyaltyBay\Admin;
+namespace PointBay\Admin;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WooCommerce Settings Tab for LoyaltyBay.
+ * WooCommerce Settings Tab for PointBay.
  */
 class WCSettingsTab extends \WC_Settings_Page {
 
@@ -23,8 +23,8 @@ class WCSettingsTab extends \WC_Settings_Page {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->id    = \LOYALTYBAY_PLUGIN_NAME;
-		$this->label = __( 'Loyalty Points', 'loyaltybay-loyalty-points-referral-rewards-woo' );
+		$this->id    = \POINTBAY_PLUGIN_NAME;
+		$this->label = __( 'Loyalty Points', 'pointbay-loyalty-points-referral-rewards-woo' );
 
 		parent::__construct();
 	}

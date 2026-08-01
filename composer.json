@@ -1,12 +1,12 @@
 {
-    "name": "loyaltybay/loyaltybay",
+    "name": "pointbay/pointbay",
     "description": "A comprehensive WordPress plugin boilerplate with React/TypeScript frontend.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "LoyaltyBay",
-            "email": "loyaltybay@gmail.com"
+            "name": "PointBay",
+            "email": "pointbay@gmail.com"
         }
     ],
     "require": {
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "LoyaltyBay\\": "app/"
+            "PointBay\\": "app/"
         }
     }
 }

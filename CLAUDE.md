@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-LoyaltyBay is a WooCommerce loyalty/points/referrals/tiers plugin (requires WooCommerce). PHP backend under `app/` (PSR-4 namespace `LoyaltyBay\`), React/TypeScript admin UI under `src/` (two entry apps: `AdminApp.tsx`, `SettingsApp.tsx`). `config/` holds plain PHP config arrays (admin, api, core, migrations, settings) separate from the `app/` classes — check there before changing settings/REST/migration behavior.
+PointBay is a WooCommerce loyalty/points/referrals/tiers plugin (requires WooCommerce). PHP backend under `app/` (PSR-4 namespace `PointBay\`), React/TypeScript admin UI under `src/` (two entry apps: `AdminApp.tsx`, `SettingsApp.tsx`). `config/` holds plain PHP config arrays (admin, api, core, migrations, settings) separate from the `app/` classes — check there before changing settings/REST/migration behavior.
 
 `readme.txt` still contains generic "boilerplate" copy left over from the plugin's origin; don't treat it as an accurate feature list — the real modules live under `app/` (`Referrals`, `Tiers`, `Dashboard`, `Checkout`, etc.).
 
@@ -27,11 +27,11 @@ LoyaltyBay is a WooCommerce loyalty/points/referrals/tiers plugin (requires WooC
 
 There is no PHPUnit or Jest setup — testing is E2E/QIT-based:
 - `tests/e2e/` — Playwright specs (`playwright.config.js`) covering gamification, referrals, redemption, refunds, earning, checkout (classic + block), cron, deactivation, registration, reviews.
-- `qit.json` configures WooCommerce QIT (slug `loyaltybay`) for managed/E2E test runs; see `tests/run_qit_managed_tests.sh`, `tests/run_all_tests.sh`, `tests/run_individual.sh`.
+- `qit.json` configures WooCommerce QIT (slug `pointbay`) for managed/E2E test runs; see `tests/run_qit_managed_tests.sh`, `tests/run_all_tests.sh`, `tests/run_individual.sh`.
 - CI: `.github/workflows/tests.yml` runs QIT tests; `.github/workflows/phpcs.yml` runs PHPCS.
 
 ## Conventions
 
-- Text domain: `loyaltybay`. Custom capability: `manage_loyaltybay`. Prefixes: `loyaltybay` / `LOYALTYBAY` / `LoyaltyBay`.
+- Text domain: `pointbay`. Custom capability: `manage_pointbay`. Prefixes: `pointbay` / `POINTBAY` / `PointBay`.
 - PHP classes generally follow a Singleton `get_instance()` pattern (e.g. `Plugin`, `Settings`).
 - `phpcs.xml.dist` excludes `vendor/`, `node_modules/`, `dist/`, `build/`, `assets/` — don't lint-fix generated output.

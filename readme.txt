@@ -1,4 +1,4 @@
-=== Loyaltybay - Loyalty Points & Referral Rewards for Woocommerce ===
+=== PointBay - Loyalty Points & Referral Rewards for Woocommerce ===
 Contributors: wpanchorbay, sankarsan
 Tags: woocommerce, loyalty, rewards, points, loyalty program
 Requires at least: 6.8
@@ -12,7 +12,7 @@ Reward WooCommerce customers with loyalty points they earn on purchases and rede
 
 == Description ==
 
-**LoyaltyBay** is a loyalty and rewards points system for WooCommerce. Let your customers earn points when they shop and spend those points for instant savings at checkout. Everything is configured from a single settings screen, and customers can track their balance right inside their WooCommerce account.
+**PointBay** is a loyalty and rewards points system for WooCommerce. Let your customers earn points when they shop and spend those points for instant savings at checkout. Everything is configured from a single settings screen, and customers can track their balance right inside their WooCommerce account.
 
 **Earning points**
 
@@ -37,20 +37,20 @@ Reward WooCommerce customers with loyalty points they earn on purchases and rede
 
 *   A **Points History** ledger in the admin lists every points transaction for auditing.
 *   A clean, modern settings screen integrated into WooCommerce settings.
-*   A custom `manage_loyaltybay` capability so you control which roles can manage the program.
+*   A custom `manage_pointbay` capability so you control which roles can manage the program.
 
 == Installation ==
 
 1.  Make sure **WooCommerce** is installed and active.
-2.  In your WordPress admin, go to **Plugins > Add New > Upload Plugin** and choose the plugin zip file, or upload the `loyaltybay-loyalty-points-referral-rewards-woo` folder to `/wp-content/plugins/`.
+2.  In your WordPress admin, go to **Plugins > Add New > Upload Plugin** and choose the plugin zip file, or upload the `pointbay-loyalty-points-referral-rewards-woo` folder to `/wp-content/plugins/`.
 3.  Activate the plugin through the **Plugins** menu in WordPress.
-4.  Go to **WooCommerce > Settings > LoyaltyBay** to configure earning and redemption rules.
+4.  Go to **WooCommerce > Settings > PointBay** to configure earning and redemption rules.
 
 == Frequently Asked Questions ==
 
 = Does this plugin require WooCommerce? =
 
-Yes. LoyaltyBay is a WooCommerce extension and requires WooCommerce to be installed and active.
+Yes. PointBay is a WooCommerce extension and requires WooCommerce to be installed and active.
 
 = How do customers earn points? =
 
@@ -62,7 +62,7 @@ At checkout, customers can apply their available points for a discount. You deci
 
 = Does it work with the WooCommerce checkout blocks? =
 
-Yes. LoyaltyBay supports both the classic checkout and the block-based Cart and Checkout.
+Yes. PointBay supports both the classic checkout and the block-based Cart and Checkout.
 
 = Where can customers see their points balance? =
 
@@ -70,7 +70,7 @@ Every customer gets a **My Rewards** section under **My Account** showing their 
 
 == Screenshots ==
 
-1.  LoyaltyBay settings screen inside WooCommerce settings.
+1.  PointBay settings screen inside WooCommerce settings.
 2.  Earning rules: points per purchase, registration, and reviews.
 3.  Redemption applied at checkout.
 4.  The customer "My Rewards" area in My Account.
@@ -83,9 +83,9 @@ Every customer gets a **My Rewards** section under **My Account** showing their 
 
 == Development ==
 
-LoyaltyBay is fully open source. The complete, human-readable source — the React/TypeScript admin interface and the Sass stylesheets in the `src/` directory that compile to the minified files in `build/`, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`) — ships inside the plugin, so it can be rebuilt from the downloaded plugin alone. The same source is also published publicly at:
+PointBay is fully open source. The complete, human-readable source — the React/TypeScript admin interface and the Sass stylesheets in the `src/` directory that compile to the minified files in `build/`, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`) — ships inside the plugin, so it can be rebuilt from the downloaded plugin alone. The same source is also published publicly at:
 
-https://github.com/wpanchorbay/loyaltybay-free
+https://github.com/wpanchorbay/pointbay-free
 
 The admin interface is built with @wordpress/scripts (webpack + Babel); the stylesheets are compiled from Sass with Tailwind CSS via PostCSS by the same build. To regenerate the compiled assets from source, from the plugin directory:
 
@@ -98,7 +98,7 @@ PHP dependencies are managed with Composer (`composer install`); third-party lib
 
 Every minified file in `build/` is compiled from our own source, which is available uncompressed at:
 
-https://github.com/wpanchorbay/loyaltybay-free/tree/1.0.0/src
+https://github.com/wpanchorbay/pointbay-free/tree/1.0.0/src
 
 *   `build/admin.js`, `build/settings.js`, `build/block-cart.js`, `build/block-checkout.js` are compiled from the React/TypeScript entry points in `src/` (see `src/AdminApp.tsx`, `src/SettingsApp.tsx` and `src/blocks/`).
 *   `build/admin.css`, `build/settings.css` and their `-rtl` variants are compiled from `src/styles/index.scss` (Sass + Tailwind CSS via PostCSS).

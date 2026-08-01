@@ -2,15 +2,15 @@
 /**
  * WooCommerce Checkout block integration for the redemption UI.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
 /**
- * Integrates the LoyaltyBay redemption UI with the WooCommerce Checkout block.
+ * Integrates the PointBay redemption UI with the WooCommerce Checkout block.
  *
  * @since 1.0.0
  */
@@ -23,7 +23,7 @@ class BlockIntegration implements IntegrationInterface {
 	 * @return string The integration name.
 	 */
 	public function get_name() {
-		return 'loyaltybay_checkout';
+		return 'pointbay_checkout';
 	}
 
 	/**
@@ -33,12 +33,12 @@ class BlockIntegration implements IntegrationInterface {
 	 * @return void
 	 */
 	public function initialize() {
-		$script_url  = \LOYALTYBAY_URL . 'build/block-checkout.js';
-		$script_path = \LOYALTYBAY_DIR . 'build/block-checkout.js';
-		$asset_path  = \LOYALTYBAY_DIR . 'build/block-checkout.asset.php';
+		$script_url  = \POINTBAY_URL . 'build/block-checkout.js';
+		$script_path = \POINTBAY_DIR . 'build/block-checkout.js';
+		$asset_path  = \POINTBAY_DIR . 'build/block-checkout.asset.php';
 
 		$dependencies = array( 'wp-element', 'wp-components', 'wp-i18n', 'wp-plugins' );
-		$version      = \LOYALTYBAY_VERSION;
+		$version      = \POINTBAY_VERSION;
 
 		if ( file_exists( $asset_path ) ) {
 			$asset        = require $asset_path;
@@ -52,7 +52,7 @@ class BlockIntegration implements IntegrationInterface {
 		}
 
 		wp_register_script(
-			'loyaltybay-block-checkout',
+			'pointbay-block-checkout',
 			$script_url,
 			$dependencies,
 			$version,
@@ -62,9 +62,9 @@ class BlockIntegration implements IntegrationInterface {
 		// Without this the block's __() strings stay untranslated even when a
 		// language pack is installed -- the script has no translation source.
 		wp_set_script_translations(
-			'loyaltybay-block-checkout',
-			'loyaltybay-loyalty-points-referral-rewards-woo',
-			\LOYALTYBAY_PATH . 'languages'
+			'pointbay-block-checkout',
+			'pointbay-loyalty-points-referral-rewards-woo',
+			\POINTBAY_PATH . 'languages'
 		);
 	}
 
@@ -75,7 +75,7 @@ class BlockIntegration implements IntegrationInterface {
 	 * @return string[] The frontend script handles.
 	 */
 	public function get_script_handles() {
-		return array( 'loyaltybay-block-checkout' );
+		return array( 'pointbay-block-checkout' );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class BlockIntegration implements IntegrationInterface {
 	 * @return string[] The editor script handles.
 	 */
 	public function get_editor_script_handles() {
-		return array( 'loyaltybay-block-checkout' );
+		return array( 'pointbay-block-checkout' );
 	}
 
 	/**
@@ -96,17 +96,17 @@ class BlockIntegration implements IntegrationInterface {
 	 */
 	public function get_script_data() {
 		$user_id  = get_current_user_id();
-		$manager  = \LoyaltyBay\Checkout\RedemptionManager::get_instance();
-		$settings = \LoyaltyBay\Core\Settings::get_instance();
+		$manager  = \PointBay\Checkout\RedemptionManager::get_instance();
+		$settings = \PointBay\Core\Settings::get_instance();
 
-		$earning_multiplier = $user_id ? apply_filters( 'loyaltybay_earning_multiplier', 1.0, $user_id ) : 1.0;
+		$earning_multiplier = $user_id ? apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id ) : 1.0;
 
 		return array(
-			'rest_url'           => esc_url_raw( rest_url( 'loyaltybay/v1/redeem' ) ),
+			'rest_url'           => esc_url_raw( rest_url( 'pointbay/v1/redeem' ) ),
 			'nonce'              => wp_create_nonce( 'wp_rest' ),
 			'max_points'         => $manager->get_max_redeemable_points( $user_id ),
 			'applied_points'     => $manager->get_applied_points(),
-			'balance'            => \LoyaltyBay\Services\LedgerService::get_instance()->get_balance( $user_id ),
+			'balance'            => \PointBay\Services\LedgerService::get_instance()->get_balance( $user_id ),
 			'is_logged_in'       => is_user_logged_in(),
 			'points_value'       => (float) $settings->get_settings( 'redemption_pointsValue' ),
 			'points_per_dollar'  => (int) $settings->get_settings( 'earning_pointsPerDollar' ),

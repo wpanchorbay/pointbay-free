@@ -2,12 +2,12 @@
 /**
  * Handles the "earn points" notice shown on the cart and checkout for logged-in users.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
-use LoyaltyBay\Core\Settings;
+use PointBay\Core\Settings;
 
 /**
  * Displays a notice informing logged-in customers how many points they will earn.
@@ -20,7 +20,7 @@ class EarnNotice {
 	 * Register the hooks that display the earn notice.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -48,7 +48,7 @@ class EarnNotice {
 
 		$total = (float) WC()->cart->subtotal;
 
-		$manager        = \LoyaltyBay\Checkout\RedemptionManager::get_instance();
+		$manager        = \PointBay\Checkout\RedemptionManager::get_instance();
 		$applied_points = $manager->get_applied_points();
 		if ( $applied_points > 0 ) {
 			$discount_value = $manager->calculate_discount_value( $applied_points );
@@ -56,15 +56,15 @@ class EarnNotice {
 			$total          = max( 0, $total );
 		}
 
-		loyaltybay_log( 'LoyaltyBay EarnNotice: Subtotal after discount is ' . $total );
+		pointbay_log( 'PointBay EarnNotice: Subtotal after discount is ' . $total );
 
 		if ( $total <= 0 ) {
-			loyaltybay_log( 'LoyaltyBay EarnNotice: Returning because total <= 0' );
+			pointbay_log( 'PointBay EarnNotice: Returning because total <= 0' );
 			return;
 		}
 
 		$user_id    = get_current_user_id();
-		$multiplier = apply_filters( 'loyaltybay_earning_multiplier', 1.0, $user_id );
+		$multiplier = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
 
 		$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
 
@@ -74,13 +74,13 @@ class EarnNotice {
 
 		$message = sprintf(
 			// translators: %d: number of points the customer will earn on this order.
-			__( 'Complete this order to earn <strong>%d</strong> points!', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			__( 'Complete this order to earn <strong>%d</strong> points!', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			$points_to_award
 		);
 
-		loyaltybay_log( 'LoyaltyBay EarnNotice: Printing notice HTML. Points: ' . $points_to_award );
+		pointbay_log( 'PointBay EarnNotice: Printing notice HTML. Points: ' . $points_to_award );
 
-		echo '<div class="loyaltybay-earn-notice woocommerce-info" style="margin-bottom: 2em;">';
+		echo '<div class="pointbay-earn-notice woocommerce-info" style="margin-bottom: 2em;">';
 		echo wp_kses_post( $message );
 		echo '</div>';
 	}

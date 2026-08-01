@@ -40,7 +40,7 @@ export const ClassicInput: React.FC<ClassicInputProps> = ({
       {label && (
         <label
           htmlFor={inputId}
-          className={labelPosition === "top" ? "loyaltybay-block loyaltybay-mb-1" : undefined}
+          className={labelPosition === "top" ? "pointbay-block pointbay-mb-1" : undefined}
         >
           {label}
         </label>
@@ -52,7 +52,7 @@ export const ClassicInput: React.FC<ClassicInputProps> = ({
         {...props}
       />
       {description && (
-        <p className="description loyaltybay-block loyaltybay-mt-1">
+        <p className="description pointbay-block pointbay-mt-1">
           {description}
         </p>
       )}

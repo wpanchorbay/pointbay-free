@@ -2,7 +2,7 @@
 /**
  * Reusable functions.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @since 1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
@@ -16,11 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 
-if ( ! function_exists( 'loyaltybay_log' ) ) {
+if ( ! function_exists( 'pointbay_log' ) ) {
 	/**
 	 * Log a message through the WooCommerce logging system.
 	 *
-	 * Entries are written by WooCommerce under the 'loyaltybay' source and are
+	 * Entries are written by WooCommerce under the 'pointbay' source and are
 	 * viewable in WooCommerce > Status > Logs. WooCommerce owns the storage
 	 * location, file rotation and retention, so the plugin keeps no log files
 	 * of its own.
@@ -33,10 +33,10 @@ if ( ! function_exists( 'loyaltybay_log' ) ) {
 	 * @param string $level   A PSR-3 log level (e.g. 'debug', 'info', 'error').
 	 * @return void
 	 */
-	function loyaltybay_log( $message, $level = 'INFO' ) {
+	function pointbay_log( $message, $level = 'INFO' ) {
 		$level_lower = is_string( $level ) ? strtolower( $level ) : 'info';
 
-		$enable_logging = LoyaltyBay\Core\Settings::get_instance()->get_settings( 'debug_enableMode' );
+		$enable_logging = PointBay\Core\Settings::get_instance()->get_settings( 'debug_enableMode' );
 		if ( ! $enable_logging && $level_lower !== 'error' ) {
 			return;
 		}
@@ -59,13 +59,13 @@ if ( ! function_exists( 'loyaltybay_log' ) ) {
 		wc_get_logger()->log(
 			$level_lower,
 			(string) $message,
-			array( 'source' => \LOYALTYBAY_TEXT_DOMAIN )
+			array( 'source' => \POINTBAY_REST_NAMESPACE )
 		);
 	}
 }
 
 
-if ( ! function_exists( 'loyaltybay_get_value' ) ) {
+if ( ! function_exists( 'pointbay_get_value' ) ) {
 	/**
 	 * Safely retrieve a value from a nested array or object using dot notation.
 	 * Returns default if key is missing OR if value is an empty string.
@@ -76,7 +76,7 @@ if ( ! function_exists( 'loyaltybay_get_value' ) ) {
 	 * @param mixed        $default_val The default value if key is not found.
 	 * @return mixed
 	 */
-	function loyaltybay_get_value( $target, $key, $default_val = null ) {
+	function pointbay_get_value( $target, $key, $default_val = null ) {
 		if ( is_null( $key ) || ( is_string( $key ) && trim( $key ) === '' ) ) {
 			return $default_val;
 		}

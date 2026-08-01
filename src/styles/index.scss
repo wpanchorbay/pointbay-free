@@ -118,8 +118,8 @@
 */
 
 *,
-*:not(.loyaltybay-ignore-preflight)::before,
-*:not(.loyaltybay-ignore-preflight)::after {
+*:not(.pointbay-ignore-preflight)::before,
+*:not(.pointbay-ignore-preflight)::after {
   box-sizing: border-box;
   /* 1 */
   border-width: 0;
@@ -206,12 +206,12 @@ abbr:where([title]) {
 Remove the default font size and weight for headings.
 */
 
-h1:not(.loyaltybay-ignore-preflight),
-h2:not(.loyaltybay-ignore-preflight),
-h3:not(.loyaltybay-ignore-preflight),
-h4:not(.loyaltybay-ignore-preflight),
-h5:not(.loyaltybay-ignore-preflight),
-h6:not(.loyaltybay-ignore-preflight) {
+h1:not(.pointbay-ignore-preflight),
+h2:not(.pointbay-ignore-preflight),
+h3:not(.pointbay-ignore-preflight),
+h4:not(.pointbay-ignore-preflight),
+h5:not(.pointbay-ignore-preflight),
+h6:not(.pointbay-ignore-preflight) {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -220,7 +220,7 @@ h6:not(.loyaltybay-ignore-preflight) {
 Reset links to optimize for opt-in styling instead of opt-out.
 */
 
-a:not(.loyaltybay-ignore-preflight) {
+a:not(.pointbay-ignore-preflight) {
   color: inherit;
   text-decoration: inherit;
 }
@@ -229,8 +229,8 @@ a:not(.loyaltybay-ignore-preflight) {
 Add the correct font weight in Edge and Safari.
 */
 
-b:not(.loyaltybay-ignore-preflight),
-strong:not(.loyaltybay-ignore-preflight) {
+b:not(.pointbay-ignore-preflight),
+strong:not(.pointbay-ignore-preflight) {
   font-weight: bolder;
 }
 
@@ -259,7 +259,7 @@ pre {
 Add the correct font size in all browsers.
 */
 
-small:not(.loyaltybay-ignore-preflight) {
+small:not(.pointbay-ignore-preflight) {
   font-size: 80%;
 }
 
@@ -267,19 +267,19 @@ small:not(.loyaltybay-ignore-preflight) {
 Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
 
-sub:not(.loyaltybay-ignore-preflight),
-sup:not(.loyaltybay-ignore-preflight) {
+sub:not(.pointbay-ignore-preflight),
+sup:not(.pointbay-ignore-preflight) {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-sub:not(.loyaltybay-ignore-preflight) {
+sub:not(.pointbay-ignore-preflight) {
   bottom: -0.25em;
 }
 
-sup:not(.loyaltybay-ignore-preflight) {
+sup:not(.pointbay-ignore-preflight) {
   top: -0.5em;
 }
 
@@ -289,7 +289,7 @@ sup:not(.loyaltybay-ignore-preflight) {
 3. Remove gaps between table borders by default.
 */
 
-table:not(.loyaltybay-ignore-preflight) {
+table:not(.pointbay-ignore-preflight) {
   text-indent: 0;
   /* 1 */
   border-color: inherit;
@@ -434,25 +434,25 @@ summary {
 Removes the default spacing and border for appropriate elements.
 */
 
-blockquote:not(.loyaltybay-ignore-preflight),
-dl:not(.loyaltybay-ignore-preflight),
-dd:not(.loyaltybay-ignore-preflight),
-h1:not(.loyaltybay-ignore-preflight),
+blockquote:not(.pointbay-ignore-preflight),
+dl:not(.pointbay-ignore-preflight),
+dd:not(.pointbay-ignore-preflight),
+h1:not(.pointbay-ignore-preflight),
 // use only on classic mode
-h2:not(.loyaltybay-ignore-preflight),
+h2:not(.pointbay-ignore-preflight),
 // use only on classic mode
-h3:not(.loyaltybay-ignore-preflight),
+h3:not(.pointbay-ignore-preflight),
 // use only on classic mode
-h4:not(.loyaltybay-ignore-preflight),
+h4:not(.pointbay-ignore-preflight),
 // use only on classic mode
-h5:not(.loyaltybay-ignore-preflight),
+h5:not(.pointbay-ignore-preflight),
 // use only on classic mode
-h6:not(.loyaltybay-ignore-preflight),
+h6:not(.pointbay-ignore-preflight),
 // use only on classic mode
-hr:not(.loyaltybay-ignore-preflight),
-figure:not(.loyaltybay-ignore-preflight),
-p:not(.loyaltybay-ignore-preflight),
-pre:not(.loyaltybay-ignore-preflight) {
+hr:not(.pointbay-ignore-preflight),
+figure:not(.pointbay-ignore-preflight),
+p:not(.pointbay-ignore-preflight),
+pre:not(.pointbay-ignore-preflight) {
   margin: 0;
 }
 
@@ -566,97 +566,97 @@ video {
 
 
 @layer components {
-  .loyaltybay-p-x-page-default {
-    @apply loyaltybay-px-[12px] md:loyaltybay-px-[24px];
+  .pointbay-p-x-page-default {
+    @apply pointbay-px-[12px] md:pointbay-px-[24px];
   }
 
-  .loyaltybay-bg-secondary {
-    @apply loyaltybay-bg-[#f1f5f9];
+  .pointbay-bg-secondary {
+    @apply pointbay-bg-[#f1f5f9];
   }
 
-  .loyaltybay-bg-primary {
-    @apply loyaltybay-bg-[#3858e9];
+  .pointbay-bg-primary {
+    @apply pointbay-bg-[#3858e9];
   }
 
-  .loyaltybay-bg-primary-hovered {
-    @apply loyaltybay-bg-[#3858ff];
+  .pointbay-bg-primary-hovered {
+    @apply pointbay-bg-[#3858ff];
   }
 
-  .loyaltybay-text-primary {
-    @apply loyaltybay-text-[#3858e9];
+  .pointbay-text-primary {
+    @apply pointbay-text-[#3858e9];
   }
 
-  .loyaltybay-text-primary-hovered {
-    @apply loyaltybay-text-[#3858e9];
+  .pointbay-text-primary-hovered {
+    @apply pointbay-text-[#3858e9];
   }
 
-  .loyaltybay-gap-default {
-    @apply loyaltybay-gap-[12px];
+  .pointbay-gap-default {
+    @apply pointbay-gap-[12px];
   }
 
-  .loyaltybay-gap-default-big {
-    @apply loyaltybay-gap-[12px] xl:loyaltybay-gap-[36px];
+  .pointbay-gap-default-big {
+    @apply pointbay-gap-[12px] xl:pointbay-gap-[36px];
   }
 
-  .loyaltybay-text-default {
-    @apply loyaltybay-text-[13px] loyaltybay-leading-[20px];
+  .pointbay-text-default {
+    @apply pointbay-text-[13px] pointbay-leading-[20px];
   }
 
-  .loyaltybay-text-secondary {
-    @apply loyaltybay-text-[#949494];
+  .pointbay-text-secondary {
+    @apply pointbay-text-[#949494];
   }
 
-  .loyaltybay-text-small {
-    @apply loyaltybay-text-[12px] loyaltybay-leading-[16px];
+  .pointbay-text-small {
+    @apply pointbay-text-[12px] pointbay-leading-[16px];
   }
 
-  .loyaltybay-border-default {
-    @apply loyaltybay-border-[#e0e0e0];
+  .pointbay-border-default {
+    @apply pointbay-border-[#e0e0e0];
   }
 
-  .loyaltybay-border-primary {
-    @apply loyaltybay-border-[#3858e9];
+  .pointbay-border-primary {
+    @apply pointbay-border-[#3858e9];
   }
 
-  .loyaltybay-border-secondary {
-    @apply loyaltybay-border-[#f1f5f9];
+  .pointbay-border-secondary {
+    @apply pointbay-border-[#f1f5f9];
   }
 
-  .loyaltybay-outline-primary {
-    @apply loyaltybay-outline-[#3858e9];
+  .pointbay-outline-primary {
+    @apply pointbay-outline-[#3858e9];
   }
 }
 
 
-#wpcontent:has(#loyaltybay) {
+#wpcontent:has(#pointbay) {
   padding-left: 0;
   background: #f0f0f1;
 }
 
-.toplevel_page_loyaltybay #wpwrap {
+.toplevel_page_pointbay #wpwrap {
   background: #f0f0f1;
 }
 
-.toplevel_page_loyaltybay #wpbody-content .notice,
-.toplevel_page_loyaltybay #wpfooter {
+.toplevel_page_pointbay #wpbody-content .notice,
+.toplevel_page_pointbay #wpfooter {
   display: none;
 }
 
-#loyaltybay {
+#pointbay {
   font-family: 'SF Pro', 'Segoe UI', Tahoma, Verdana, sans-serif;
   color: #000;
 }
 
-#loyaltybay *,
-#loyaltybay *::before,
-#loyaltybay *::after {
+#pointbay *,
+#pointbay *::before,
+#pointbay *::after {
   box-sizing: border-box;
 }
 
 
 
 // ==========================================================================
-// LoyaltyBay Skeleton Loader Component
+// PointBay Skeleton Loader Component
 // ==========================================================================
 
 // --- Base Keyframes Animation for the Shimmer Effect ---
@@ -671,7 +671,7 @@ video {
 }
 
 // --- Base Skeleton Class ---
-.loyaltybay-skeleton {
+.pointbay-skeleton {
   display: block;
   background-color: #e9e9e9;
   position: relative;
@@ -683,8 +683,8 @@ video {
   }
 }
 
-.loyaltybay-skeleton-animation,
-.loyaltybay-skeleton {
+.pointbay-skeleton-animation,
+.pointbay-skeleton {
   position: relative;
   overflow: hidden;
 
@@ -726,25 +726,25 @@ video {
 
 
 
-.loyaltybay-add-items-modal {
+.pointbay-add-items-modal {
   min-height: 90vh;
 }
 
-.loyaltybay-add-items-modal-example {
+.pointbay-add-items-modal-example {
   width: 50%;
   display: none; // Hide on small devices
 }
 
-.loyaltybay-add-items-modal-grid-cols {
+.pointbay-add-items-modal-grid-cols {
   overflow-y: auto;
   // scrollbar-width: none;
 }
 
-.loyaltybay-add-items-modal-overlay {
+.pointbay-add-items-modal-overlay {
   display: block; // Show overlay on small devices
 }
 
-.loyaltybay-add-items-modal-grid-item {
+.pointbay-add-items-modal-grid-item {
   min-height: 170px;
   width: 250px;
   padding-top: 40px;
@@ -757,46 +757,46 @@ video {
 
 
 @media (min-width: 600px) {
-  .loyaltybay-add-items-modal {
+  .pointbay-add-items-modal {
     min-width: 560px;
     min-height: 400px;
   }
 
-  .loyaltybay-add-items-modal-grid-cols {
+  .pointbay-add-items-modal-grid-cols {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 850px) {
-  .loyaltybay-add-items-modal {
+  .pointbay-add-items-modal {
     min-width: 835px;
   }
 
-  .loyaltybay-add-items-modal-example {
+  .pointbay-add-items-modal-example {
     display: block; // Show example panel on larger devices
     width: 270px;
   }
 
-  .loyaltybay-add-items-modal-overlay {
+  .pointbay-add-items-modal-overlay {
     display: none !important; // Hide overlay on larger devices
   }
 
-  .loyaltybay-add-items-modal-grid-cols {
+  .pointbay-add-items-modal-grid-cols {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .loyaltybay-add-items-modal-grid-item {
+  .pointbay-add-items-modal-grid-item {
     min-height: 136px;
     padding-top: 28px;
   }
 }
 
 @media (min-width: 1100px) {
-  .loyaltybay-add-items-modal {
+  .pointbay-add-items-modal {
     min-width: 1080px;
   }
 
-  .loyaltybay-add-items-modal-grid-cols {
+  .pointbay-add-items-modal-grid-cols {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -890,7 +890,7 @@ video {
   }
 }
 
-.loyaltybay-animate-tooltip {
+.pointbay-animate-tooltip {
   animation: tooltip-fade 0.15s ease-out forwards;
 }
 
@@ -900,11 +900,11 @@ video {
 // Points Ledger — native wp-admin list-table page
 // ==========================================================================
 
-.loyaltybay-ledger-page {
+.pointbay-ledger-page {
   // WooCommerce's mark.order-status pill CSS isn't enqueued on this screen
   // (it's not a WC-registered admin page), so the look is reproduced here
   // rather than relied on.
-  .loyaltybay-status-pill {
+  .pointbay-status-pill {
     display: inline-block;
     line-height: 2.5em;
     color: #777;

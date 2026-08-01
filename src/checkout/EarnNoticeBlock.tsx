@@ -23,10 +23,10 @@ const EarnNoticeBlock = () => {
     const cartSubtotal = subtotalMinor / divisor;
 
     const data = {
-        ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'loyaltybay_checkout_data' ) : null) || {}),
-        ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'loyaltybay_cart_data' ) : null) || {}),
-        ...(window.loyaltybay_checkout_data || {}),
-        ...(window.loyaltybay_cart_data || {})
+        ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'pointbay_checkout_data' ) : null) || {}),
+        ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'pointbay_cart_data' ) : null) || {}),
+        ...(window.pointbay_checkout_data || {}),
+        ...(window.pointbay_cart_data || {})
     };
 
     // Mirrors the server-side calculation in app/Checkout/EarnNotice.php and
@@ -57,7 +57,7 @@ const EarnNoticeBlock = () => {
                 <div className="wc-block-components-totals-item">
                     <span className="wc-block-components-totals-item__label" style={{ color: '#374151' }}>
                         {sprintf(
-                            __('Create an account to earn %d points on this order!', 'loyaltybay-loyalty-points-referral-rewards-woo'),
+                            __('Create an account to earn %d points on this order!', 'pointbay-loyalty-points-referral-rewards-woo'),
                             points_to_award
                         )}
                     </span>
@@ -71,7 +71,7 @@ const EarnNoticeBlock = () => {
             <div className="wc-block-components-totals-item">
                 <span className="wc-block-components-totals-item__label" style={{ color: '#111827', fontWeight: 500 }}>
                     {sprintf(
-                        __('Complete this order to earn %d points!', 'loyaltybay-loyalty-points-referral-rewards-woo'),
+                        __('Complete this order to earn %d points!', 'pointbay-loyalty-points-referral-rewards-woo'),
                         points_to_award
                     )}
                 </span>

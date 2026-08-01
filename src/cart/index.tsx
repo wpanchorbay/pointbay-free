@@ -4,7 +4,7 @@ const ExperimentalOrderMeta = window.wc && window.wc.blocksCheckout ? window.wc.
 
 import EarnNoticeBlock from '../checkout/EarnNoticeBlock';
 
-const LoyaltyBayCart = () => {
+const PointBayCart = () => {
     if (!ExperimentalOrderMeta) return null;
     return (
         <ExperimentalOrderMeta>
@@ -13,7 +13,7 @@ const LoyaltyBayCart = () => {
     );
 };
 
-registerPlugin('loyaltybay-cart', {
-    render: LoyaltyBayCart,
+registerPlugin('pointbay-cart', {
+    render: PointBayCart,
     scope: 'woocommerce-checkout',
 });

@@ -30,22 +30,22 @@ export const ListSelect: React.FC<ListSelectProps> = ({
 }) => {
   const sizeStyles = {
     small: {
-      item: "loyaltybay-px-3 loyaltybay-py-2",
-      label: "loyaltybay-text-xs",
-      iconWrapper: "loyaltybay-w-4",
-      icon: "loyaltybay-w-3 loyaltybay-h-3",
+      item: "pointbay-px-3 pointbay-py-2",
+      label: "pointbay-text-xs",
+      iconWrapper: "pointbay-w-4",
+      icon: "pointbay-w-3 pointbay-h-3",
     },
     medium: {
-      item: "loyaltybay-px-4 loyaltybay-py-3",
-      label: "loyaltybay-text-sm",
-      iconWrapper: "loyaltybay-w-5",
-      icon: "loyaltybay-w-4 loyaltybay-h-4",
+      item: "pointbay-px-4 pointbay-py-3",
+      label: "pointbay-text-sm",
+      iconWrapper: "pointbay-w-5",
+      icon: "pointbay-w-4 pointbay-h-4",
     },
     large: {
-      item: "loyaltybay-px-5 loyaltybay-py-4",
-      label: "loyaltybay-text-base",
-      iconWrapper: "loyaltybay-w-6",
-      icon: "loyaltybay-w-5 loyaltybay-h-5",
+      item: "pointbay-px-5 pointbay-py-4",
+      label: "pointbay-text-base",
+      iconWrapper: "pointbay-w-6",
+      icon: "pointbay-w-5 pointbay-h-5",
     },
   };
 
@@ -53,7 +53,7 @@ export const ListSelect: React.FC<ListSelectProps> = ({
 
   return (
     <div
-      className={`loyaltybay-flex loyaltybay-flex-col loyaltybay-border loyaltybay-border-default loyaltybay-rounded-lg loyaltybay-bg-white loyaltybay-overflow-hidden ${className} ${
+      className={`pointbay-flex pointbay-flex-col pointbay-border pointbay-border-default pointbay-rounded-lg pointbay-bg-white pointbay-overflow-hidden ${className} ${
         classNames?.root || ""
       }`}
     >
@@ -64,26 +64,26 @@ export const ListSelect: React.FC<ListSelectProps> = ({
             key={item.value}
             onClick={() => onChange(item.value)}
             className={`
-              loyaltybay-flex loyaltybay-items-center loyaltybay-gap-3 
-              loyaltybay-cursor-pointer loyaltybay-transition-colors
-              hover:loyaltybay-bg-gray-50
+              pointbay-flex pointbay-items-center pointbay-gap-3 
+              pointbay-cursor-pointer pointbay-transition-colors
+              hover:pointbay-bg-gray-50
               ${currentSize.item}
               ${
                 index !== items.length - 1
-                  ? "loyaltybay-border-b loyaltybay-border-gray-100"
+                  ? "pointbay-border-b pointbay-border-gray-100"
                   : ""
               }
               ${classNames?.item || ""}
             `}
           >
             <div
-              className={`loyaltybay-flex loyaltybay-justify-center ${
+              className={`pointbay-flex pointbay-justify-center ${
                 currentSize.iconWrapper
               } ${classNames?.iconWrapper || ""}`}
             >
               {isSelected && (
                 <svg
-                  className={`loyaltybay-text-gray-900 ${currentSize.icon} ${
+                  className={`pointbay-text-gray-900 ${currentSize.icon} ${
                     classNames?.icon || ""
                   }`}
                   viewBox="0 0 24 24"
@@ -100,8 +100,8 @@ export const ListSelect: React.FC<ListSelectProps> = ({
             <span
               className={`${currentSize.label} ${
                 isSelected
-                  ? "loyaltybay-text-gray-900 loyaltybay-font-medium"
-                  : "loyaltybay-text-gray-500"
+                  ? "pointbay-text-gray-900 pointbay-font-medium"
+                  : "pointbay-text-gray-500"
               } ${classNames?.label || ""}`}
             >
               {item.label}

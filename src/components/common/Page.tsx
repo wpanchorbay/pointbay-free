@@ -6,7 +6,7 @@ const Page = ({
   className?: string;
 }) => {
   return (
-    <div className={`loyaltybay-p-x-page-default ${className}`}>{children}</div>
+    <div className={`pointbay-p-x-page-default ${className}`}>{children}</div>
   );
 };
 

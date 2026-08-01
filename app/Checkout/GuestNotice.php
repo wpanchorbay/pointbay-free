@@ -2,12 +2,12 @@
 /**
  * Handles the guest notice prompting visitors to log in or register to earn points.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
-use LoyaltyBay\Core\Settings;
+use PointBay\Core\Settings;
 
 /**
  * Displays a notice encouraging guests to log in or register to earn points.
@@ -20,7 +20,7 @@ class GuestNotice {
 	 * Register the hooks that display the guest notice.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -64,11 +64,11 @@ class GuestNotice {
 
 		$message = sprintf(
 			// translators: %d: number of points the customer can earn on this order.
-			__( 'Log in or create an account to earn <strong>%d</strong> points on this order!', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			__( 'Log in or create an account to earn <strong>%d</strong> points on this order!', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			$points_to_award
 		);
 
-		echo '<div class="loyaltybay-guest-notice woocommerce-info" style="margin-bottom: 2em;">';
+		echo '<div class="pointbay-guest-notice woocommerce-info" style="margin-bottom: 2em;">';
 		echo wp_kses_post( $message );
 		echo '</div>';
 	}

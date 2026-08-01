@@ -2,13 +2,13 @@
 /**
  * The settings functionality of the plugin.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The settings functionality of the plugin.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Core
+ * @package    PointBay
+ * @subpackage PointBay/Core
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Settings {
@@ -69,7 +69,7 @@ class Settings {
 	 */
 	private function get_config() {
 		if ( null === $this->config ) {
-			$this->config = include \LOYALTYBAY_PATH . 'config/settings.php';
+			$this->config = include \POINTBAY_PATH . 'config/settings.php';
 		}
 		return $this->config;
 	}
@@ -119,11 +119,11 @@ class Settings {
 		 * Filters the default settings for the plugin.
 		 *
 		 * @since 1.0.0
-		 * @hook loyaltybay_settings_defaults
+		 * @hook pointbay_settings_defaults
 		 * @param array $defaults The associative array of default settings.
 		 * @return array The filtered array of default settings.
 		 */
-		return apply_filters( 'loyaltybay_settings_defaults', $this->get_config()['defaults'] ?? array() );
+		return apply_filters( 'pointbay_settings_defaults', $this->get_config()['defaults'] ?? array() );
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Settings {
 	 * @return void
 	 */
 	public function load_settings() {
-		$options = get_option( \LOYALTYBAY_OPTION_NAME );
+		$options = get_option( \POINTBAY_OPTION_NAME );
 		if ( ! is_array( $options ) ) {
 			$options = array();
 		}
@@ -159,7 +159,7 @@ class Settings {
 		} else {
 			$options = $key_or_data;
 		}
-		update_option( \LOYALTYBAY_OPTION_NAME, $options );
+		update_option( \POINTBAY_OPTION_NAME, $options );
 		$this->load_settings();
 	}
 
@@ -174,8 +174,8 @@ class Settings {
 		$defaults = $this->get_default_settings();
 
 		register_setting(
-			'loyaltybay_settings_group',
-			\LOYALTYBAY_OPTION_NAME,
+			'pointbay_settings_group',
+			\POINTBAY_OPTION_NAME,
 			array(
 				'type'              => 'object',
 				'default'           => $defaults,
@@ -199,12 +199,12 @@ class Settings {
 		 * Filters the settings schema for the plugin.
 		 *
 		 * @since 1.0.0
-		 * @hook loyaltybay_options_properties
+		 * @hook pointbay_options_properties
 		 * @param array $setting_properties The associative array of setting properties.
 		 * @return array The filtered array of setting properties.
 		 */
 		$setting_properties = apply_filters(
-			'loyaltybay_options_properties',
+			'pointbay_options_properties',
 			$this->get_config()['schema'] ?? array()
 		);
 
@@ -226,7 +226,7 @@ class Settings {
 		$schema           = $this->get_settings_schema();
 		$properties       = $schema['properties'] ?? array();
 		$default_options  = $this->get_default_settings();
-		$sanitized_output = get_option( \LOYALTYBAY_OPTION_NAME, $default_options );
+		$sanitized_output = get_option( \POINTBAY_OPTION_NAME, $default_options );
 
 		foreach ( $properties as $key => $details ) {
 			if ( ! isset( $input[ $key ] ) ) {
@@ -264,7 +264,7 @@ class Settings {
 	 * Register the hooks for settings.
 	 *
 	 * @since    1.0.0
-	 * @param    \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param    \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return   void
 	 */
 	public function run( $plugin ) {

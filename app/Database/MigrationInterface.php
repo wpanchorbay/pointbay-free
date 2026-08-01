@@ -2,13 +2,13 @@
 /**
  * Database Migration Interface.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Database
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Database;
+namespace PointBay\Database;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

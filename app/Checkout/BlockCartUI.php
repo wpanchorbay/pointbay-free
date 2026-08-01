@@ -2,13 +2,13 @@
 /**
  * Cart block UI registration for the WooCommerce Cart block.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
 /**
- * Registers the LoyaltyBay integration with the WooCommerce Cart block.
+ * Registers the PointBay integration with the WooCommerce Cart block.
  *
  * @since 1.0.0
  */
@@ -17,7 +17,7 @@ class BlockCartUI {
 	 * Register the hooks for the cart block UI.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {

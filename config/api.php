@@ -3,10 +3,10 @@
  * API Configuration
  *
  * Use this file to register your API controllers.
- * Each controller must extend LoyaltyBay\Api\ApiController
+ * Each controller must extend PointBay\Api\ApiController
  * and implement get_instance() and run().
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Config
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
@@ -18,5 +18,5 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 return array(
-	\LoyaltyBay\Api\SettingsController::class,
+	\PointBay\Api\SettingsController::class,
 );

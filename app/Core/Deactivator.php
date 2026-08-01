@@ -2,13 +2,13 @@
 /**
  * Fired during plugin deactivation.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fired during plugin deactivation.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Core
+ * @package    PointBay
+ * @subpackage PointBay/Core
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Deactivator {
@@ -51,7 +51,7 @@ class Deactivator {
 	 */
 	private static function remove_custom_capabilities() {
 		$roles             = get_editable_roles();
-		$custom_capability = 'manage_loyaltybay';
+		$custom_capability = 'manage_pointbay';
 
 		foreach ( $roles as $role_name => $role_info ) {
 			$role = get_role( $role_name );

@@ -2,22 +2,22 @@
 /**
  * REST API controller for the points ledger.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Admin
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Admin;
+namespace PointBay\Admin;
 
-use LoyaltyBay\Api\ApiController;
+use PointBay\Api\ApiController;
 
 /**
  * REST API controller for the points ledger.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Admin
+ * @package    PointBay
+ * @subpackage PointBay/Admin
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class LedgerController extends ApiController {
@@ -54,7 +54,7 @@ class LedgerController extends ApiController {
 	 */
 	public function get_items( $request ) {
 		global $wpdb;
-		$table = $wpdb->prefix . 'loyaltybay_ledger';
+		$table = $wpdb->prefix . 'pointbay_ledger';
 
 		$per_page         = $request->get_param( 'per_page' ) ? absint( $request->get_param( 'per_page' ) ) : 20;
 		$page             = $request->get_param( 'page' ) ? absint( $request->get_param( 'page' ) ) : 1;

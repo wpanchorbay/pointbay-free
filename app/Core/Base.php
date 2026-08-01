@@ -2,13 +2,13 @@
 /**
  * Base singleton class.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
 /**
  * Base singleton class.

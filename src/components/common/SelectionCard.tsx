@@ -39,37 +39,37 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={`
-        loyaltybay-relative loyaltybay-p-[20px] loyaltybay-rounded-[8px] loyaltybay-transition-all loyaltybay-duration-200
-        loyaltybay-flex loyaltybay-items-start loyaltybay-gap-[10px]
+        pointbay-relative pointbay-p-[20px] pointbay-rounded-[8px] pointbay-transition-all pointbay-duration-200
+        pointbay-flex pointbay-items-start pointbay-gap-[10px]
         ${
           isDisabled
-            ? "loyaltybay-bg-gray-50 loyaltybay-border loyaltybay-border-gray-200 loyaltybay-cursor-not-allowed"
-            : "loyaltybay-cursor-pointer"
+            ? "pointbay-bg-gray-50 pointbay-border pointbay-border-gray-200 pointbay-cursor-not-allowed"
+            : "pointbay-cursor-pointer"
         }
         ${
           !isDisabled && selected
-            ? "loyaltybay-bg-primary loyaltybay-border loyaltybay-border-primary loyaltybay-shadow-sm loyaltybay-shadow-primary/20"
+            ? "pointbay-bg-primary pointbay-border pointbay-border-primary pointbay-shadow-sm pointbay-shadow-primary/20"
             : !isDisabled
-            ? "loyaltybay-bg-white loyaltybay-border loyaltybay-border-gray-100 hover:loyaltybay-border-gray-300"
+            ? "pointbay-bg-white pointbay-border pointbay-border-gray-100 hover:pointbay-border-gray-300"
             : ""
         }
         ${classNames?.root || ""}
       `}
     >
-      <div className={`loyaltybay-mt-1 ${classNames?.iconWrapper || ""}`}>
+      <div className={`pointbay-mt-1 ${classNames?.iconWrapper || ""}`}>
         <div
           className={`
-            loyaltybay-w-5 loyaltybay-h-5 loyaltybay-rounded-full loyaltybay-border-2 loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
+            pointbay-w-5 pointbay-h-5 pointbay-rounded-full pointbay-border-2 pointbay-flex pointbay-items-center pointbay-justify-center
             ${
               isDisabled
-                ? "loyaltybay-border-gray-300 loyaltybay-bg-gray-100"
+                ? "pointbay-border-gray-300 pointbay-bg-gray-100"
                 : ""
             }
             ${
               !isDisabled && selected
-                ? "loyaltybay-border-white"
+                ? "pointbay-border-white"
                 : !isDisabled
-                ? "loyaltybay-border-gray-300"
+                ? "pointbay-border-gray-300"
                 : ""
             }
             ${classNames?.circle || ""}
@@ -77,7 +77,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
         >
           {!isDisabled && selected && (
             <div
-              className={`loyaltybay-w-2.5 loyaltybay-h-2.5 loyaltybay-bg-white loyaltybay-rounded-full ${
+              className={`pointbay-w-2.5 pointbay-h-2.5 pointbay-bg-white pointbay-rounded-full ${
                 classNames?.dot || ""
               }`}
             />
@@ -86,22 +86,22 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
       </div>
       <div className={classNames?.textWrapper || ""}>
         <h3
-          className={`loyaltybay-text-[15px] loyaltybay-leading-[24px] loyaltybay-font-[700] loyaltybay-mb-1 ${
+          className={`pointbay-text-[15px] pointbay-leading-[24px] pointbay-font-[700] pointbay-mb-1 ${
             !isDisabled && selected
-              ? "loyaltybay-text-white"
-              : "loyaltybay-text-gray-900"
-          } ${isDisabled ? "!loyaltybay-text-gray-400" : ""} ${
+              ? "pointbay-text-white"
+              : "pointbay-text-gray-900"
+          } ${isDisabled ? "!pointbay-text-gray-400" : ""} ${
             classNames?.title || ""
           }`}
         >
           {title}
         </h3>
         <p
-          className={`loyaltybay-text-[13px] loyaltybay-leading-[20px] ${
+          className={`pointbay-text-[13px] pointbay-leading-[20px] ${
             !isDisabled && selected
-              ? "loyaltybay-text-blue-100"
-              : "loyaltybay-text-gray-500"
-          } ${isDisabled ? "!loyaltybay-text-gray-400" : ""} ${
+              ? "pointbay-text-blue-100"
+              : "pointbay-text-gray-500"
+          } ${isDisabled ? "!pointbay-text-gray-400" : ""} ${
             classNames?.description || ""
           }`}
         >

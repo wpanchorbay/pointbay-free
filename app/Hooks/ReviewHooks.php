@@ -2,15 +2,15 @@
 /**
  * Hooks for awarding points on approved product reviews.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Hooks
  * @since      1.0.0
  */
 
-namespace LoyaltyBay\Hooks;
+namespace PointBay\Hooks;
 
-use LoyaltyBay\Services\LedgerService;
-use LoyaltyBay\Core\Settings;
+use PointBay\Services\LedgerService;
+use PointBay\Core\Settings;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -49,7 +49,7 @@ class ReviewHooks {
 	 * Registers the WordPress hooks handled by this class.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The main plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The main plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -92,7 +92,7 @@ class ReviewHooks {
 	 * @param \WP_Comment $comment The comment object to evaluate and reward.
 	 */
 	private function process_review( $comment ) {
-		loyaltybay_log( "ReviewHooks: Processing comment {$comment->comment_ID} for post {$comment->comment_post_ID} type {$comment->comment_type}", 'DEBUG' );
+		pointbay_log( "ReviewHooks: Processing comment {$comment->comment_ID} for post {$comment->comment_post_ID} type {$comment->comment_type}", 'DEBUG' );
 
 		// Must be a product review (WooCommerce stores reviews as comments on products).
 		if ( 'review' !== $comment->comment_type && get_post_type( $comment->comment_post_ID ) !== 'product' ) {
@@ -100,7 +100,7 @@ class ReviewHooks {
 		}
 
 		$user_id = (int) $comment->user_id;
-		loyaltybay_log( "ReviewHooks: User ID: $user_id", 'DEBUG' );
+		pointbay_log( "ReviewHooks: User ID: $user_id", 'DEBUG' );
 
 		if ( ! $user_id ) {
 			return; // Guest reviews do not earn points.
@@ -108,7 +108,7 @@ class ReviewHooks {
 
 		$settings = Settings::get_instance();
 		$points   = (int) $settings->get_settings( 'earning_pointsForReview' );
-		loyaltybay_log( "ReviewHooks: Points to award: $points", 'DEBUG' );
+		pointbay_log( "ReviewHooks: Points to award: $points", 'DEBUG' );
 
 		if ( $points <= 0 ) {
 			return;
@@ -118,7 +118,7 @@ class ReviewHooks {
 
 		// Idempotency: one credit per review comment.
 		if ( $ledger->has_existing_transaction( $user_id, 'review', (int) $comment->comment_ID, 'credit' ) ) {
-			loyaltybay_log( "ReviewHooks: Transaction already exists for comment {$comment->comment_ID}", 'DEBUG' );
+			pointbay_log( "ReviewHooks: Transaction already exists for comment {$comment->comment_ID}", 'DEBUG' );
 			return;
 		}
 
@@ -127,9 +127,9 @@ class ReviewHooks {
 			$points,
 			'review',
 			(int) $comment->comment_ID,
-			__( 'Points awarded for product review.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			__( 'Points awarded for product review.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			'system'
 		);
-		loyaltybay_log( "ReviewHooks: Credited $points points for comment {$comment->comment_ID}", 'DEBUG' );
+		pointbay_log( "ReviewHooks: Credited $points points for comment {$comment->comment_ID}", 'DEBUG' );
 	}
 }

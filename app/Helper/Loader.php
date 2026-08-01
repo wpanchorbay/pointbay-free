@@ -2,13 +2,13 @@
 /**
  * Register all actions and filters for the plugin.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Helper
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Helper;
+namespace PointBay\Helper;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Register all actions and filters for the plugin.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Helper
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */

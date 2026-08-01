@@ -1,17 +1,17 @@
 // src/utils/apiFetch.ts
 import apiFetch, { APIFetchOptions } from "@wordpress/api-fetch";
-import { LoyaltyBayStore } from "./types";
+import { PointBayStore } from "./types";
 
 declare global {
   interface Window {
     /**
      * The main data object localized from PHP by wp_localize_script.
      */
-    loyaltybay_Localize?: LoyaltyBayStore;
+    pointbay_Localize?: PointBayStore;
   }
 }
 
-const { nonce, rest_url } = window?.loyaltybay_Localize || {};
+const { nonce, rest_url } = window?.pointbay_Localize || {};
 
 /**
  * Custom wrapper for apiFetch.

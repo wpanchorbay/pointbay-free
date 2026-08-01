@@ -2,13 +2,13 @@
 /**
  * Hooks for awarding, reversing and displaying loyalty points on orders.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Hooks;
+namespace PointBay\Hooks;
 
-use LoyaltyBay\Services\LedgerService;
-use LoyaltyBay\Core\Settings;
+use PointBay\Services\LedgerService;
+use PointBay\Core\Settings;
 
 /**
  * Registers the hooks that manage loyalty points across the order lifecycle.
@@ -42,7 +42,7 @@ class OrderHooks {
 	 * Registers the WordPress hooks handled by this class.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The main plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The main plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -91,7 +91,7 @@ class OrderHooks {
 		$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
 		$total             = (float) $order->get_total();
 
-		$multiplier = apply_filters( 'loyaltybay_earning_multiplier', 1.0, $user_id );
+		$multiplier = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
 
 		$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
 
@@ -134,7 +134,7 @@ class OrderHooks {
 			return;
 		}
 
-		$credit = \LoyaltyBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
+		$credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
 		if ( ! $credit || (int) $credit->amount <= 0 ) {
 			return;
 		}
@@ -145,12 +145,12 @@ class OrderHooks {
 			'order_reversal',
 			$order_id,
 			// translators: 1: order ID, 2: new order status.
-			sprintf( __( 'Points reversed: COD order #%1$d was %2$s.', 'loyaltybay-loyalty-points-referral-rewards-woo' ), $order_id, $new_status ),
+			sprintf( __( 'Points reversed: COD order #%1$d was %2$s.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id, $new_status ),
 			false,
 			'system'
 		);
 
-		do_action( 'loyaltybay_order_points_reversed', $user_id, $order_id );
+		do_action( 'pointbay_order_points_reversed', $user_id, $order_id );
 	}
 
 	/**
@@ -184,14 +184,14 @@ class OrderHooks {
 		}
 
 		$refund_amount   = (float) $refund->get_amount();
-		$original_credit = \LoyaltyBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
+		$original_credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
 
 		if ( $original_credit ) {
 			$original_points = (int) $original_credit->amount;
 
 			$settings          = Settings::get_instance();
 			$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
-			$multiplier        = apply_filters( 'loyaltybay_earning_multiplier', 1.0, $user_id );
+			$multiplier        = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
 
 			$points_to_claw_back = (int) floor( $refund_amount * $points_per_dollar * $multiplier );
 			$points_to_claw_back = min( $points_to_claw_back, $original_points );
@@ -219,15 +219,15 @@ class OrderHooks {
 		}
 
 		// Find credit entry (points earned)
-		$credit = \LoyaltyBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
+		$credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
 		// Find debit entry (points redeemed)
-		$debit = \LoyaltyBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'debit' );
+		$debit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'debit' );
 
 		if ( $credit && (int) $credit->amount > 0 ) {
-			$total_rows['loyaltybay_points_earned'] = array(
-				'label' => __( 'Points Earned:', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			$total_rows['pointbay_points_earned'] = array(
+				'label' => __( 'Points Earned:', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				// translators: %d: number of points earned.
-				'value' => sprintf( __( '+%d points', 'loyaltybay-loyalty-points-referral-rewards-woo' ), $credit->amount ),
+				'value' => sprintf( __( '+%d points', 'pointbay-loyalty-points-referral-rewards-woo' ), $credit->amount ),
 			);
 		} else {
 			$status = $order->get_status();
@@ -236,25 +236,25 @@ class OrderHooks {
 				$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
 				$total             = (float) $order->get_total();
 
-				$multiplier = apply_filters( 'loyaltybay_earning_multiplier', 1.0, $user_id );
+				$multiplier = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
 
 				$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
 
 				if ( $points_to_award > 0 ) {
-					$total_rows['loyaltybay_points_pending'] = array(
-						'label' => __( 'Pending Points:', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+					$total_rows['pointbay_points_pending'] = array(
+						'label' => __( 'Pending Points:', 'pointbay-loyalty-points-referral-rewards-woo' ),
 						// translators: %d: number of points the customer will earn.
-						'value' => sprintf( __( 'You will earn %d points', 'loyaltybay-loyalty-points-referral-rewards-woo' ), $points_to_award ),
+						'value' => sprintf( __( 'You will earn %d points', 'pointbay-loyalty-points-referral-rewards-woo' ), $points_to_award ),
 					);
 				}
 			}
 		}
 
 		if ( $debit && (int) $debit->amount > 0 ) {
-			$total_rows['loyaltybay_points_redeemed'] = array(
-				'label' => __( 'Points Redeemed:', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			$total_rows['pointbay_points_redeemed'] = array(
+				'label' => __( 'Points Redeemed:', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				// translators: %d: number of points redeemed.
-				'value' => sprintf( __( '-%d points', 'loyaltybay-loyalty-points-referral-rewards-woo' ), $debit->amount ),
+				'value' => sprintf( __( '-%d points', 'pointbay-loyalty-points-referral-rewards-woo' ), $debit->amount ),
 			);
 		}
 

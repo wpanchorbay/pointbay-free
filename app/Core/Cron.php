@@ -2,13 +2,13 @@
 /**
  * Cron job management for the plugin.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -24,8 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * and the built-in WP-Cron system.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Core
+ * @package    PointBay
+ * @subpackage PointBay/Core
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class Cron {
@@ -45,7 +45,7 @@ class Cron {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const HOOK_PREFIX = 'loyaltybay_cron_';
+	const HOOK_PREFIX = 'pointbay_cron_';
 
 	/**
 	 * Option key that stores the last-run timestamps for fallback detection.
@@ -53,7 +53,7 @@ class Cron {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const LAST_RUN_OPTION = 'loyaltybay_cron_last_run';
+	const LAST_RUN_OPTION = 'pointbay_cron_last_run';
 
 	/**
 	 * Transient key left behind by the retired file-based logging subsystem.
@@ -63,7 +63,7 @@ class Cron {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const RETIRED_LOG_CACHE_KEY = 'loyaltybay_logs_cache';
+	const RETIRED_LOG_CACHE_KEY = 'pointbay_logs_cache';
 
 	/**
 	 * Registry of dynamically scheduled callbacks.
@@ -122,11 +122,11 @@ class Cron {
 		 * Filters the list of cron jobs registered by the plugin.
 		 *
 		 * @since 1.0.0
-		 * @hook loyaltybay_cron_jobs
+		 * @hook pointbay_cron_jobs
 		 * @param array $jobs The array of cron job definitions.
 		 * @return array
 		 */
-		return apply_filters( 'loyaltybay_cron_jobs', array() );
+		return apply_filters( 'pointbay_cron_jobs', array() );
 	}
 
 	/**
@@ -175,7 +175,7 @@ class Cron {
 
 			foreach ( $hooks as $hook => $events ) {
 				// Only handle our own plugin hooks.
-				if ( strpos( $hook, 'loyaltybay_' ) !== 0 ) {
+				if ( strpos( $hook, 'pointbay_' ) !== 0 ) {
 					continue;
 				}
 
@@ -234,7 +234,7 @@ class Cron {
 		}
 
 		$scheduled = wp_schedule_single_event( time() + $delay, $hook, $args );
-		loyaltybay_log( 'Cron: scheduled single event "' . $hook . '" to run in ' . $delay . 's.', 'INFO' );
+		pointbay_log( 'Cron: scheduled single event "' . $hook . '" to run in ' . $delay . 's.', 'INFO' );
 		return (bool) $scheduled;
 	}
 
@@ -262,7 +262,7 @@ class Cron {
 		}
 
 		$scheduled = wp_schedule_event( time(), $interval, $hook, $args );
-		loyaltybay_log( 'Cron: scheduled recurring event "' . $hook . '" with interval "' . $interval . '".', 'INFO' );
+		pointbay_log( 'Cron: scheduled recurring event "' . $hook . '" with interval "' . $interval . '".', 'INFO' );
 		return (bool) $scheduled;
 	}
 
@@ -293,8 +293,8 @@ class Cron {
 	 * @return string
 	 */
 	private function maybe_prefix_hook( $hook ) {
-		if ( strpos( $hook, 'loyaltybay_' ) !== 0 ) {
-			$hook = 'loyaltybay_' . $hook;
+		if ( strpos( $hook, 'pointbay_' ) !== 0 ) {
+			$hook = 'pointbay_' . $hook;
 		}
 		return $hook;
 	}
@@ -313,7 +313,7 @@ class Cron {
 		 * Sweep every event registered under the plugin's hook prefix rather
 		 * than only the ones get_jobs() currently returns. That also catches
 		 * dynamically scheduled events, events added through the
-		 * loyaltybay_cron_jobs filter, and leftovers from earlier versions —
+		 * pointbay_cron_jobs filter, and leftovers from earlier versions —
 		 * none of which get_jobs() knows about at deactivation time.
 		 *
 		 * Same prefix convention maybe_run_missed() uses.
@@ -322,7 +322,7 @@ class Cron {
 		if ( is_array( $crons ) ) {
 			foreach ( $crons as $timestamp => $hooks ) {
 				foreach ( $hooks as $hook => $events ) {
-					if ( strpos( $hook, 'loyaltybay_' ) !== 0 ) {
+					if ( strpos( $hook, 'pointbay_' ) !== 0 ) {
 						continue;
 					}
 
@@ -382,14 +382,14 @@ class Cron {
 	 * @return void
 	 */
 	public function test_job() {
-		loyaltybay_log( 'Test cron job executed successfully.', 'error' );
+		pointbay_log( 'Test cron job executed successfully.', 'error' );
 	}
 
 	/**
 	 * Register the hooks for the cron system.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -408,6 +408,6 @@ class Cron {
 		}
 
 		// Register the test cron callback.
-		add_action( 'loyaltybay_test_cron', array( $this, 'test_job' ) );
+		add_action( 'pointbay_test_cron', array( $this, 'test_job' ) );
 	}
 }

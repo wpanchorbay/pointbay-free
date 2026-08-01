@@ -5,12 +5,12 @@
  * Handles the creation and management of the plugin's custom database tables.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Data
+ * @package    PointBay
+ * @subpackage PointBay/Data
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Data;
+namespace PointBay\Data;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class DbManager
  *
  * @since 1.0.0
- * @package LoyaltyBay
+ * @package PointBay
  */
 class DbManager {
 
@@ -66,7 +66,7 @@ class DbManager {
 	 * @return array Array of migration instances.
 	 */
 	private function get_migrations() {
-		$migration_classes = include \LOYALTYBAY_PATH . 'config/migrations.php';
+		$migration_classes = include \POINTBAY_PATH . 'config/migrations.php';
 		$migrations        = array();
 
 		if ( is_array( $migration_classes ) ) {
@@ -89,7 +89,7 @@ class DbManager {
 		$migrations = $this->get_migrations();
 
 		foreach ( $migrations as $migration ) {
-			if ( $migration instanceof \LoyaltyBay\Database\MigrationInterface ) {
+			if ( $migration instanceof \PointBay\Database\MigrationInterface ) {
 				$migration->up();
 			}
 		}
@@ -105,7 +105,7 @@ class DbManager {
 
 		// Run down() in reverse order
 		foreach ( array_reverse( $migrations ) as $migration ) {
-			if ( $migration instanceof \LoyaltyBay\Database\MigrationInterface ) {
+			if ( $migration instanceof \PointBay\Database\MigrationInterface ) {
 				$migration->down();
 			}
 		}

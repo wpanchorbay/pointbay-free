@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 const Loader: FC = () => {
-  return <div className="loyaltybay-loader-container"></div>;
+  return <div className="pointbay-loader-container"></div>;
 };
 
 export default Loader;

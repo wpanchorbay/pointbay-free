@@ -53,7 +53,7 @@ export const WPEditor = ({ id, value, onChange }: WPEditorProps) => {
       ref={textareaRef}
       defaultValue={value}
       onChange={(e) => onChange(e.target.value)}
-      className="loyaltybay-w-full loyaltybay-border loyaltybay-border-gray-300 loyaltybay-p-2"
+      className="pointbay-w-full pointbay-border pointbay-border-gray-300 pointbay-p-2"
       rows={5}
     />
   );

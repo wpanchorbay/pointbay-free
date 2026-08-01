@@ -2,40 +2,40 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Loyaltybay - Loyalty Points & Referral Rewards for Woocommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/loyaltybay-loyalty-points-referral-rewards-woo\n"
+"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for Woocommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pointbay-loyalty-points-referral-rewards-woo\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-28T12:11:05+00:00\n"
+"POT-Creation-Date: 2026-08-01T09:37:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: loyaltybay-loyalty-points-referral-rewards-woo\n"
+"X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
 
 #. Plugin Name of the plugin
-#: loyaltybay-loyalty-points-referral-rewards-woo.php
-msgid "Loyaltybay - Loyalty Points & Referral Rewards for Woocommerce"
+#: pointbay-loyalty-points-referral-rewards-woo.php
+msgid "PointBay - Loyalty Points & Referral Rewards for Woocommerce"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: loyaltybay-loyalty-points-referral-rewards-woo.php
-msgid "https://wpanchorbay.com/plugins/loyaltybay-loyalty-points-referral-rewards-for-woocommerce"
+#: pointbay-loyalty-points-referral-rewards-woo.php
+msgid "https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-for-woocommerce"
 msgstr ""
 
 #. Description of the plugin
-#: loyaltybay-loyalty-points-referral-rewards-woo.php
+#: pointbay-loyalty-points-referral-rewards-woo.php
 msgid "Reward WooCommerce customers with loyalty points they earn on purchases and redeem for discounts at checkout."
 msgstr ""
 
 #. Author of the plugin
-#: loyaltybay-loyalty-points-referral-rewards-woo.php
+#: pointbay-loyalty-points-referral-rewards-woo.php
 msgid "WPAnchorBay"
 msgstr ""
 
 #. Author URI of the plugin
-#: loyaltybay-loyalty-points-referral-rewards-woo.php
+#: pointbay-loyalty-points-referral-rewards-woo.php
 msgid "https://wpanchorbay.com"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgid "Insufficient points balance. Your points may have been used elsewhere."
 msgstr ""
 
 #: app/Checkout/ClassicCheckoutUI.php:91
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 msgid "Redeem Loyalty Points"
 msgstr ""
 
@@ -102,7 +102,7 @@ msgid "You have %1$s points available. (Max %2$s points for this order)."
 msgstr ""
 
 #: app/Checkout/ClassicCheckoutUI.php:113
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 msgid "Slide to adjust points:"
 msgstr ""
 
@@ -121,7 +121,7 @@ msgid "Complete this order to earn <strong>%d</strong> points!"
 msgstr ""
 
 #: app/Checkout/FeeRedemption.php:80
-msgid "LoyaltyBay Points Discount"
+msgid "PointBay Points Discount"
 msgstr ""
 
 #. translators: %d: number of points the customer can earn on this order.
@@ -141,7 +141,7 @@ msgid "You do not have enough points or the cart value is lower than the points 
 msgstr ""
 
 #: app/Core/Activator.php:44
-msgid "LoyaltyBay requires WooCommerce to be installed and active."
+msgid "PointBay requires WooCommerce to be installed and active."
 msgstr ""
 
 #: app/Core/Activator.php:45
@@ -231,13 +231,13 @@ msgstr ""
 #: config/admin.php:88
 #: config/admin.php:89
 #: config/admin.php:90
-#: build/admin.js:14
-msgid "LoyaltyBay"
+#: build/admin.js:1
+msgid "PointBay"
 msgstr ""
 
 #: config/admin.php:54
 #: config/admin.php:55
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Points History"
 msgstr ""
 
@@ -250,282 +250,282 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Select bulk action"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Bulk actions"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Export Selected"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Apply"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "1 item"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "items"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "First page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Previous page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Current Page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "of"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Next page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Last page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "User"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Search users…"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Type"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Amount"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Reason"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Export to CSV"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Adjust Points"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Submit"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Search Ledger"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Search by user name or email"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Filter by type"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "All types"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Credit"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Debit"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Filter by reference"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "All references"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:1
 msgid "Apply Filters"
 msgstr ""
 
-#: build/block-cart.js:12
-#: build/block-checkout.js:12
+#: build/block-cart.js:1
+#: build/block-checkout.js:1
 #, js-format
 msgid "Complete this order to earn %d points!"
 msgstr ""
 
-#: build/block-cart.js:12
-#: build/block-checkout.js:12
+#: build/block-cart.js:1
+#: build/block-checkout.js:1
 #, js-format
 msgid "Create an account to earn %d points on this order!"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 #, js-format
 msgid "Awesome! You have redeemed %d points for a %s discount."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 msgid "Removing..."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 msgid "Remove"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 #, js-format
 msgid "You have %d points available. (Max %d points for this order)."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 #, js-format
 msgid "1 pt = %s"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 msgid "Points to redeem"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 msgid "Applying..."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:1
 #, js-format
 msgid "Apply %s Discount"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Failed to load settings."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Settings saved successfully."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Failed to save settings."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Earning Points"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Configure how customers earn loyalty points."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Points Per Dollar"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "How many points the customer earns for every $1 spent."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Points for Registration"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Give new users this many points when they register."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Points for Product Review"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Reward points for an approved product review."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Order Status Trigger"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "The WooCommerce order status that triggers points crediting."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Redemption Rules"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Configure how points are converted to discounts."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Point Value ($)"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "The monetary value of a single point."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Redemption Mode"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Cart Fee (WC_Fee)"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Virtual Coupon (WC_Coupon)"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "How the discount is applied to the cart."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Minimum Points to Redeem"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "The minimum amount of points needed before the redemption form is shown."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Display & System"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Additional display and maintenance options."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Guest Notice"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Show login/register prompt on checkout"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:1
 msgid "Purge all ledger data upon deletion"
 msgstr ""

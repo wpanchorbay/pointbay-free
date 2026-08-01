@@ -2,13 +2,13 @@
 /**
  * The "My Rewards" WooCommerce account endpoint.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Dashboard;
+namespace PointBay\Dashboard;
 
-use LoyaltyBay\Core\Settings;
-use LoyaltyBay\Services\LedgerService;
+use PointBay\Core\Settings;
+use PointBay\Services\LedgerService;
 
 /**
  * Registers and renders the "My Rewards" WooCommerce account endpoint.
@@ -43,7 +43,7 @@ class MyRewardsEndpoint {
 	 * Registers the endpoint hooks with the plugin loader.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -88,11 +88,11 @@ class MyRewardsEndpoint {
 		foreach ( $items as $key => $value ) {
 			$new_items[ $key ] = $value;
 			if ( 'orders' === $key ) {
-				$new_items[ self::ENDPOINT ] = __( 'My Rewards', 'loyaltybay-loyalty-points-referral-rewards-woo' );
+				$new_items[ self::ENDPOINT ] = __( 'My Rewards', 'pointbay-loyalty-points-referral-rewards-woo' );
 			}
 		}
 		if ( ! array_key_exists( self::ENDPOINT, $new_items ) ) {
-			$new_items[ self::ENDPOINT ] = __( 'My Rewards', 'loyaltybay-loyalty-points-referral-rewards-woo' );
+			$new_items[ self::ENDPOINT ] = __( 'My Rewards', 'pointbay-loyalty-points-referral-rewards-woo' );
 		}
 		return $new_items;
 	}
@@ -110,12 +110,12 @@ class MyRewardsEndpoint {
 
 		$settings = Settings::get_instance();
 
-		echo '<div class="loyaltybay-dashboard">';
-		echo '<h2>' . esc_html__( 'My Loyalty Rewards', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</h2>';
+		echo '<div class="pointbay-dashboard">';
+		echo '<h2>' . esc_html__( 'My Loyalty Rewards', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h2>';
 		echo '<div style="background:#f7f7f7; padding:20px; border-radius:8px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">';
 		echo '<div>';
-		echo '<h3 style="margin-top:0;">' . esc_html__( 'Current Balance', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</h3>';
-		echo '<p style="font-size:32px; font-weight:bold; margin:0; color:#5c35b6;"><span class="loyaltybay-balance-value">' . esc_html( $balance ) . '</span> <span style="font-size:16px; font-weight:normal;">' . esc_html__( 'Points', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</span></p>';
+		echo '<h3 style="margin-top:0;">' . esc_html__( 'Current Balance', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h3>';
+		echo '<p style="font-size:32px; font-weight:bold; margin:0; color:#5c35b6;"><span class="pointbay-balance-value">' . esc_html( $balance ) . '</span> <span style="font-size:16px; font-weight:normal;">' . esc_html__( 'Points', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</span></p>';
 		echo '</div>';
 
 		/**
@@ -124,12 +124,12 @@ class MyRewardsEndpoint {
 		 * in to supply the markup.
 		 *
 		 * @since 1.0.0
-		 * @hook loyaltybay_tier_progress_html
+		 * @hook pointbay_tier_progress_html
 		 * @param string $html    The HTML to render (empty by default).
 		 * @param int    $user_id The current user's ID.
 		 * @return string
 		 */
-		echo apply_filters( 'loyaltybay_tier_progress_html', '', $user_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo apply_filters( 'pointbay_tier_progress_html', '', $user_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '</div>';
 
@@ -139,17 +139,17 @@ class MyRewardsEndpoint {
 		 * supply the markup.
 		 *
 		 * @since 1.0.0
-		 * @hook loyaltybay_referral_html
+		 * @hook pointbay_referral_html
 		 * @param string $html    The HTML to render (empty by default).
 		 * @param int    $user_id The current user's ID.
 		 * @return string
 		 */
-		echo apply_filters( 'loyaltybay_referral_html', '', $user_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo apply_filters( 'pointbay_referral_html', '', $user_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		echo '<h3>' . esc_html__( 'Recent History', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Recent History', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h3>';
 
 		global $wpdb;
-		$table = $wpdb->prefix . 'loyaltybay_ledger';
+		$table = $wpdb->prefix . 'pointbay_ledger';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the customer's history must reflect the latest ledger write.
 		$history = $wpdb->get_results(
 			$wpdb->prepare(
@@ -161,7 +161,7 @@ class MyRewardsEndpoint {
 
 		if ( ! empty( $history ) ) {
 			echo '<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">';
-			echo '<thead><tr><th>' . esc_html__( 'Date', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</th><th>' . esc_html__( 'Description', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</th><th>' . esc_html__( 'Points', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</th></tr></thead><tbody>';
+			echo '<thead><tr><th>' . esc_html__( 'Date', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</th><th>' . esc_html__( 'Description', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</th><th>' . esc_html__( 'Points', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</th></tr></thead><tbody>';
 
 			foreach ( $history as $row ) {
 				$sign  = $row->transaction_type === 'credit' ? '+' : '-';
@@ -176,7 +176,7 @@ class MyRewardsEndpoint {
 
 			echo '</tbody></table>';
 		} else {
-			echo '<p>' . esc_html__( 'No activity yet.', 'loyaltybay-loyalty-points-referral-rewards-woo' ) . '</p>';
+			echo '<p>' . esc_html__( 'No activity yet.', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</p>';
 		}
 
 		echo '</div>';

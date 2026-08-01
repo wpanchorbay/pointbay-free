@@ -49,14 +49,14 @@ export const ClassicTooltip: React.FC<ClassicTooltipProps> = ({
           setVisible(false);
         }}
         tabIndex={0}
-        className={`loyaltybay-cursor-help loyaltybay-inline-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-w-[16px] loyaltybay-h-[16px] loyaltybay-rounded-full loyaltybay-bg-[#72777c] hover:loyaltybay-bg-[#50575e] loyaltybay-text-white loyaltybay-transition-colors loyaltybay-ml-1 ${className}`}
+        className={`pointbay-cursor-help pointbay-inline-flex pointbay-items-center pointbay-justify-center pointbay-w-[16px] pointbay-h-[16px] pointbay-rounded-full pointbay-bg-[#72777c] hover:pointbay-bg-[#50575e] pointbay-text-white pointbay-transition-colors pointbay-ml-1 ${className}`}
       >
         <CircleQuestionMarkIcon />
       </span>
       {visible &&
         createPortal(
           <div
-            className="loyaltybay-fixed loyaltybay-z-[999999] loyaltybay-bg-[#333] loyaltybay-text-white loyaltybay-px-2 loyaltybay-py-1 loyaltybay-rounded loyaltybay-text-xs loyaltybay-leading-snug loyaltybay-max-w-[200px] loyaltybay-text-center loyaltybay-pointer-events-none loyaltybay-shadow-sm"
+            className="pointbay-fixed pointbay-z-[999999] pointbay-bg-[#333] pointbay-text-white pointbay-px-2 pointbay-py-1 pointbay-rounded pointbay-text-xs pointbay-leading-snug pointbay-max-w-[200px] pointbay-text-center pointbay-pointer-events-none pointbay-shadow-sm"
             style={{
               top: coords.top,
               left: coords.left,
@@ -65,7 +65,7 @@ export const ClassicTooltip: React.FC<ClassicTooltipProps> = ({
           >
             {tip}
             <div
-              className="loyaltybay-absolute loyaltybay-border-[5px] loyaltybay-border-solid loyaltybay-border-t-[#333] loyaltybay-border-x-transparent loyaltybay-border-b-transparent"
+              className="pointbay-absolute pointbay-border-[5px] pointbay-border-solid pointbay-border-t-[#333] pointbay-border-x-transparent pointbay-border-b-transparent"
               style={{
                 top: "100%",
                 left: "50%",

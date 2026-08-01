@@ -60,62 +60,62 @@ export const Popover: React.FC<PopoverProps> = ({
   switch (align) {
     case "top":
       positionClasses =
-        "loyaltybay-bottom-full loyaltybay-mb-2 loyaltybay-left-1/2 loyaltybay--translate-x-1/2";
-      originClass = "loyaltybay-origin-bottom";
+        "pointbay-bottom-full pointbay-mb-2 pointbay-left-1/2 pointbay--translate-x-1/2";
+      originClass = "pointbay-origin-bottom";
       break;
     case "top-left":
-      positionClasses = "loyaltybay-bottom-full loyaltybay-mb-2 loyaltybay-left-0";
-      originClass = "loyaltybay-origin-bottom-left";
+      positionClasses = "pointbay-bottom-full pointbay-mb-2 pointbay-left-0";
+      originClass = "pointbay-origin-bottom-left";
       break;
     case "top-right":
       positionClasses =
-        "loyaltybay-bottom-full loyaltybay-mb-2 loyaltybay-right-0";
-      originClass = "loyaltybay-origin-bottom-right";
+        "pointbay-bottom-full pointbay-mb-2 pointbay-right-0";
+      originClass = "pointbay-origin-bottom-right";
       break;
     case "bottom":
       positionClasses =
-        "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-left-1/2 loyaltybay--translate-x-1/2";
-      originClass = "loyaltybay-origin-top";
+        "pointbay-top-full pointbay-mt-2 pointbay-left-1/2 pointbay--translate-x-1/2";
+      originClass = "pointbay-origin-top";
       break;
     case "bottom-left":
-      positionClasses = "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-left-0";
-      originClass = "loyaltybay-origin-top-left";
+      positionClasses = "pointbay-top-full pointbay-mt-2 pointbay-left-0";
+      originClass = "pointbay-origin-top-left";
       break;
     case "bottom-right":
-      positionClasses = "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-right-0";
-      originClass = "loyaltybay-origin-top-right";
+      positionClasses = "pointbay-top-full pointbay-mt-2 pointbay-right-0";
+      originClass = "pointbay-origin-top-right";
       break;
     case "left":
       positionClasses =
-        "loyaltybay-right-full loyaltybay-mr-2 loyaltybay-top-1/2 loyaltybay--translate-y-1/2";
-      originClass = "loyaltybay-origin-right";
+        "pointbay-right-full pointbay-mr-2 pointbay-top-1/2 pointbay--translate-y-1/2";
+      originClass = "pointbay-origin-right";
       break;
     case "right":
       positionClasses =
-        "loyaltybay-left-full loyaltybay-ml-2 loyaltybay-top-1/2 loyaltybay--translate-y-1/2";
-      originClass = "loyaltybay-origin-left";
+        "pointbay-left-full pointbay-ml-2 pointbay-top-1/2 pointbay--translate-y-1/2";
+      originClass = "pointbay-origin-left";
       break;
     default:
-      positionClasses = "loyaltybay-top-full loyaltybay-mt-2 loyaltybay-left-0";
-      originClass = "loyaltybay-origin-top-left";
+      positionClasses = "pointbay-top-full pointbay-mt-2 pointbay-left-0";
+      originClass = "pointbay-origin-top-left";
   }
 
   // Transition classes (Opacity + Scale)
   const transitionClasses = isOpen
-    ? "loyaltybay-opacity-100 loyaltybay-scale-100 loyaltybay-pointer-events-auto"
-    : "loyaltybay-opacity-0 loyaltybay-scale-95 loyaltybay-pointer-events-none";
+    ? "pointbay-opacity-100 pointbay-scale-100 pointbay-pointer-events-auto"
+    : "pointbay-opacity-0 pointbay-scale-95 pointbay-pointer-events-none";
 
   return (
     <div
       ref={containerRef}
-      className={`loyaltybay-relative loyaltybay-inline-block ${className} ${
+      className={`pointbay-relative pointbay-inline-block ${className} ${
         classNames?.root || ""
       }`}
     >
       {/* Trigger Wrapper */}
       <div
         onClick={toggle}
-        className={`loyaltybay-cursor-pointer loyaltybay-inline-flex ${
+        className={`pointbay-cursor-pointer pointbay-inline-flex ${
           classNames?.triggerWrapper || ""
         }`}
       >
@@ -125,9 +125,9 @@ export const Popover: React.FC<PopoverProps> = ({
       {/* Dropdown Content */}
       <div
         className={`
-          loyaltybay-absolute loyaltybay-z-50 loyaltybay-w-48
-          loyaltybay-bg-white loyaltybay-rounded-xl loyaltybay-shadow-xl loyaltybay-border loyaltybay-border-default
-          loyaltybay-transition-all loyaltybay-duration-200 loyaltybay-ease-out
+          pointbay-absolute pointbay-z-50 pointbay-w-48
+          pointbay-bg-white pointbay-rounded-xl pointbay-shadow-xl pointbay-border pointbay-border-default
+          pointbay-transition-all pointbay-duration-200 pointbay-ease-out
           ${positionClasses}
           ${originClass}
           ${transitionClasses}

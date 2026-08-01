@@ -1,7 +1,7 @@
 import { useState, useEffect, FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
-import { useLoyaltyBayStore } from "../../store/loyaltybayStore";
+import { usePointBayStore } from "../../store/pointbayStore";
 
 interface MenuLink {
   label: string;
@@ -11,28 +11,28 @@ interface MenuLink {
 const Navbar: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const store = useLoyaltyBayStore();
+  const store = usePointBayStore();
 
   const menus: MenuLink[] = [
     {
-      label: __("Dashboard", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Dashboard", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/",
     },
     // Add your menu items here
     {
-      label: __("Logs", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Logs", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/logs",
     },
     {
-      label: __("Components", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Components", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/components",
     },
     {
-      label: __("Components (Classic)", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Components (Classic)", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/components-classic",
     },
     // {
-    //   label: __("Settings", "loyaltybay-loyalty-points-referral-rewards-woo"),
+    //   label: __("Settings", "pointbay-loyalty-points-referral-rewards-woo"),
     //   path: "/settings",
     // },
   ];
@@ -48,29 +48,29 @@ const Navbar: FC = () => {
 
   return (
     <>
-      <div className="loyaltybay-bg-white loyaltybay-p-0 !loyaltybay-border-0 !loyaltybay-border-b !loyaltybay-border-gray-300 loyaltybay-z-50 loyaltybay-relative">
-        <div className="loyaltybay-flex loyaltybay-px-[12px] loyaltybay-justify-between loyaltybay-items-center loyaltybay-flex-wrap md:loyaltybay-flex-nowrap loyaltybay-gap-[4px] loyaltybay-relative">
-          <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-gap-[4px] loyaltybay-py-[12px]">
-            <span className="loyaltybay-font-[700] loyaltybay-text-[16px] loyaltybay-text-gray-900">
-              {store.pluginData?.plugin_name || "LoyaltyBay"}
+      <div className="pointbay-bg-white pointbay-p-0 !pointbay-border-0 !pointbay-border-b !pointbay-border-gray-300 pointbay-z-50 pointbay-relative">
+        <div className="pointbay-flex pointbay-px-[12px] pointbay-justify-between pointbay-items-center pointbay-flex-wrap md:pointbay-flex-nowrap pointbay-gap-[4px] pointbay-relative">
+          <div className="pointbay-flex pointbay-items-center pointbay-gap-[4px] pointbay-py-[12px]">
+            <span className="pointbay-font-[700] pointbay-text-[16px] pointbay-text-gray-900">
+              {store.pluginData?.plugin_name || "PointBay"}
             </span>
           </div>
           <div
-            className={`loyaltybay-flex-1 md:loyaltybay-flex-none loyaltybay-flex-col md:loyaltybay-flex-row loyaltybay-justify-stretch md:loyaltybay-items-center loyaltybay-absolute md:loyaltybay-relative loyaltybay-top-[102%] md:loyaltybay-top-auto loyaltybay-left-0 loyaltybay-w-full md:loyaltybay-w-auto loyaltybay-gap-0 md:loyaltybay-gap-[6px] loyaltybay-bg-white !loyaltybay-border-0 ${
+            className={`pointbay-flex-1 md:pointbay-flex-none pointbay-flex-col md:pointbay-flex-row pointbay-justify-stretch md:pointbay-items-center pointbay-absolute md:pointbay-relative pointbay-top-[102%] md:pointbay-top-auto pointbay-left-0 pointbay-w-full md:pointbay-w-auto pointbay-gap-0 md:pointbay-gap-[6px] pointbay-bg-white !pointbay-border-0 ${
               isMobileMenuOpen
-                ? "loyaltybay-flex"
-                : "loyaltybay-hidden md:loyaltybay-flex"
+                ? "pointbay-flex"
+                : "pointbay-hidden md:pointbay-flex"
             }`}
           >
-            <nav className="loyaltybay-items-stretch md:loyaltybay-items-center loyaltybay-gap-0 loyaltybay-flex loyaltybay-flex-col md:loyaltybay-flex-row loyaltybay-w-full">
+            <nav className="pointbay-items-stretch md:pointbay-items-center pointbay-gap-0 pointbay-flex pointbay-flex-col md:pointbay-flex-row pointbay-w-full">
               {menus.map((menu) => (
                 <span
                   key={menu.path}
-                  className={`loyaltybay-text-default loyaltybay-font-[700]
-                    loyaltybay-cursor-pointer loyaltybay-py-[8px] loyaltybay-px-[16px] loyaltybay-border-b md:loyaltybay-border-b-0 loyaltybay-border-gray-300 last:loyaltybay-border-gray-300 ${
+                  className={`pointbay-text-default pointbay-font-[700]
+                    pointbay-cursor-pointer pointbay-py-[8px] pointbay-px-[16px] pointbay-border-b md:pointbay-border-b-0 pointbay-border-gray-300 last:pointbay-border-gray-300 ${
                       activeTab === menu.path
-                        ? "loyaltybay-text-blue-800 loyaltybay-bg-gray-100 loyaltybay-rounded-[0] md:loyaltybay-rounded-[8px]"
-                        : "loyaltybay-text-gray-800 hover:loyaltybay-text-blue-800"
+                        ? "pointbay-text-blue-800 pointbay-bg-gray-100 pointbay-rounded-[0] md:pointbay-rounded-[8px]"
+                        : "pointbay-text-gray-800 hover:pointbay-text-blue-800"
                     }`}
                   onClick={() => {
                     navigate(menu.path);
@@ -83,7 +83,7 @@ const Navbar: FC = () => {
             </nav>
           </div>
           <button
-            className="loyaltybay-flex md:loyaltybay-hidden loyaltybay-items-center loyaltybay-gap-[2px] loyaltybay-text-gray-800 hover:loyaltybay-text-blue-800"
+            className="pointbay-flex md:pointbay-hidden pointbay-items-center pointbay-gap-[2px] pointbay-text-gray-800 hover:pointbay-text-blue-800"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
@@ -94,7 +94,7 @@ const Navbar: FC = () => {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="loyaltybay-transition-all loyaltybay-duration-300 loyaltybay-ease-in-out"
+              className="pointbay-transition-all pointbay-duration-300 pointbay-ease-in-out"
               aria-hidden="true"
             >
               {isMobileMenuOpen ? (
@@ -145,7 +145,7 @@ const Navbar: FC = () => {
       </div>
       {isMobileMenuOpen && (
         <div
-          className="loyaltybay-fixed loyaltybay-top-0 loyaltybay-left-0 loyaltybay-w-full loyaltybay-h-full loyaltybay-bg-black loyaltybay-opacity-60 loyaltybay-z-40 md:loyaltybay-hidden"
+          className="pointbay-fixed pointbay-top-0 pointbay-left-0 pointbay-w-full pointbay-h-full pointbay-bg-black pointbay-opacity-60 pointbay-z-40 md:pointbay-hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

@@ -29,18 +29,18 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const sizeClasses = {
     small:
-      "loyaltybay-px-[8px] !loyaltybay-py-[7px] loyaltybay-text-[13px] loyaltybay-leading-[20px]",
+      "pointbay-px-[8px] !pointbay-py-[7px] pointbay-text-[13px] pointbay-leading-[20px]",
     medium:
-      "loyaltybay-px-[12px] !loyaltybay-py-[9px] !loyaltybay-text-[13px] !loyaltybay-leading-[20px]",
+      "pointbay-px-[12px] !pointbay-py-[9px] !pointbay-text-[13px] !pointbay-leading-[20px]",
     large:
-      "loyaltybay-px-[12px] !loyaltybay-py-[11px] loyaltybay-text-[13px] loyaltybay-leading-[20px]",
+      "pointbay-px-[12px] !pointbay-py-[11px] pointbay-text-[13px] pointbay-leading-[20px]",
   };
 
   return (
-    <div className={`loyaltybay-w-full ${classNames?.root || ""}`}>
+    <div className={`pointbay-w-full ${classNames?.root || ""}`}>
       {label && (
         <label
-          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 ${
+          className={`pointbay-block pointbay-text-sm pointbay-font-bold pointbay-text-gray-900 pointbay-mb-2 ${
             classNames?.label || ""
           }`}
         >
@@ -49,16 +49,16 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         className={`
-          loyaltybay-w-full loyaltybay-outline-none
-          loyaltybay-bg-white loyaltybay-border loyaltybay-rounded-[8px]
-          loyaltybay-text-[#1e1e1e] loyaltybay-placeholder-gray-400
+          pointbay-w-full pointbay-outline-none
+          pointbay-bg-white pointbay-border pointbay-rounded-[8px]
+          pointbay-text-[#1e1e1e] pointbay-placeholder-gray-400
           ${sizeClasses[size]}
           ${borderClasses}
           ${transitionClasses}
           ${error ? errorClasses : hoverClasses}
           ${
             props.disabled
-              ? "loyaltybay-opacity-50 loyaltybay-cursor-not-allowed"
+              ? "pointbay-opacity-50 pointbay-cursor-not-allowed"
               : ""
           }
           ${className}
@@ -68,7 +68,7 @@ export const Input: React.FC<InputProps> = ({
       />
       {error && (
         <span
-          className={`loyaltybay-mt-1 loyaltybay-text-xs loyaltybay-text-red-500 ${
+          className={`pointbay-mt-1 pointbay-text-xs pointbay-text-red-500 ${
             classNames?.error || ""
           }`}
         >

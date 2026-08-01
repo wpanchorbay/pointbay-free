@@ -1,11 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import './styles/index.scss';
 import AdminApp from './AdminApp';
-import { registerLoyaltyBayRegistry } from './registry';
+import { registerPointBayRegistry } from './registry';
 
-registerLoyaltyBayRegistry();
+registerPointBayRegistry();
 
-const rootElement = document.getElementById( 'loyaltybay' );
+const rootElement = document.getElementById( 'pointbay' );
 if ( rootElement ) {
 	createRoot( rootElement ).render( <AdminApp /> );
 }

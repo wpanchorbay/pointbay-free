@@ -292,16 +292,16 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
 
   return (
     <div
-      className={`${sizeClass} ${className} loyaltybay-align-middle`}
+      className={`${sizeClass} ${className} pointbay-align-middle`}
       ref={containerRef}
     >
       {label && (
-        <label htmlFor={selectId} className="loyaltybay-block loyaltybay-mb-1">
+        <label htmlFor={selectId} className="pointbay-block pointbay-mb-1">
           {label}
         </label>
       )}
 
-      <div className="loyaltybay-relative" style={{ width: explicitWidth }}>
+      <div className="pointbay-relative" style={{ width: explicitWidth }}>
         <div
           id={selectId}
           tabIndex={disabled ? -1 : 0}
@@ -314,23 +314,23 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
             setIsOpen(!isOpen);
           }}
           onKeyDown={handleTriggerKeyDown}
-          className={`loyaltybay-flex loyaltybay-flex-wrap loyaltybay-items-center loyaltybay-gap-1 loyaltybay-min-h-[40px] loyaltybay-bg-white loyaltybay-border loyaltybay-border-[#8c8f94] loyaltybay-rounded-[3px] loyaltybay-p-[3px_24px_3px_6px] loyaltybay-min-h-[30px] loyaltybay-transition-shadow loyaltybay-duration-100 loyaltybay-relative loyaltybay-box-border loyaltybay-w-full ${disabled
-            ? "loyaltybay-cursor-not-allowed loyaltybay-bg-[#f0f0f1]"
-            : "loyaltybay-cursor-text"
+          className={`pointbay-flex pointbay-flex-wrap pointbay-items-center pointbay-gap-1 pointbay-min-h-[40px] pointbay-bg-white pointbay-border pointbay-border-[#8c8f94] pointbay-rounded-[3px] pointbay-p-[3px_24px_3px_6px] pointbay-min-h-[30px] pointbay-transition-shadow pointbay-duration-100 pointbay-relative pointbay-box-border pointbay-w-full ${disabled
+            ? "pointbay-cursor-not-allowed pointbay-bg-[#f0f0f1]"
+            : "pointbay-cursor-text"
             } ${isOpen
-              ? "loyaltybay-border-[#2271b1] loyaltybay-shadow-[0_0_0_1px_#2271b1] loyaltybay-outline-none"
-              : "loyaltybay-shadow-none"
+              ? "pointbay-border-[#2271b1] pointbay-shadow-[0_0_0_1px_#2271b1] pointbay-outline-none"
+              : "pointbay-shadow-none"
             }`}
         >
           {selectedOptions.map((opt) => (
             <span
               key={opt.value}
-              className="loyaltybay-bg-[#f0f0f1] loyaltybay-border loyaltybay-border-[#c3c4c7] loyaltybay-rounded-[3px] loyaltybay-px-1 loyaltybay-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-text-xs loyaltybay-text-[#3c434a] loyaltybay-leading-[20px]"
+              className="pointbay-bg-[#f0f0f1] pointbay-border pointbay-border-[#c3c4c7] pointbay-rounded-[3px] pointbay-px-1 pointbay-flex pointbay-items-center pointbay-gap-1 pointbay-text-xs pointbay-text-[#3c434a] pointbay-leading-[20px]"
             >
               {opt.label}
               <button
                 onClick={(e) => handleRemove(e, opt.value)}
-                className="loyaltybay-bg-transparent loyaltybay-border-none loyaltybay-p-0 loyaltybay-cursor-pointer loyaltybay-text-[#8c8f94] loyaltybay-flex loyaltybay-items-center"
+                className="pointbay-bg-transparent pointbay-border-none pointbay-p-0 pointbay-cursor-pointer pointbay-text-[#8c8f94] pointbay-flex pointbay-items-center"
               >
                 <X size={12} />
               </button>
@@ -338,20 +338,20 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
           ))}
 
           {!enableSearch && value.length === 0 && (
-            <span className="loyaltybay-text-[#8c8f94] loyaltybay-text-[13px] loyaltybay-pl-1">
+            <span className="pointbay-text-[#8c8f94] pointbay-text-[13px] pointbay-pl-1">
               {placeholder}
             </span>
           )}
 
           {/* Chevron icon pointing down */}
-          <span className="loyaltybay-absolute loyaltybay-right-1.5 loyaltybay-top-1/2 -loyaltybay-translate-y-1/2 loyaltybay-flex loyaltybay-pointer-events-none">
+          <span className="pointbay-absolute pointbay-right-1.5 pointbay-top-1/2 -pointbay-translate-y-1/2 pointbay-flex pointbay-pointer-events-none">
             <ChevronDown size={14} color="#50575e" />
           </span>
         </div>
 
         {isOpen && (
           <div
-            className="loyaltybay-absolute loyaltybay-z-[99999] loyaltybay-bg-white loyaltybay-border-2 loyaltybay-border-[#2271b1] loyaltybay-border-t-0  loyaltybay-rounded-b-[3px] loyaltybay-shadow-[0_3px_5px_rgba(0,0,0,0.2)] loyaltybay-p-0 loyaltybay-box-border loyaltybay-top-full loyaltybay-left-[-1px] loyaltybay-mt-[-3px]"
+            className="pointbay-absolute pointbay-z-[99999] pointbay-bg-white pointbay-border-2 pointbay-border-[#2271b1] pointbay-border-t-0  pointbay-rounded-b-[3px] pointbay-shadow-[0_3px_5px_rgba(0,0,0,0.2)] pointbay-p-0 pointbay-box-border pointbay-top-full pointbay-left-[-1px] pointbay-mt-[-3px]"
             style={{
               ...(differentDropdownWidth
                 ? { minWidth: "calc(100% + 2px)" }
@@ -373,22 +373,22 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                 onKeyDown={handleSearchKeyDown}
                 placeholder={value.length === 0 ? placeholder : ""}
                 disabled={disabled}
-                className="loyaltybay-w-[calc(100%-8px)] loyaltybay-px-2 loyaltybay-leading-loose loyaltybay-min-h-[26px] loyaltybay-border loyaltybay-border-[#aaaaaa] loyaltybay-bg-[#fcfcfc] loyaltybay-rounded-[3px] loyaltybay-box-border loyaltybay-text-[13px] focus:loyaltybay-outline-none focus:loyaltybay-shadow-none loyaltybay-m-[4px]"
+                className="pointbay-w-[calc(100%-8px)] pointbay-px-2 pointbay-leading-loose pointbay-min-h-[26px] pointbay-border pointbay-border-[#aaaaaa] pointbay-bg-[#fcfcfc] pointbay-rounded-[3px] pointbay-box-border pointbay-text-[13px] focus:pointbay-outline-none focus:pointbay-shadow-none pointbay-m-[4px]"
               />
             )}
             {isLoading ? (
-              <div className="loyaltybay-py-2 loyaltybay-px-3 loyaltybay-text-[#646970] loyaltybay-text-[13px] loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2">
-                <Hourglass size={14} className="loyaltybay-animate-spin" />{" "}
+              <div className="pointbay-py-2 pointbay-px-3 pointbay-text-[#646970] pointbay-text-[13px] pointbay-flex pointbay-items-center pointbay-gap-2">
+                <Hourglass size={14} className="pointbay-animate-spin" />{" "}
                 Loading...
               </div>
             ) : (
               <ul
                 ref={listRef}
                 role="listbox"
-                className="loyaltybay-max-h-[220px] loyaltybay-overflow-y-auto loyaltybay-m-0 loyaltybay-p-0 loyaltybay-list-none"
+                className="pointbay-max-h-[220px] pointbay-overflow-y-auto pointbay-m-0 pointbay-p-0 pointbay-list-none"
               >
                 {filteredOptions.length === 0 ? (
-                  <li className="loyaltybay-px-3 loyaltybay-py-1.5 loyaltybay-text-[#646970] loyaltybay-italic loyaltybay-text-[13px] loyaltybay-m-0">
+                  <li className="pointbay-px-3 pointbay-py-1.5 pointbay-text-[#646970] pointbay-italic pointbay-text-[13px] pointbay-m-0">
                     {searchQuery ? "No results found" : "No options available"}
                   </li>
                 ) : (
@@ -410,38 +410,38 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
                           e.stopPropagation();
                           handleSelect(opt);
                         }}
-                        className={`loyaltybay-px-3 loyaltybay-py-1.5 loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-text-[13px] loyaltybay-m-0 ${isDisabled
-                          ? "loyaltybay-cursor-not-allowed"
-                          : "loyaltybay-cursor-pointer"
+                        className={`pointbay-px-3 pointbay-py-1.5 pointbay-flex pointbay-items-center pointbay-justify-between pointbay-text-[13px] pointbay-m-0 ${isDisabled
+                          ? "pointbay-cursor-not-allowed"
+                          : "pointbay-cursor-pointer"
                           } ${isHighlighted
-                            ? "loyaltybay-bg-[#2271b1] loyaltybay-text-white"
+                            ? "pointbay-bg-[#2271b1] pointbay-text-white"
                             : isDisabled
-                              ? "loyaltybay-bg-transparent loyaltybay-text-[#a7aaad]"
-                              : "loyaltybay-bg-transparent loyaltybay-text-[#2c3338]"
+                              ? "pointbay-bg-transparent pointbay-text-[#a7aaad]"
+                              : "pointbay-bg-transparent pointbay-text-[#2c3338]"
                           }`}
                       >
-                        <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2">
+                        <div className="pointbay-flex pointbay-items-center pointbay-gap-2">
                           <div
                             className={`
-                            loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
-                            loyaltybay-w-4 loyaltybay-h-4 loyaltybay-rounded loyaltybay-border-2 loyaltybay-transition-all loyaltybay-duration-200
+                            pointbay-flex pointbay-items-center pointbay-justify-center
+                            pointbay-w-4 pointbay-h-4 pointbay-rounded pointbay-border-2 pointbay-transition-all pointbay-duration-200
                             ${isSelected
                                 ? isHighlighted
-                                  ? "loyaltybay-border-white loyaltybay-bg-white"
-                                  : "loyaltybay-border-[#2271b1] loyaltybay-bg-[#2271b1]"
+                                  ? "pointbay-border-white pointbay-bg-white"
+                                  : "pointbay-border-[#2271b1] pointbay-bg-[#2271b1]"
                                 : isHighlighted
-                                  ? "loyaltybay-border-white loyaltybay-bg-transparent"
-                                  : "loyaltybay-border-[#8c8f94] loyaltybay-bg-white"
+                                  ? "pointbay-border-white pointbay-bg-transparent"
+                                  : "pointbay-border-[#8c8f94] pointbay-bg-white"
                               }
                           `}
                           >
                             <svg
-                              className={`loyaltybay-w-3.5 loyaltybay-h-3.5 loyaltybay-transform loyaltybay-transition-transform loyaltybay-duration-200 ${isSelected
-                                ? "loyaltybay-scale-100"
-                                : "loyaltybay-scale-0"
+                              className={`pointbay-w-3.5 pointbay-h-3.5 pointbay-transform pointbay-transition-transform pointbay-duration-200 ${isSelected
+                                ? "pointbay-scale-100"
+                                : "pointbay-scale-0"
                                 } ${isHighlighted && isSelected
-                                  ? "loyaltybay-text-[#2271b1]"
-                                  : "loyaltybay-text-white"
+                                  ? "pointbay-text-[#2271b1]"
+                                  : "pointbay-text-white"
                                 }`}
                               viewBox="0 0 24 24"
                               fill="none"
@@ -468,7 +468,7 @@ export const ClassicMultiSelect: React.FC<ClassicMultiSelectProps> = ({
       </div>
 
       {description && (
-        <p className="description loyaltybay-mt-1">{description}</p>
+        <p className="description pointbay-mt-1">{description}</p>
       )}
     </div>
   );

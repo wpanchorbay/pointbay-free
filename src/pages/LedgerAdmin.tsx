@@ -99,7 +99,7 @@ const LedgerAdmin: FC = () => {
 			const params = buildLedgerParams();
 
 			const res: any = await apiFetch( {
-				path: `/loyaltybay/v1/ledger?${ params.toString() }`,
+				path: `/pointbay/v1/ledger?${ params.toString() }`,
 			} );
 			setData( res.data );
 			setTotal( res.total );
@@ -132,7 +132,7 @@ const LedgerAdmin: FC = () => {
 		}
 		try {
 			await apiFetch( {
-				path: `/loyaltybay/v1/user-points`,
+				path: `/pointbay/v1/user-points`,
 				method: 'POST',
 				data: {
 					user_id: userId,
@@ -191,7 +191,7 @@ const LedgerAdmin: FC = () => {
 		link.setAttribute( 'href', url );
 		link.setAttribute(
 			'download',
-			`loyaltybay_ledger_${ filenameSuffix }_${
+			`pointbay_ledger_${ filenameSuffix }_${
 				new Date().toISOString().split( 'T' )[ 0 ]
 			}.csv`
 		);
@@ -206,7 +206,7 @@ const LedgerAdmin: FC = () => {
 		try {
 			const params = buildLedgerParams( 1, 99999 );
 			const res: any = await apiFetch( {
-				path: `/loyaltybay/v1/ledger?${ params.toString() }`,
+				path: `/pointbay/v1/ledger?${ params.toString() }`,
 			} );
 			exportRows( res.data, 'export' );
 		} catch ( e: any ) {
@@ -277,7 +277,7 @@ const LedgerAdmin: FC = () => {
 						htmlFor="bulk-action-selector-top"
 						className="screen-reader-text"
 					>
-						{ __( 'Select bulk action', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Select bulk action', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</label>
 					<select
 						id="bulk-action-selector-top"
@@ -285,10 +285,10 @@ const LedgerAdmin: FC = () => {
 						onChange={ ( e ) => setBulkAction( e.target.value ) }
 					>
 						<option value="">
-							{ __( 'Bulk actions', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Bulk actions', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</option>
 						<option value="export_selected">
-							{ __( 'Export Selected', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Export Selected', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</option>
 					</select>
 					<ClassicButton
@@ -297,15 +297,15 @@ const LedgerAdmin: FC = () => {
 						disabled={ ! bulkAction || selected.length === 0 }
 						onClick={ handleApplyBulkAction }
 					>
-						{ __( 'Apply', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Apply', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</ClassicButton>
 				</div>
 			) }
 			<div className="tablenav-pages">
 				<span className="displaying-num">
 					{ total === 1
-						? __( '1 item', 'loyaltybay-loyalty-points-referral-rewards-woo' )
-						: `${ total } ${ __( 'items', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }` }
+						? __( '1 item', 'pointbay-loyalty-points-referral-rewards-woo' )
+						: `${ total } ${ __( 'items', 'pointbay-loyalty-points-referral-rewards-woo' ) }` }
 				</span>
 				<span className="pagination-links">
 					<button
@@ -316,7 +316,7 @@ const LedgerAdmin: FC = () => {
 						onClick={ () => setPage( 1 ) }
 					>
 						<span className="screen-reader-text">
-							{ __( 'First page', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'First page', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</span>
 						<span aria-hidden="true">«</span>
 					</button>
@@ -328,20 +328,20 @@ const LedgerAdmin: FC = () => {
 						onClick={ () => setPage( page - 1 ) }
 					>
 						<span className="screen-reader-text">
-							{ __( 'Previous page', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Previous page', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</span>
 						<span aria-hidden="true">‹</span>
 					</button>
 					<span className="paging-input">
 						<form
 							onSubmit={ handlePageInputSubmit }
-							className="loyaltybay-inline"
+							className="pointbay-inline"
 						>
 							<label
 								htmlFor={ `current-page-selector-${ position }` }
 								className="screen-reader-text"
 							>
-								{ __( 'Current Page', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+								{ __( 'Current Page', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 							</label>
 							<input
 								id={ `current-page-selector-${ position }` }
@@ -355,7 +355,7 @@ const LedgerAdmin: FC = () => {
 							/>
 							<span className="tablenav-paging-text">
 								{ ' ' }
-								{ __( 'of', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }{ ' ' }
+								{ __( 'of', 'pointbay-loyalty-points-referral-rewards-woo' ) }{ ' ' }
 								<span className="total-pages">
 									{ totalPages }
 								</span>
@@ -370,7 +370,7 @@ const LedgerAdmin: FC = () => {
 						onClick={ () => setPage( page + 1 ) }
 					>
 						<span className="screen-reader-text">
-							{ __( 'Next page', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Next page', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</span>
 						<span aria-hidden="true">›</span>
 					</button>
@@ -382,7 +382,7 @@ const LedgerAdmin: FC = () => {
 						onClick={ () => setPage( totalPages ) }
 					>
 						<span className="screen-reader-text">
-							{ __( 'Last page', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Last page', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</span>
 						<span aria-hidden="true">»</span>
 					</button>
@@ -393,11 +393,11 @@ const LedgerAdmin: FC = () => {
 
 	const adjustFields: SettingsField[] = [
 		{
-			id: 'loyaltybay-adjust-user',
-			label: __( 'User', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			id: 'pointbay-adjust-user',
+			label: __( 'User', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			render: () => (
 				<ClassicMultiSelect
-					id="loyaltybay-adjust-user"
+					id="pointbay-adjust-user"
 					differentDropdownWidth
 					value={ adjUserId ? [ parseInt( adjUserId ) ] : [] }
 					onChange={ ( val ) =>
@@ -407,18 +407,18 @@ const LedgerAdmin: FC = () => {
 								: ''
 						)
 					}
-					endpoint="/loyaltybay/v1/user-points/search-users"
-					placeholder={ __( 'Search users…', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+					endpoint="/pointbay/v1/user-points/search-users"
+					placeholder={ __( 'Search users…', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					size="regular"
 				/>
 			),
 		},
 		{
-			id: 'loyaltybay-adjust-type',
-			label: __( 'Type', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			id: 'pointbay-adjust-type',
+			label: __( 'Type', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			render: () => (
 				<ClassicSelect
-					id="loyaltybay-adjust-type"
+					id="pointbay-adjust-type"
 					value={ adjType }
 					onChange={ ( val ) => setAdjType( val as string ) }
 					options={ [
@@ -430,11 +430,11 @@ const LedgerAdmin: FC = () => {
 			),
 		},
 		{
-			id: 'loyaltybay-adjust-amount',
-			label: __( 'Amount', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			id: 'pointbay-adjust-amount',
+			label: __( 'Amount', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			render: () => (
 				<ClassicInput
-					id="loyaltybay-adjust-amount"
+					id="pointbay-adjust-amount"
 					type="number"
 					min="1"
 					value={ adjAmount }
@@ -445,11 +445,11 @@ const LedgerAdmin: FC = () => {
 			),
 		},
 		{
-			id: 'loyaltybay-adjust-reason',
-			label: __( 'Reason', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			id: 'pointbay-adjust-reason',
+			label: __( 'Reason', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			render: () => (
 				<ClassicInput
-					id="loyaltybay-adjust-reason"
+					id="pointbay-adjust-reason"
 					type="text"
 					value={ adjReason }
 					onChange={ ( e ) => setAdjReason( e.target.value ) }
@@ -461,23 +461,23 @@ const LedgerAdmin: FC = () => {
 	];
 
 	return (
-		<div className="wrap loyaltybay-ledger-page">
-			<div className="loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between">
-				<h1 className="wp-heading-inline loyaltybay-ignore-preflight">
-					{ __( 'Points History', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+		<div className="wrap pointbay-ledger-page">
+			<div className="pointbay-flex pointbay-items-center pointbay-justify-between">
+				<h1 className="wp-heading-inline pointbay-ignore-preflight">
+					{ __( 'Points History', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 				</h1>
-				<div className="loyaltybay-flex loyaltybay-gap-2">
+				<div className="pointbay-flex pointbay-gap-2">
 					<ClassicButton
 						variant="secondary"
 						onClick={ handleExportAllCSV }
 					>
-						{ __( 'Export to CSV', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Export to CSV', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</ClassicButton>
 					<ClassicButton
 						variant="primary"
 						onClick={ () => setAdjustOpen( true ) }
 					>
-						{ __( 'Adjust Points', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Adjust Points', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</ClassicButton>
 				</div>
 			</div>
@@ -486,33 +486,33 @@ const LedgerAdmin: FC = () => {
 			<CustomModal
 				isOpen={ adjustOpen }
 				onClose={ () => setAdjustOpen( false ) }
-				title={ __( 'Adjust Points', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
-				classNames={ { body: '!loyaltybay-overflow-visible' } }
+				title={ __( 'Adjust Points', 'pointbay-loyalty-points-referral-rewards-woo' ) }
+				classNames={ { body: '!pointbay-overflow-visible' } }
 				footer={
 					<ClassicButton
 						variant="primary"
 						type="submit"
-						form="loyaltybay-adjust-points-form"
+						form="pointbay-adjust-points-form"
 					>
-						{ __( 'Submit', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Submit', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</ClassicButton>
 				}
 			>
-				<form id="loyaltybay-adjust-points-form" onSubmit={ handleAdjust }>
+				<form id="pointbay-adjust-points-form" onSubmit={ handleAdjust }>
 					<ClassicSettingsTable fields={ adjustFields } />
 				</form>
 			</CustomModal>
 
 			<form
 				onSubmit={ handleApplyFilters }
-				className="tablenav top loyaltybay-mt-4"
+				className="tablenav top pointbay-mt-4"
 			>
-				<div className="alignleft actions loyaltybay-flex loyaltybay-gap-2 loyaltybay-items-center">
+				<div className="alignleft actions pointbay-flex pointbay-gap-2 pointbay-items-center">
 					<label
 						className="screen-reader-text"
 						htmlFor="ledger-search-input"
 					>
-						{ __( 'Search Ledger', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Search Ledger', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</label>
 					<input
 						type="search"
@@ -521,7 +521,7 @@ const LedgerAdmin: FC = () => {
 						onChange={ ( e ) => setSearchInput( e.target.value ) }
 						placeholder={ __(
 							'Search by user name or email',
-							'loyaltybay-loyalty-points-referral-rewards-woo'
+							'pointbay-loyalty-points-referral-rewards-woo'
 						) }
 					/>
 
@@ -529,7 +529,7 @@ const LedgerAdmin: FC = () => {
 						htmlFor="filter-by-type"
 						className="screen-reader-text"
 					>
-						{ __( 'Filter by type', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Filter by type', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</label>
 					<select
 						id="filter-by-type"
@@ -539,13 +539,13 @@ const LedgerAdmin: FC = () => {
 						}
 					>
 						<option value="">
-							{ __( 'All types', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'All types', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</option>
 						<option value="credit">
-							{ __( 'Credit', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Credit', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</option>
 						<option value="debit">
-							{ __( 'Debit', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'Debit', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</option>
 					</select>
 
@@ -553,7 +553,7 @@ const LedgerAdmin: FC = () => {
 						htmlFor="filter-by-reference"
 						className="screen-reader-text"
 					>
-						{ __( 'Filter by reference', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						{ __( 'Filter by reference', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					</label>
 					<select
 						id="filter-by-reference"
@@ -563,7 +563,7 @@ const LedgerAdmin: FC = () => {
 						}
 					>
 						<option value="">
-							{ __( 'All references', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+							{ __( 'All references', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 						</option>
 						{ Object.entries( REFERENCE_TYPE_LABELS ).map(
 							( [ value, label ] ) => (
@@ -576,7 +576,7 @@ const LedgerAdmin: FC = () => {
 					<input
 						type="submit"
 						className="button"
-						value={ __( 'Apply Filters', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+						value={ __( 'Apply Filters', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 					/>
 				</div>
 			</form>
@@ -617,17 +617,17 @@ const LedgerAdmin: FC = () => {
 							if ( columnKey === 'type' )
 								return (
 									<span
-										className={ `loyaltybay-status-pill loyaltybay-status-pill--${ item.transaction_type }` }
+										className={ `pointbay-status-pill pointbay-status-pill--${ item.transaction_type }` }
 									>
 										{ item.transaction_type === 'credit'
-											? __( 'Credit', 'loyaltybay-loyalty-points-referral-rewards-woo' )
-											: __( 'Debit', 'loyaltybay-loyalty-points-referral-rewards-woo' ) }
+											? __( 'Credit', 'pointbay-loyalty-points-referral-rewards-woo' )
+											: __( 'Debit', 'pointbay-loyalty-points-referral-rewards-woo' ) }
 									</span>
 								);
 							if ( columnKey === 'reference' )
 								return (
 									<span
-										className={ `loyaltybay-status-pill loyaltybay-status-pill--reference` }
+										className={ `pointbay-status-pill pointbay-status-pill--reference` }
 									>
 										{ referenceTypeLabel(
 											item.reference_type

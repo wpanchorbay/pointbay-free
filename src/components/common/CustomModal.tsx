@@ -25,7 +25,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   title,
   children,
   footer,
-  maxWidth = "loyaltybay-max-w-2xl",
+  maxWidth = "pointbay-max-w-2xl",
   closeOnOutsideClick = true,
   className = "",
   showHeader = true,
@@ -56,20 +56,20 @@ const CustomModal: React.FC<CustomModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="loyaltybay-fixed loyaltybay-inset-0 loyaltybay-z-[9998] loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-p-4 loyaltybay-bg-black/75 loyaltybay-transition-opacity loyaltybay-duration-300">
+    <div className="pointbay-fixed pointbay-inset-0 pointbay-z-[9998] pointbay-flex pointbay-items-center pointbay-justify-center pointbay-p-4 pointbay-bg-black/75 pointbay-transition-opacity pointbay-duration-300">
       {/* Backdrop click handler */}
       <div
-        className="loyaltybay-absolute loyaltybay-inset-0"
+        className="pointbay-absolute pointbay-inset-0"
         onClick={closeOnOutsideClick ? onClose : undefined}
       />
 
       {/* Modal Content */}
       <div
         className={`
-          loyaltybay-relative loyaltybay-w-full ${maxWidth} 
-          loyaltybay-bg-white loyaltybay-shadow-2xl loyaltybay-rounded-xl 
-          loyaltybay-flex loyaltybay-flex-col loyaltybay-max-h-[90vh]
-          loyaltybay-animate-in loyaltybay-fade-in loyaltybay-zoom-in-95 loyaltybay-duration-200
+          pointbay-relative pointbay-w-full ${maxWidth} 
+          pointbay-bg-white pointbay-shadow-2xl pointbay-rounded-xl 
+          pointbay-flex pointbay-flex-col pointbay-max-h-[90vh]
+          pointbay-animate-in pointbay-fade-in pointbay-zoom-in-95 pointbay-duration-200
           ${className}
         `}
         role="dialog"
@@ -78,24 +78,24 @@ const CustomModal: React.FC<CustomModalProps> = ({
         {/* Header */}
         {showHeader && (
           <div
-            className={`loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-px-6 loyaltybay-py-4 loyaltybay-border-b loyaltybay-border-gray-100 ${classNames.header}`}
+            className={`pointbay-flex pointbay-items-center pointbay-justify-between pointbay-px-6 pointbay-py-4 pointbay-border-b pointbay-border-gray-100 ${classNames.header}`}
           >
-            <h3 className="loyaltybay-text-lg loyaltybay-font-semibold loyaltybay-text-gray-900">
+            <h3 className="pointbay-text-lg pointbay-font-semibold pointbay-text-gray-900">
               {title}
             </h3>
             <button
               onClick={onClose}
-              className="loyaltybay-p-1.5 loyaltybay-text-gray-400 hover:loyaltybay-text-gray-600 loyaltybay-transition-colors hover:loyaltybay-bg-gray-100 loyaltybay-rounded-full"
+              className="pointbay-p-1.5 pointbay-text-gray-400 hover:pointbay-text-gray-600 pointbay-transition-colors hover:pointbay-bg-gray-100 pointbay-rounded-full"
               aria-label="Close modal"
             >
-              <X className="loyaltybay-w-5 loyaltybay-h-5" />
+              <X className="pointbay-w-5 pointbay-h-5" />
             </button>
           </div>
         )}
 
         {/* Body */}
         <div
-          className={`loyaltybay-p-6 loyaltybay-overflow-y-auto loyaltybay-flex-1 ${classNames.body}`}
+          className={`pointbay-p-6 pointbay-overflow-y-auto pointbay-flex-1 ${classNames.body}`}
         >
           {children}
         </div>
@@ -103,7 +103,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
         {/* Footer */}
         {footer && (
           <div
-            className={`loyaltybay-flex loyaltybay-items-center loyaltybay-justify-end loyaltybay-gap-3 loyaltybay-px-6 loyaltybay-py-4 loyaltybay-bg-gray-50 loyaltybay-border-t loyaltybay-border-gray-100 loyaltybay-rounded-b-xl ${classNames.footer}`}
+            className={`pointbay-flex pointbay-items-center pointbay-justify-end pointbay-gap-3 pointbay-px-6 pointbay-py-4 pointbay-bg-gray-50 pointbay-border-t pointbay-border-gray-100 pointbay-rounded-b-xl ${classNames.footer}`}
           >
             {footer}
           </div>

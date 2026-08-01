@@ -5,7 +5,7 @@
  * Register your database migration classes here. They will be executed
  * in the order listed on plugin activation, and in reverse order on uninstallation.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Config
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 return array(
-	\LoyaltyBay\Database\Migrations\CreateLedgerTable::class,
-	\LoyaltyBay\Database\Migrations\CreateLedgerCacheTable::class,
-	\LoyaltyBay\Database\Migrations\CreateCronLogTable::class,
+	\PointBay\Database\Migrations\CreateLedgerTable::class,
+	\PointBay\Database\Migrations\CreateLedgerCacheTable::class,
+	\PointBay\Database\Migrations\CreateCronLogTable::class,
 );

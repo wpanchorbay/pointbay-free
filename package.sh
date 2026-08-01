@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# LoyaltyBay Packaging Script
+# PointBay Packaging Script
 # This script builds the project and creates distributable zip files.
 
 # Exit on error
 set -e
 
 # Define the zip filename
-PLUGIN_SLUG="loyaltybay-loyalty-points-referral-rewards-woo"
+PLUGIN_SLUG="pointbay-loyalty-points-referral-rewards-woo"
 ZIP_NAME="$PLUGIN_SLUG.zip"
 
 echo "------------------------------------------------------"
@@ -80,7 +80,7 @@ copy_plugin_files() {
     cp index.php "$DEST/"
     cp readme.txt "$DEST/"
     cp uninstall.php "$DEST/"
-    cp loyaltybay-loyalty-points-referral-rewards-woo.php "$DEST/"
+    cp pointbay-loyalty-points-referral-rewards-woo.php "$DEST/"
     cp composer.json "$DEST/"
 
     # Ship the JS build-tooling config so the bundled src/ is self-buildable from

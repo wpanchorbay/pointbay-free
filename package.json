@@ -1,7 +1,7 @@
 {
-  "name": "loyaltybay-loyalty-points-referral-rewards-woo",
+  "name": "pointbay-loyalty-points-referral-rewards-woo",
   "version": "1.0.0",
-  "description": "LoyaltyBay - A modern WordPress plugin boilerplate with React/TypeScript admin UI.",
+  "description": "PointBay - A modern WordPress plugin boilerplate with React/TypeScript admin UI.",
   "main": "index.js",
   "scripts": {
     "start": "wp-scripts start",
@@ -13,13 +13,13 @@
     "lint:js": "wp-scripts lint-js src",
     "lint:js:fix": "wp-scripts lint-js src --fix",
     "format": "wp-scripts format src",
-    "makepot": "wp i18n make-pot . languages/loyaltybay-loyalty-points-referral-rewards-woo.pot --domain=loyaltybay-loyalty-points-referral-rewards-woo --slug=loyaltybay-loyalty-points-referral-rewards-woo --exclude='node_modules,vendor,src'",
+    "makepot": "wp i18n make-pot . languages/pointbay-loyalty-points-referral-rewards-woo.pot --domain=pointbay-loyalty-points-referral-rewards-woo --slug=pointbay-loyalty-points-referral-rewards-woo --exclude='node_modules,vendor,src'",
     "make-json": "wp i18n make-json languages --no-purge",
     "zip": "bash package.sh",
     "rebranding": "bash rename.sh",
     "make:resource": "php bin/make-resource"
   },
-  "author": "LoyaltyBay",
+  "author": "PointBay",
   "license": "GPLv2 or later",
   "devDependencies": {
     "@babel/core": "^7.28.4",
@@ -59,7 +59,7 @@
     "react-router-dom": "^7.6.3"
   },
   "wp-i18n": {
-    "domain": "loyaltybay-loyalty-points-referral-rewards-woo",
-    "potFile": "languages/loyaltybay-loyalty-points-referral-rewards-woo.pot"
+    "domain": "pointbay-loyalty-points-referral-rewards-woo",
+    "potFile": "languages/pointbay-loyalty-points-referral-rewards-woo.pot"
   }
 }

@@ -2,12 +2,12 @@
 /**
  * Provides a virtual WooCommerce coupon representing redeemed loyalty points.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
-use LoyaltyBay\Core\Settings;
+use PointBay\Core\Settings;
 
 /**
  * Applies the loyalty points discount to the cart using a virtual coupon.
@@ -23,7 +23,7 @@ class CouponRedemption {
 	 * @var CouponRedemption|null
 	 */
 	private static $instance = null;
-	const COUPON_CODE_PREFIX = 'loyaltybay_points_';
+	const COUPON_CODE_PREFIX = 'pointbay_points_';
 
 	/**
 	 * Gets an instance of this object.
@@ -42,7 +42,7 @@ class CouponRedemption {
 	 * Register the hooks for the virtual points coupon.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {

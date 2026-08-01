@@ -54,31 +54,31 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div
-      className={`loyaltybay-fixed loyaltybay-inset-0 loyaltybay-z-[60000] loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-bg-black/50 loyaltybay-backdrop-blur-sm loyaltybay-transition-opacity ${
+      className={`pointbay-fixed pointbay-inset-0 pointbay-z-[60000] pointbay-flex pointbay-items-center pointbay-justify-center pointbay-bg-black/50 pointbay-backdrop-blur-sm pointbay-transition-opacity ${
         classNames.overlay || ""
       }`}
     >
       <div
-        className={`loyaltybay-bg-white loyaltybay-rounded-lg loyaltybay-shadow-xl loyaltybay-pt-6 loyaltybay-pb-3 loyaltybay-px-8 loyaltybay-max-w-sm loyaltybay-w-full loyaltybay-mx-4 loyaltybay-transform loyaltybay-transition-all loyaltybay-scale-100 ${
+        className={`pointbay-bg-white pointbay-rounded-lg pointbay-shadow-xl pointbay-pt-6 pointbay-pb-3 pointbay-px-8 pointbay-max-w-sm pointbay-w-full pointbay-mx-4 pointbay-transform pointbay-transition-all pointbay-scale-100 ${
           classNames.content || ""
         }`}
       >
         <h3
-          className={`loyaltybay-text-lg loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 loyaltybay-text-nowrap ${
+          className={`pointbay-text-lg pointbay-font-bold pointbay-text-gray-900 pointbay-mb-2 pointbay-text-nowrap ${
             classNames.title || ""
           }`}
         >
           {title}
         </h3>
         <p
-          className={`loyaltybay-text-gray-600 loyaltybay-mb-6 loyaltybay-text-sm loyaltybay-leading-relaxed ${
+          className={`pointbay-text-gray-600 pointbay-mb-6 pointbay-text-sm pointbay-leading-relaxed ${
             classNames.message || ""
           }`}
         >
           {message}
         </p>
         <div
-          className={`loyaltybay-flex loyaltybay-justify-end loyaltybay-gap-3 ${
+          className={`pointbay-flex pointbay-justify-end pointbay-gap-3 ${
             classNames.footer || ""
           }`}
         >

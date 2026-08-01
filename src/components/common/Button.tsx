@@ -21,35 +21,35 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const sizeClasses = {
-      small: "loyaltybay-px-[8px] loyaltybay-py-[5px]",
-      medium: "loyaltybay-px-[12px] loyaltybay-py-[6px]",
-      large: "loyaltybay-px-[16px] loyaltybay-py-[10px]",
+      small: "pointbay-px-[8px] pointbay-py-[5px]",
+      medium: "pointbay-px-[12px] pointbay-py-[6px]",
+      large: "pointbay-px-[16px] pointbay-py-[10px]",
     };
 
     const colorClasses = {
       primary: {
         solid:
-          "loyaltybay-bg-primary loyaltybay-text-white loyaltybay-border loyaltybay-border-primary hover:loyaltybay-bg-primary-hovered hover:loyaltybay-border-primary-hovered",
+          "pointbay-bg-primary pointbay-text-white pointbay-border pointbay-border-primary hover:pointbay-bg-primary-hovered hover:pointbay-border-primary-hovered",
         outline:
-          "loyaltybay-bg-transparent loyaltybay-border loyaltybay-border-primary loyaltybay-text-primary hover:loyaltybay-bg-primary hover:loyaltybay-text-white",
+          "pointbay-bg-transparent pointbay-border pointbay-border-primary pointbay-text-primary hover:pointbay-bg-primary hover:pointbay-text-white",
         ghost:
-          "loyaltybay-bg-transparent loyaltybay-text-primary hover:loyaltybay-text-primary-hovered hover:loyaltybay-bg-primary/10",
+          "pointbay-bg-transparent pointbay-text-primary hover:pointbay-text-primary-hovered hover:pointbay-bg-primary/10",
       },
       secondary: {
         solid:
-          "loyaltybay-bg-secondary loyaltybay-text-white loyaltybay-border loyaltybay-border-secondary hover:loyaltybay-bg-secondary-hovered",
+          "pointbay-bg-secondary pointbay-text-white pointbay-border pointbay-border-secondary hover:pointbay-bg-secondary-hovered",
         outline:
-          "loyaltybay-bg-transparent loyaltybay-border loyaltybay-border-secondary loyaltybay-text-secondary hover:loyaltybay-bg-secondary hover:loyaltybay-text-white",
+          "pointbay-bg-transparent pointbay-border pointbay-border-secondary pointbay-text-secondary hover:pointbay-bg-secondary hover:pointbay-text-white",
         ghost:
-          "loyaltybay-bg-transparent loyaltybay-text-[#1e1e1e] hover:!loyaltybay-text-primary",
+          "pointbay-bg-transparent pointbay-text-[#1e1e1e] hover:!pointbay-text-primary",
       },
       danger: {
         solid:
-          "loyaltybay-bg-red-500 loyaltybay-text-white loyaltybay-border loyaltybay-border-red-500 hover:loyaltybay-bg-red-600 hover:loyaltybay-border-red-600",
+          "pointbay-bg-red-500 pointbay-text-white pointbay-border pointbay-border-red-500 hover:pointbay-bg-red-600 hover:pointbay-border-red-600",
         outline:
-          "loyaltybay-bg-transparent loyaltybay-border loyaltybay-border-red-500 loyaltybay-text-red-500 hover:loyaltybay-bg-red-500 hover:loyaltybay-text-white",
+          "pointbay-bg-transparent pointbay-border pointbay-border-red-500 pointbay-text-red-500 hover:pointbay-bg-red-500 hover:pointbay-text-white",
         ghost:
-          "loyaltybay-bg-transparent loyaltybay-text-red-500 hover:loyaltybay-bg-red-500/10",
+          "pointbay-bg-transparent pointbay-text-red-500 hover:pointbay-bg-red-500/10",
       },
     };
 
@@ -62,9 +62,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={`
-                loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-gap-[6px]
-                loyaltybay-text-default loyaltybay-rounded-[8px] loyaltybay-transition-all loyaltybay-duration-200
-                disabled:loyaltybay-opacity-50 disabled:loyaltybay-cursor-not-allowed
+                pointbay-flex pointbay-items-center pointbay-justify-center pointbay-gap-[6px]
+                pointbay-text-default pointbay-rounded-[8px] pointbay-transition-all pointbay-duration-200
+                disabled:pointbay-opacity-50 disabled:pointbay-cursor-not-allowed
                 ${finalSizeClass} 
                 ${variantClasses} 
                 ${className}

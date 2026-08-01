@@ -2,15 +2,15 @@
 /**
  * Fired during plugin activation.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
-use LoyaltyBay\Data\DbManager;
+use PointBay\Data\DbManager;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
@@ -39,16 +39,16 @@ class Activator {
 	public static function activate() {
 		// Bail out (and deactivate) if WooCommerce isn't active — this plugin requires it.
 		if ( ! self::is_woocommerce_active() ) {
-			deactivate_plugins( plugin_basename( \LOYALTYBAY_PATH . 'loyaltybay-loyalty-points-referral-rewards-woo.php' ) );
+			deactivate_plugins( plugin_basename( \POINTBAY_PATH . 'pointbay-loyalty-points-referral-rewards-woo.php' ) );
 			wp_die(
-				esc_html__( 'LoyaltyBay requires WooCommerce to be installed and active.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
-				esc_html__( 'Plugin dependency check', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+				esc_html__( 'PointBay requires WooCommerce to be installed and active.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				esc_html__( 'Plugin dependency check', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				array( 'back_link' => true )
 			);
 		}
 
 		// Set up the default options if they don't exist.
-		if ( false === get_option( \LOYALTYBAY_OPTION_NAME ) ) {
+		if ( false === get_option( \POINTBAY_OPTION_NAME ) ) {
 			Settings::get_instance()->update_settings( Settings::get_instance()->get_default_settings() );
 		}
 
@@ -56,8 +56,8 @@ class Activator {
 		self::create_custom_tables();
 
 		// Register the rewrite endpoint before flushing, since init has already run during the activation request.
-		if ( class_exists( '\LoyaltyBay\Dashboard\MyRewardsEndpoint' ) ) {
-			\LoyaltyBay\Dashboard\MyRewardsEndpoint::get_instance()->add_endpoint();
+		if ( class_exists( '\PointBay\Dashboard\MyRewardsEndpoint' ) ) {
+			\PointBay\Dashboard\MyRewardsEndpoint::get_instance()->add_endpoint();
 		}
 
 		// Flush rewrite rules.
@@ -104,7 +104,7 @@ class Activator {
 	 * @static
 	 */
 	private static function add_plugin_roles_and_capabilities() {
-		$custom_capability = 'manage_loyaltybay';
+		$custom_capability = 'manage_pointbay';
 
 		$admin_role = get_role( 'administrator' );
 		if ( $admin_role && ! $admin_role->has_cap( $custom_capability ) ) {

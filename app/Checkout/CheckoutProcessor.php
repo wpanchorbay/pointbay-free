@@ -2,12 +2,12 @@
 /**
  * Debits redemption points when an order is processed at checkout.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
-use LoyaltyBay\Services\LedgerService;
+use PointBay\Services\LedgerService;
 
 /**
  * Handles debiting applied redemption points for classic and block checkout.
@@ -40,7 +40,7 @@ class CheckoutProcessor {
 	 * Register the checkout hooks for both classic and block checkout.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The Plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The Plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -90,7 +90,7 @@ class CheckoutProcessor {
 		} catch ( \Exception $e ) {
 			if ( class_exists( '\Automattic\WooCommerce\StoreApi\Exceptions\RouteException' ) ) {
 				throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException(
-					'loyaltybay_redemption_failed',
+					'pointbay_redemption_failed',
 					esc_html( $e->getMessage() ),
 					409
 				);
@@ -129,17 +129,17 @@ class CheckoutProcessor {
 
 		try {
 			// Lock the cache row (blocks until lock is acquired)
-			$balance = \LoyaltyBay\Models\LedgerCache::lock_for_update( $user_id );
+			$balance = \PointBay\Models\LedgerCache::lock_for_update( $user_id );
 
 			if ( $balance < $points ) {
-				throw new \Exception( __( 'Insufficient points balance. Your points may have been used elsewhere.', 'loyaltybay-loyalty-points-referral-rewards-woo' ) );
+				throw new \Exception( __( 'Insufficient points balance. Your points may have been used elsewhere.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
 			}
 
 			// Debit points (runs inside our manual transaction)
 			$result = LedgerService::get_instance()->debit( $user_id, $points, 'order', $order_id, 'Points redeemed at checkout for order #' . $order_id, true, 'system' );
 
 			if ( is_wp_error( $result ) ) {
-				throw new \Exception( 'LoyaltyBay Error: Failed to debit points. ' . $result->get_error_message() );
+				throw new \Exception( 'PointBay Error: Failed to debit points. ' . $result->get_error_message() );
 			}
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.

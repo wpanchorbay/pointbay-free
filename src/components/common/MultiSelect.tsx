@@ -93,7 +93,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   enableSearch = true,
   isError = false,
-  errorClassName = "loyaltybay-border-danger",
+  errorClassName = "pointbay-border-danger",
   classNames = {},
   isCompact = false,
   renderOption,
@@ -334,14 +334,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div
-      className={`loyaltybay-relative loyaltybay-w-full ${className} ${
+      className={`pointbay-relative pointbay-w-full ${className} ${
         classNames.wrapper || ""
       }`}
       ref={containerRef}
     >
       {label && (
         <label
-          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-bold loyaltybay-text-gray-900 loyaltybay-mb-2 ${
+          className={`pointbay-block pointbay-text-sm pointbay-font-bold pointbay-text-gray-900 pointbay-mb-2 ${
             classNames.label || ""
           }`}
         >
@@ -355,14 +355,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         ref={ref}
         onClick={handleTriggerClick}
         className={`
-          loyaltybay-relative loyaltybay-flex loyaltybay-flex-wrap loyaltybay-items-center loyaltybay-gap-2 loyaltybay-w-full loyaltybay-px-4 loyaltybay-text-left !loyaltybay-cursor-text
-          loyaltybay-transition-all loyaltybay-duration-200 loyaltybay-ease-in-out loyaltybay-border loyaltybay-rounded-[8px] loyaltybay-bg-white
+          pointbay-relative pointbay-flex pointbay-flex-wrap pointbay-items-center pointbay-gap-2 pointbay-w-full pointbay-px-4 pointbay-text-left !pointbay-cursor-text
+          pointbay-transition-all pointbay-duration-200 pointbay-ease-in-out pointbay-border pointbay-rounded-[8px] pointbay-bg-white
           ${borderClasses}
-          ${isCompact ? "loyaltybay-py-[4px]" : "loyaltybay-py-[7px]"}
+          ${isCompact ? "pointbay-py-[4px]" : "pointbay-py-[7px]"}
           ${
             disabled
-              ? "loyaltybay-bg-gray-50 loyaltybay-cursor-not-allowed loyaltybay-text-gray-400 loyaltybay-border-gray-200"
-              : `hover:!loyaltybay-border-primary`
+              ? "pointbay-bg-gray-50 pointbay-cursor-not-allowed pointbay-text-gray-400 pointbay-border-gray-200"
+              : `hover:!pointbay-border-primary`
           }
           ${isOpen ? hoverBorderClasses : ""}
           ${isError ? errorClassName : ""}
@@ -374,7 +374,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           <span
             key={option.value}
             className={`
-                loyaltybay-inline-flex loyaltybay-items-center loyaltybay-gap-1 loyaltybay-bg-gray-100 loyaltybay-text-gray-800 loyaltybay-px-2 loyaltybay-py-[2px] loyaltybay-rounded-none loyaltybay-text-[13px] loyaltybay-leading-[20px] loyaltybay-font-[400]
+                pointbay-inline-flex pointbay-items-center pointbay-gap-1 pointbay-bg-gray-100 pointbay-text-gray-800 pointbay-px-2 pointbay-py-[2px] pointbay-rounded-none pointbay-text-[13px] pointbay-leading-[20px] pointbay-font-[400]
                 ${classNames.tag || ""}
             `}
           >
@@ -382,10 +382,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             <button
               type="button"
               onClick={(e) => handleRemove(option.value, e)}
-              className="loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center loyaltybay-w-4 loyaltybay-h-4 loyaltybay-rounded-full hover:loyaltybay-bg-gray-200 loyaltybay-transition-colors loyaltybay-text-gray-500"
+              className="pointbay-flex pointbay-items-center pointbay-justify-center pointbay-w-4 pointbay-h-4 pointbay-rounded-full hover:pointbay-bg-gray-200 pointbay-transition-colors pointbay-text-gray-500"
               aria-label={`Remove ${option.label}`}
             >
-              <X className="loyaltybay-w-3 loyaltybay-h-3" />
+              <X className="pointbay-w-3 pointbay-h-3" />
             </button>
           </span>
         ))}
@@ -395,7 +395,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           ref={searchInputRef}
           type="text"
           className={`
-            loyaltybay-flex-1 loyaltybay-min-w-[80px] loyaltybay-bg-transparent !loyaltybay-border-none !loyaltybay-shadow-none loyaltybay-outline-none loyaltybay-px-1 loyaltybay-py-[2px]  !loyaltybay-text-[13px] !loyaltybay-leading-[20px] loyaltybay-font-[400] loyaltybay-text-gray-900 loyaltybay-placeholder-gray-400 !loyaltybay-min-h-[24px]
+            pointbay-flex-1 pointbay-min-w-[80px] pointbay-bg-transparent !pointbay-border-none !pointbay-shadow-none pointbay-outline-none pointbay-px-1 pointbay-py-[2px]  !pointbay-text-[13px] !pointbay-leading-[20px] pointbay-font-[400] pointbay-text-gray-900 pointbay-placeholder-gray-400 !pointbay-min-h-[24px]
             ${classNames.search || ""}
           `}
           value={searchQuery}
@@ -411,10 +411,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         />
 
         {/* Chevron Icon */}
-        <span className="loyaltybay-flex-shrink-0 loyaltybay-ml-auto loyaltybay-flex loyaltybay-items-center">
+        <span className="pointbay-flex-shrink-0 pointbay-ml-auto pointbay-flex pointbay-items-center">
           <ChevronDown
-            className={`loyaltybay-h-4 loyaltybay-w-4 loyaltybay-text-gray-500 loyaltybay-transition-transform loyaltybay-duration-200 ${
-              isOpen ? "loyaltybay-transform loyaltybay-rotate-180" : ""
+            className={`pointbay-h-4 pointbay-w-4 pointbay-text-gray-500 pointbay-transition-transform pointbay-duration-200 ${
+              isOpen ? "pointbay-transform pointbay-rotate-180" : ""
             }`}
           />
         </span>
@@ -425,7 +425,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         <div
           ref={dropdownRef}
           className={`
-                loyaltybay-absolute loyaltybay-z-[50000] loyaltybay-w-full loyaltybay-bg-white loyaltybay-border loyaltybay-border-gray-200 loyaltybay-rounded-[12px] loyaltybay-p-[4px] loyaltybay-shadow-[0_4px_12px_rgba(0,0,0,0.1)] loyaltybay-top-full loyaltybay-left-0 -loyaltybay-mt-[1px]
+                pointbay-absolute pointbay-z-[50000] pointbay-w-full pointbay-bg-white pointbay-border pointbay-border-gray-200 pointbay-rounded-[12px] pointbay-p-[4px] pointbay-shadow-[0_4px_12px_rgba(0,0,0,0.1)] pointbay-top-full pointbay-left-0 -pointbay-mt-[1px]
                 ${classNames.dropdown || ""}
             `}
         >
@@ -433,15 +433,15 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             ref={listRef}
             role="listbox"
             tabIndex={-1}
-            className="loyaltybay-max-h-[204px] loyaltybay-overflow-auto focus:loyaltybay-outline-none"
+            className="pointbay-max-h-[204px] pointbay-overflow-auto focus:pointbay-outline-none"
             style={{ scrollbarWidth: "none" }}
           >
             {isLoading ? (
-              <li className="loyaltybay-px-3 loyaltybay-py-2 loyaltybay-text-gray-500 loyaltybay-text-sm loyaltybay-text-center loyaltybay-italic !loyaltybay-mb-0 loyaltybay-rounded-[8px]">
+              <li className="pointbay-px-3 pointbay-py-2 pointbay-text-gray-500 pointbay-text-sm pointbay-text-center pointbay-italic !pointbay-mb-0 pointbay-rounded-[8px]">
                 Loading...
               </li>
             ) : filteredOptions.length === 0 ? (
-              <li className="loyaltybay-px-3 loyaltybay-py-2 loyaltybay-text-gray-500 loyaltybay-text-sm loyaltybay-text-center loyaltybay-italic !loyaltybay-mb-0 loyaltybay-rounded-[8px]">
+              <li className="pointbay-px-3 pointbay-py-2 pointbay-text-gray-500 pointbay-text-sm pointbay-text-center pointbay-italic !pointbay-mb-0 pointbay-rounded-[8px]">
                 {searchQuery ? "No results found" : "No more options"}
               </li>
             ) : (
@@ -460,24 +460,24 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       handleSelect(option);
                     }}
                     className={`
-                        loyaltybay-group loyaltybay-relative loyaltybay-cursor-pointer loyaltybay-select-none loyaltybay-px-4 loyaltybay-py-2.5 loyaltybay-text-sm loyaltybay-transition-colors loyaltybay-border-b loyaltybay-border-gray-50 last:loyaltybay-border-0 !loyaltybay-mb-0 loyaltybay-rounded-[8px]
-                        loyaltybay-flex loyaltybay-flex-nowrap loyaltybay-justify-between loyaltybay-items-center
+                        pointbay-group pointbay-relative pointbay-cursor-pointer pointbay-select-none pointbay-px-4 pointbay-py-2.5 pointbay-text-sm pointbay-transition-colors pointbay-border-b pointbay-border-gray-50 last:pointbay-border-0 !pointbay-mb-0 pointbay-rounded-[8px]
+                        pointbay-flex pointbay-flex-nowrap pointbay-justify-between pointbay-items-center
                         ${
                           isDisabled
-                            ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed loyaltybay-text-gray-500 loyaltybay-bg-gray-100/50"
+                            ? "pointbay-opacity-100 !pointbay-cursor-not-allowed pointbay-text-gray-500 pointbay-bg-gray-100/50"
                             : ""
                         }
                         ${
                           isHighlighted && !isDisabled
-                            ? "loyaltybay-bg-blue-600 loyaltybay-text-white"
-                            : "loyaltybay-text-gray-700"
+                            ? "pointbay-bg-blue-600 pointbay-text-white"
+                            : "pointbay-text-gray-700"
                         }
                         ${option.className || ""}
                         ${classNames.option || ""}
                         `}
                   >
-                    <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-min-w-0 loyaltybay-gap-4">
-                      <span className="loyaltybay-block loyaltybay-truncate">
+                    <div className="pointbay-flex pointbay-items-center pointbay-min-w-0 pointbay-gap-4">
+                      <span className="pointbay-block pointbay-truncate">
                         {renderOption ? renderOption(option) : option.label}
                       </span>
                     </div>

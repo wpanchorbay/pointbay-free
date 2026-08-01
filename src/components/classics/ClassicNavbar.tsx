@@ -10,7 +10,7 @@ interface MenuLink {
 const ClassicNavbar: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const context = (window as any).loyaltybay_Localize?.context || "options";
+  const context = (window as any).pointbay_Localize?.context || "options";
 
   if (context === "settings") {
     return null;
@@ -18,15 +18,15 @@ const ClassicNavbar: FC = () => {
 
   const menus: MenuLink[] = [
     {
-      label: __("Dashboard", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Dashboard", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/",
     },
     {
-      label: __("Items", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Items", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/items",
     },
     {
-      label: __("Logs", "loyaltybay-loyalty-points-referral-rewards-woo"),
+      label: __("Logs", "pointbay-loyalty-points-referral-rewards-woo"),
       path: "/logs",
     },
   ];
@@ -38,18 +38,18 @@ const ClassicNavbar: FC = () => {
   };
 
   return (
-    <nav className="loyaltybay-flex loyaltybay-items-center loyaltybay-gap-6 loyaltybay-border-b loyaltybay-border-gray-200 loyaltybay-mb-8 loyaltybay-ignore-preflight loyaltybay-p-x-page-default loyaltybay-bg-white loyaltybay-overflow-x-auto loyaltybay-whitespace-nowrap loyaltybay-scrollbar-hide">
+    <nav className="pointbay-flex pointbay-items-center pointbay-gap-6 pointbay-border-b pointbay-border-gray-200 pointbay-mb-8 pointbay-ignore-preflight pointbay-p-x-page-default pointbay-bg-white pointbay-overflow-x-auto pointbay-whitespace-nowrap pointbay-scrollbar-hide">
       {menus.map((menu) => (
         <a
           key={menu.path}
           href={`#${menu.path}`}
           className={`
-            loyaltybay-pb-3 loyaltybay-text-[14px] loyaltybay-transition-all loyaltybay-no-underline loyaltybay-relative focus:loyaltybay-outline-none
-            focus:loyaltybay-border-t-0 focus:loyaltybay-border-l-0 focus:loyaltybay-border-r-0 focus:loyaltybay-shadow-none
+            pointbay-pb-3 pointbay-text-[14px] pointbay-transition-all pointbay-no-underline pointbay-relative focus:pointbay-outline-none
+            focus:pointbay-border-t-0 focus:pointbay-border-l-0 focus:pointbay-border-r-0 focus:pointbay-shadow-none
             ${
               isActive(menu.path)
-                ? "loyaltybay-text-gray-900 loyaltybay-font-bold"
-                : "loyaltybay-text-gray-600 loyaltybay-font-normal hover:loyaltybay-text-[#2271b1]"
+                ? "pointbay-text-gray-900 pointbay-font-bold"
+                : "pointbay-text-gray-600 pointbay-font-normal hover:pointbay-text-[#2271b1]"
             }
           `}
           onClick={(e) => {
@@ -59,7 +59,7 @@ const ClassicNavbar: FC = () => {
         >
           {menu.label}
           {isActive(menu.path) && (
-            <div className="loyaltybay-absolute loyaltybay-bottom-[-1px] loyaltybay-left-0 loyaltybay-w-full loyaltybay-h-[3px] loyaltybay-bg-[#2271b1]" />
+            <div className="pointbay-absolute pointbay-bottom-[-1px] pointbay-left-0 pointbay-w-full pointbay-h-[3px] pointbay-bg-[#2271b1]" />
           )}
         </a>
       ))}

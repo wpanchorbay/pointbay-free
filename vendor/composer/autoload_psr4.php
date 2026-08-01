@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Rakit\\Validation\\' => array($vendorDir . '/rakit/validation/src'),
-    'LoyaltyBay\\' => array($baseDir . '/app'),
+    'PointBay\\' => array($baseDir . '/app'),
 );

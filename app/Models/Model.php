@@ -3,13 +3,13 @@
  * Base Model class for interacting with custom database tables.
  * Provides a simple Eloquent-like wrapper over $wpdb.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Models
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Models;
+namespace PointBay\Models;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

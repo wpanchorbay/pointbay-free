@@ -133,12 +133,12 @@ export const Tooltip: React.FC<TooltipProps> = ({
   }, []);
 
   const arrowClasses = {
-    top: "loyaltybay-top-full loyaltybay-left-1/2 loyaltybay--translate-x-1/2 loyaltybay-border-t-gray-900",
+    top: "pointbay-top-full pointbay-left-1/2 pointbay--translate-x-1/2 pointbay-border-t-gray-900",
     bottom:
-      "loyaltybay-bottom-full loyaltybay-left-1/2 loyaltybay--translate-x-1/2 loyaltybay-border-b-gray-900",
-    left: "loyaltybay-left-full loyaltybay-top-1/2 loyaltybay--translate-y-1/2 loyaltybay-border-l-gray-900",
+      "pointbay-bottom-full pointbay-left-1/2 pointbay--translate-x-1/2 pointbay-border-b-gray-900",
+    left: "pointbay-left-full pointbay-top-1/2 pointbay--translate-y-1/2 pointbay-border-l-gray-900",
     right:
-      "loyaltybay-right-full loyaltybay-top-1/2 loyaltybay--translate-y-1/2 loyaltybay-border-r-gray-900",
+      "pointbay-right-full pointbay-top-1/2 pointbay--translate-y-1/2 pointbay-border-r-gray-900",
   }[position];
 
   return (
@@ -149,7 +149,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         onMouseLeave={handleMouseLeave}
         onFocus={handleMouseEnter}
         onBlur={handleMouseLeave}
-        className={`loyaltybay-inline-block ${classNames?.trigger || ""}`}
+        className={`pointbay-inline-block ${classNames?.trigger || ""}`}
       >
         {children}
       </div>
@@ -160,7 +160,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={`
-            loyaltybay-fixed loyaltybay-z-[60] loyaltybay-max-w-[300px]
+            pointbay-fixed pointbay-z-[60] pointbay-max-w-[300px]
             ${className}
             ${classNames?.root || ""}
           `}
@@ -170,7 +170,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
             }}
           >
             <div
-              className={`loyaltybay-animate-tooltip loyaltybay-relative loyaltybay-px-2.5 loyaltybay-py-1.5 loyaltybay-bg-gray-900 loyaltybay-text-white loyaltybay-text-xs loyaltybay-rounded loyaltybay-shadow-lg ${
+              className={`pointbay-animate-tooltip pointbay-relative pointbay-px-2.5 pointbay-py-1.5 pointbay-bg-gray-900 pointbay-text-white pointbay-text-xs pointbay-rounded pointbay-shadow-lg ${
                 classNames?.content || ""
               }`}
             >
@@ -182,7 +182,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                     href={docLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="loyaltybay-text-blue-400 hover:loyaltybay-text-blue-300 loyaltybay-underline"
+                    className="pointbay-text-blue-400 hover:pointbay-text-blue-300 pointbay-underline"
                   >
                     Read More
                   </a>
@@ -190,7 +190,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
               )}
               <div
                 className={`
-                loyaltybay-absolute loyaltybay-border-[5px] loyaltybay-border-transparent
+                pointbay-absolute pointbay-border-[5px] pointbay-border-transparent
                 ${arrowClasses}
                 ${classNames?.arrow || ""}
               `}

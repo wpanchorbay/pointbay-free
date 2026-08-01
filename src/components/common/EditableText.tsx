@@ -67,7 +67,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
   return (
     <div>
       <div
-        className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2 ${className} ${
+        className={`pointbay-flex pointbay-items-center pointbay-gap-2 ${className} ${
           classNames?.root || ""
         }`}
       >
@@ -82,21 +82,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
           readOnly={disabled}
           placeholder={placeholder}
           className={`
-          !loyaltybay-bg-transparent !loyaltybay-shadow-none
-          loyaltybay-text-[#1e1e1e] loyaltybay-font-[700] loyaltybay-text-[20px] loyaltybay-leading-[32px]
-          loyaltybay-px-1 loyaltybay-py-0.5
-          loyaltybay-w-auto 
-          !loyaltybay-border-t-0 !loyaltybay-border-l-0 !loyaltybay-border-r-0 !loyaltybay-border-b-2
-           !loyaltybay-rounded-[0px]
-          focus:loyaltybay-outline-none
-          loyaltybay-transition-colors loyaltybay-duration-200 placeholder:loyaltybay-italic
+          !pointbay-bg-transparent !pointbay-shadow-none
+          pointbay-text-[#1e1e1e] pointbay-font-[700] pointbay-text-[20px] pointbay-leading-[32px]
+          pointbay-px-1 pointbay-py-0.5
+          pointbay-w-auto 
+          !pointbay-border-t-0 !pointbay-border-l-0 !pointbay-border-r-0 !pointbay-border-b-2
+           !pointbay-rounded-[0px]
+          focus:pointbay-outline-none
+          pointbay-transition-colors pointbay-duration-200 placeholder:pointbay-italic
           ${
             error
-              ? "!loyaltybay-border-red-500"
-              : "!loyaltybay-border-transparent focus:!loyaltybay-border-[#3858e9]"
+              ? "!pointbay-border-red-500"
+              : "!pointbay-border-transparent focus:!pointbay-border-[#3858e9]"
           }
-          ${isEditing ? "" : "loyaltybay-cursor-pointer"}
-          ${disabled ? "loyaltybay-cursor-not-allowed loyaltybay-opacity-60" : ""}
+          ${isEditing ? "" : "pointbay-cursor-pointer"}
+          ${disabled ? "pointbay-cursor-not-allowed pointbay-opacity-60" : ""}
           ${isEditing ? classNames?.input || "" : classNames?.text || ""}
         `}
         />
@@ -115,11 +115,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
               }
             }}
             className={`
-            loyaltybay-p-1 loyaltybay-rounded-full loyaltybay-transition-colors
+            pointbay-p-1 pointbay-rounded-full pointbay-transition-colors
             ${
               isEditing
-                ? "loyaltybay-text-primary hover:loyaltybay-bg-blue-50"
-                : "loyaltybay-text-gray-400 hover:loyaltybay-text-primary hover:loyaltybay-bg-gray-100"
+                ? "pointbay-text-primary hover:pointbay-bg-blue-50"
+                : "pointbay-text-gray-400 hover:pointbay-text-primary hover:pointbay-bg-gray-100"
             }
             ${classNames?.iconButton || ""}
           `}
@@ -134,7 +134,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         )}
       </div>
       {error && (
-        <span className="loyaltybay-text-red-500 loyaltybay-text-sm loyaltybay-mt-1">
+        <span className="pointbay-text-red-500 pointbay-text-sm pointbay-mt-1">
           {error}
         </span>
       )}

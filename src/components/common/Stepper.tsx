@@ -32,23 +32,23 @@ export const Stepper: React.FC<StepperProps> = ({
 
   return (
     <div
-      className={`loyaltybay-w-full loyaltybay-py-6 ${classNames?.root || ""}`}
+      className={`pointbay-w-full pointbay-py-6 ${classNames?.root || ""}`}
     >
       <div
-        className={`loyaltybay-flex loyaltybay-justify-between loyaltybay-items-start loyaltybay-relative ${
+        className={`pointbay-flex pointbay-justify-between pointbay-items-start pointbay-relative ${
           classNames?.container || ""
         }`}
       >
         {/* Background Grey Line */}
         {/* Positioned with left-16 and right-16 (4rem) to start/end at the center of the first/last circles (w-32 items) */}
         <div
-          className={`loyaltybay-absolute loyaltybay-top-5 loyaltybay-left-16 loyaltybay-right-16 loyaltybay-h-[2px] loyaltybay-bg-gray-200 loyaltybay-z-0 ${
+          className={`pointbay-absolute pointbay-top-5 pointbay-left-16 pointbay-right-16 pointbay-h-[2px] pointbay-bg-gray-200 pointbay-z-0 ${
             classNames?.backgroundLine || ""
           }`}
         >
           {/* Foreground Green Line */}
           <div
-            className={`loyaltybay-h-full loyaltybay-bg-green-500 loyaltybay-transition-all loyaltybay-duration-500 loyaltybay-ease-out ${
+            className={`pointbay-h-full pointbay-bg-green-500 pointbay-transition-all pointbay-duration-500 pointbay-ease-out ${
               classNames?.progressLine || ""
             }`}
             style={{ width: `${progressPercentage}%` }}
@@ -63,31 +63,31 @@ export const Stepper: React.FC<StepperProps> = ({
           return (
             <div
               key={step}
-              className={`loyaltybay-flex loyaltybay-flex-col loyaltybay-items-center loyaltybay-relative loyaltybay-z-10 loyaltybay-w-32  ${
+              className={`pointbay-flex pointbay-flex-col pointbay-items-center pointbay-relative pointbay-z-10 pointbay-w-32  ${
                 classNames?.stepContainer || ""
               }`}
             >
               <div
                 onClick={isCompleted ? () => setStep(stepNum) : undefined}
                 className={`
-                  loyaltybay-w-10 loyaltybay-h-10 loyaltybay-rounded-full loyaltybay-flex loyaltybay-items-center loyaltybay-justify-center
-                  loyaltybay-transition-colors loyaltybay-duration-300 loyaltybay-border-2
+                  pointbay-w-10 pointbay-h-10 pointbay-rounded-full pointbay-flex pointbay-items-center pointbay-justify-center
+                  pointbay-transition-colors pointbay-duration-300 pointbay-border-2
                   ${
                     isCompleted
-                      ? "loyaltybay-cursor-pointer"
-                      : "loyaltybay-cursor-not-allowed"
+                      ? "pointbay-cursor-pointer"
+                      : "pointbay-cursor-not-allowed"
                   }
                   ${
                     isCompleted || isActive
-                      ? "loyaltybay-bg-green-500 loyaltybay-border-green-500 loyaltybay-text-white"
-                      : "loyaltybay-bg-gray-300 loyaltybay-border-gray-300 loyaltybay-text-white"
+                      ? "pointbay-bg-green-500 pointbay-border-green-500 pointbay-text-white"
+                      : "pointbay-bg-gray-300 pointbay-border-gray-300 pointbay-text-white"
                   }
                   ${classNames?.stepCircle || ""}
                 `}
               >
                 {isCompleted ? (
                   <svg
-                    className="loyaltybay-w-6 loyaltybay-h-6"
+                    className="pointbay-w-6 pointbay-h-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -100,16 +100,16 @@ export const Stepper: React.FC<StepperProps> = ({
                     />
                   </svg>
                 ) : (
-                  <span className="loyaltybay-text-sm loyaltybay-font-bold">
+                  <span className="pointbay-text-sm pointbay-font-bold">
                     {stepNum.toString().padStart(2, "0")}
                   </span>
                 )}
               </div>
               <div
-                className={`loyaltybay-mt-3 loyaltybay-text-xs loyaltybay-font-bold loyaltybay-text-center loyaltybay-transition-colors ${
+                className={`pointbay-mt-3 pointbay-text-xs pointbay-font-bold pointbay-text-center pointbay-transition-colors ${
                   isActive || isCompleted
-                    ? "loyaltybay-text-gray-900"
-                    : "loyaltybay-text-gray-500"
+                    ? "pointbay-text-gray-900"
+                    : "pointbay-text-gray-500"
                 } ${classNames?.stepLabel || ""}`}
               >
                 {step}

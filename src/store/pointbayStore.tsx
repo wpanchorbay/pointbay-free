@@ -7,14 +7,14 @@ import React, {
   useRef,
 } from "react";
 import apiFetch from "@wordpress/api-fetch";
-import { LoyaltyBayStore, PluginSettings } from "../utils/types";
+import { PointBayStore, PluginSettings } from "../utils/types";
 import { date, getSettings as getDateSettings } from "@wordpress/date";
 
-interface LoyaltyBayStoreContextType {
-  store: LoyaltyBayStore;
-  updateStore: <K extends keyof LoyaltyBayStore>(
+interface PointBayStoreContextType {
+  store: PointBayStore;
+  updateStore: <K extends keyof PointBayStore>(
     key: K,
-    value: LoyaltyBayStore[K],
+    value: PointBayStore[K],
   ) => void;
   updateSettings: <K extends keyof PluginSettings>(
     key: K,
@@ -24,19 +24,19 @@ interface LoyaltyBayStoreContextType {
   serverDateLoaded: boolean;
 }
 
-const LoyaltyBayStoreContext = createContext<LoyaltyBayStoreContextType | null>(null);
+const PointBayStoreContext = createContext<PointBayStoreContextType | null>(null);
 
-declare const loyaltybay_Localize: LoyaltyBayStore;
+declare const pointbay_Localize: PointBayStore;
 
-export const LoyaltyBayProvider: React.FC<{ children: ReactNode }> = ({
+export const PointBayProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const initialValue: LoyaltyBayStore =
-    typeof loyaltybay_Localize !== "undefined"
-      ? loyaltybay_Localize
-      : ({} as LoyaltyBayStore);
+  const initialValue: PointBayStore =
+    typeof pointbay_Localize !== "undefined"
+      ? pointbay_Localize
+      : ({} as PointBayStore);
 
-  const [store, setStore] = useState<LoyaltyBayStore>(initialValue);
+  const [store, setStore] = useState<PointBayStore>(initialValue);
   const isInitialized = useRef(false);
 
   const [serverDate, setServerDate] = useState(new Date());
@@ -72,9 +72,9 @@ export const LoyaltyBayProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [initialValue.nonce, initialValue.rest_url]);
 
-  const updateStore = <K extends keyof LoyaltyBayStore>(
+  const updateStore = <K extends keyof PointBayStore>(
     key: K,
-    value: LoyaltyBayStore[K],
+    value: PointBayStore[K],
   ) => {
     setStore((prev) => ({
       ...prev,
@@ -95,7 +95,7 @@ export const LoyaltyBayProvider: React.FC<{ children: ReactNode }> = ({
     }));
   };
 
-  const contextValue: LoyaltyBayStoreContextType = {
+  const contextValue: PointBayStoreContextType = {
     store,
     updateStore,
     updateSettings,
@@ -104,27 +104,27 @@ export const LoyaltyBayProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   return (
-    <LoyaltyBayStoreContext.Provider value={contextValue}>
+    <PointBayStoreContext.Provider value={contextValue}>
       {children}
-    </LoyaltyBayStoreContext.Provider>
+    </PointBayStoreContext.Provider>
   );
 };
 
-export const useLoyaltyBayStore = (): LoyaltyBayStore => {
-  const context = useContext(LoyaltyBayStoreContext);
+export const usePointBayStore = (): PointBayStore => {
+  const context = useContext(PointBayStoreContext);
 
   if (!context) {
-    throw new Error("useLoyaltyBayStore must be used within a LoyaltyBayProvider");
+    throw new Error("usePointBayStore must be used within a PointBayProvider");
   }
 
   return context.store;
 };
 
-export const useLoyaltyBayStoreActions = () => {
-  const context = useContext(LoyaltyBayStoreContext);
+export const usePointBayStoreActions = () => {
+  const context = useContext(PointBayStoreContext);
 
   if (!context) {
-    throw new Error("useLoyaltyBayStoreActions must be used within a LoyaltyBayProvider");
+    throw new Error("usePointBayStoreActions must be used within a PointBayProvider");
   }
 
   return {
@@ -136,4 +136,4 @@ export const useLoyaltyBayStoreActions = () => {
   };
 };
 
-export default LoyaltyBayStoreContext;
+export default PointBayStoreContext;

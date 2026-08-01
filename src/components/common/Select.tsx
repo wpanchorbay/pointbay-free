@@ -147,7 +147,7 @@ const Select: React.FC<SelectProps> = ({
   enableSearch = false,
   border = borderClasses,
   hoverBorder = hoverBorderClasses,
-  color = "loyaltybay-text-[#0a4b78]",
+  color = "pointbay-text-[#0a4b78]",
   isError = false,
   errorClassName = errorClasses,
   differentDropdownWidth = false,
@@ -347,14 +347,14 @@ const Select: React.FC<SelectProps> = ({
   };
   return (
     <div
-      className={`loyaltybay-relative loyaltybay-w-full ${className} ${
+      className={`pointbay-relative pointbay-w-full ${className} ${
         classNames.wrapper || ""
       }`}
       ref={containerRef}
     >
       {label && (
         <label
-          className={`loyaltybay-block loyaltybay-text-sm loyaltybay-font-medium loyaltybay-text-gray-700 loyaltybay-mb-1 ${
+          className={`pointbay-block pointbay-text-sm pointbay-font-medium pointbay-text-gray-700 pointbay-mb-1 ${
             classNames.label || ""
           }`}
         >
@@ -375,29 +375,29 @@ const Select: React.FC<SelectProps> = ({
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
         className={`
-          loyaltybay-ring-1 loyaltybay-ring-transparent
-          loyaltybay-relative loyaltybay-flex loyaltybay-flex-wrap  loyaltybay-items-center loyaltybay-justify-between loyaltybay-w-full loyaltybay-gap-0 loyaltybay-px-4  loyaltybay-text-left !loyaltybay-cursor-pointer 
-          loyaltybay-transition-all loyaltybay-duration-200 loyaltybay-ease-in-out loyaltybay-border loyaltybay-rounded-[8px] loyaltybay-bg-white ${border} 
-          ${isCompact ? "loyaltybay-py-[5px]" : "loyaltybay-py-[9px]"}
+          pointbay-ring-1 pointbay-ring-transparent
+          pointbay-relative pointbay-flex pointbay-flex-wrap  pointbay-items-center pointbay-justify-between pointbay-w-full pointbay-gap-0 pointbay-px-4  pointbay-text-left !pointbay-cursor-pointer 
+          pointbay-transition-all pointbay-duration-200 pointbay-ease-in-out pointbay-border pointbay-rounded-[8px] pointbay-bg-white ${border} 
+          ${isCompact ? "pointbay-py-[5px]" : "pointbay-py-[9px]"}
           ${!disabled && !isOpen ? ` ${color} ` : ""}
           ${
             disabled
-              ? "loyaltybay-bg-gray-100 loyaltybay-cursor-not-allowed loyaltybay-text-gray-400 loyaltybay-border-gray-200"
+              ? "pointbay-bg-gray-100 pointbay-cursor-not-allowed pointbay-text-gray-400 pointbay-border-gray-200"
               : isError
               ? ""
-              : "hover:!loyaltybay-border-[#3858e9]"
+              : "hover:!pointbay-border-[#3858e9]"
           }
           ${isOpen ? (isError ? errorClassesManual : hoverClassesManual) : ""}
           ${isError ? `${errorClassName} ${classNames.error || ""}` : ""}
           ${classNames.select || ""} ${classNames.container || ""}
         `}
       >
-        <div className="loyaltybay-flex-1 loyaltybay-min-w-0">
+        <div className="pointbay-flex-1 pointbay-min-w-0">
           {enableSearch && isOpen ? (
             <input
               ref={searchInputRef}
               type="text"
-              className={`loyaltybay-w-full !loyaltybay-bg-transparent !loyaltybay-border-none !loyaltybay-shadow-none !loyaltybay-outline-none !loyaltybay-p-0 !loyaltybay-font-[${fontWeight}] !loyaltybay-text-[${fontSize}px] !loyaltybay-leading-[20px] !loyaltybay-min-h-[unset] ${
+              className={`pointbay-w-full !pointbay-bg-transparent !pointbay-border-none !pointbay-shadow-none !pointbay-outline-none !pointbay-p-0 !pointbay-font-[${fontWeight}] !pointbay-text-[${fontSize}px] !pointbay-leading-[20px] !pointbay-min-h-[unset] ${
                 classNames.search || ""
               }`}
               value={searchQuery}
@@ -411,11 +411,11 @@ const Select: React.FC<SelectProps> = ({
             />
           ) : (
             <span
-              className={`loyaltybay-block loyaltybay-truncate ${color} hover:!loyaltybay-text-[#3858e9] loyaltybay-text-[${fontSize}px] loyaltybay-font-[${fontWeight}]`}
+              className={`pointbay-block pointbay-truncate ${color} hover:!pointbay-text-[#3858e9] pointbay-text-[${fontSize}px] pointbay-font-[${fontWeight}]`}
             >
               {value ? (
                 <span
-                  className={`loyaltybay-flex loyaltybay-items-center loyaltybay-gap-2 `}
+                  className={`pointbay-flex pointbay-items-center pointbay-gap-2 `}
                 >
                   {renderOption && selectedOption
                     ? renderOption(selectedOption)
@@ -430,10 +430,10 @@ const Select: React.FC<SelectProps> = ({
 
         {/* Chevron Icon */}
         {!hideIcon ? (
-          <span className="loyaltybay-flex-shrink-0 loyaltybay-ml-2 loyaltybay-flex loyaltybay-items-center">
+          <span className="pointbay-flex-shrink-0 pointbay-ml-2 pointbay-flex pointbay-items-center">
             <ChevronDown
-              className={`loyaltybay-h-4 loyaltybay-w-4 loyaltybay-text-gray-700 loyaltybay-transition-transform loyaltybay-duration-200 ${
-                isOpen ? "loyaltybay-transform loyaltybay-rotate-180" : ""
+              className={`pointbay-h-4 pointbay-w-4 pointbay-text-gray-700 pointbay-transition-transform pointbay-duration-200 ${
+                isOpen ? "pointbay-transform pointbay-rotate-180" : ""
               }`}
             />
           </span>
@@ -443,8 +443,8 @@ const Select: React.FC<SelectProps> = ({
       {/* Dropdown Panel */}
       {isOpen && (
         <div
-          className={`loyaltybay-absolute loyaltybay-z-[50000] loyaltybay-bg-white loyaltybay-border loyaltybay-border-gray-200 loyaltybay-rounded-[12px] loyaltybay-shadow-[0_2px_2px_rgba(0,0,0,0.3)] -loyaltybay-mt-[1px] loyaltybay-p-1 ${
-            differentDropdownWidth ? "" : "loyaltybay-w-full"
+          className={`pointbay-absolute pointbay-z-[50000] pointbay-bg-white pointbay-border pointbay-border-gray-200 pointbay-rounded-[12px] pointbay-shadow-[0_2px_2px_rgba(0,0,0,0.3)] -pointbay-mt-[1px] pointbay-p-1 ${
+            differentDropdownWidth ? "" : "pointbay-w-full"
           } ${classNames.dropdown || ""}`}
         >
           {/* Options List */}
@@ -453,11 +453,11 @@ const Select: React.FC<SelectProps> = ({
             id="custom-select-list"
             role="listbox"
             tabIndex={-1}
-            className={`loyaltybay-max-h-60 loyaltybay-overflow-auto focus:loyaltybay-outline-none loyaltybay-scrollbar-hide loyaltybay-relative ${color} loyaltybay-font-[${fontWeight}] loyaltybay-text-[${fontSize}px]`}
+            className={`pointbay-max-h-60 pointbay-overflow-auto focus:pointbay-outline-none pointbay-scrollbar-hide pointbay-relative ${color} pointbay-font-[${fontWeight}] pointbay-text-[${fontSize}px]`}
             style={{ scrollbarWidth: "none" }}
           >
             {filteredOptions.length === 0 ? (
-              <li className="loyaltybay-relative loyaltybay-cursor-default loyaltybay-select-none loyaltybay-p-1  loyaltybay-italic loyaltybay-text-center loyaltybay-rounded-[8px]">
+              <li className="pointbay-relative pointbay-cursor-default pointbay-select-none pointbay-p-1  pointbay-italic pointbay-text-center pointbay-rounded-[8px]">
                 {searchQuery ? "No results found" : "No options available"}
               </li>
             ) : (
@@ -478,17 +478,17 @@ const Select: React.FC<SelectProps> = ({
                       handleSelect(option);
                     }}
                     className={`
-                      loyaltybay-group loyaltybay-relative loyaltybay-cursor-pointer loyaltybay-select-none loyaltybay-px-3  loyaltybay-flex loyaltybay-flex-nowrap loyaltybay-justify-between loyaltybay-min-h-[36px]loyaltybay-font-medium loyaltybay-transition-colors loyaltybay-duration-150 !loyaltybay-mb-0 loyaltybay-border-b-[1px] loyaltybay-border-gray-100  loyaltybay-rounded-[8px] 
+                      pointbay-group pointbay-relative pointbay-cursor-pointer pointbay-select-none pointbay-px-3  pointbay-flex pointbay-flex-nowrap pointbay-justify-between pointbay-min-h-[36px]pointbay-font-medium pointbay-transition-colors pointbay-duration-150 !pointbay-mb-0 pointbay-border-b-[1px] pointbay-border-gray-100  pointbay-rounded-[8px] 
                       ${
                         isDisabled
-                          ? "loyaltybay-opacity-100 !loyaltybay-cursor-not-allowed loyaltybay-text-gray-500 loyaltybay-bg-gray-200"
+                          ? "pointbay-opacity-100 !pointbay-cursor-not-allowed pointbay-text-gray-500 pointbay-bg-gray-200"
                           : ""
                       }
                       ${
                         isHighlighted && !isDisabled
-                          ? "loyaltybay-bg-blue-600 loyaltybay-text-white"
+                          ? "pointbay-bg-blue-600 pointbay-text-white"
                           : isDisabled
-                          ? "loyaltybay-text-gray-400"
+                          ? "pointbay-text-gray-400"
                           : ""
                       }
                       ${
@@ -499,12 +499,12 @@ const Select: React.FC<SelectProps> = ({
                       ${classNames.option || ""}
                     `}
                   >
-                    <div className="loyaltybay-flex loyaltybay-items-center loyaltybay-justify-between loyaltybay-min-h-[36px] loyaltybay-w-full loyaltybay-gap-4">
+                    <div className="pointbay-flex pointbay-items-center pointbay-justify-between pointbay-min-h-[36px] pointbay-w-full pointbay-gap-4">
                       <span
-                        className={`loyaltybay-block loyaltybay-truncate ${
+                        className={`pointbay-block pointbay-truncate ${
                           isSelected
-                            ? "loyaltybay-font-semibold"
-                            : "loyaltybay-font-normal"
+                            ? "pointbay-font-semibold"
+                            : "pointbay-font-normal"
                         }`}
                       >
                         {renderOption ? renderOption(option) : option.label}
@@ -514,14 +514,14 @@ const Select: React.FC<SelectProps> = ({
                     {/* Checkmark for selected item */}
                     {isSelected && (
                       <span
-                        className={`loyaltybay-px-3 loyaltybay-pr-0 loyaltybay-flex-nowrap loyaltybay-flex loyaltybay-items-center loyaltybay-pr-4 ${
+                        className={`pointbay-px-3 pointbay-pr-0 pointbay-flex-nowrap pointbay-flex pointbay-items-center pointbay-pr-4 ${
                           isHighlighted && !isDisabled
-                            ? "loyaltybay-text-white"
-                            : "loyaltybay-text-blue-600"
+                            ? "pointbay-text-white"
+                            : "pointbay-text-blue-600"
                         }`}
                       >
                         <svg
-                          className="loyaltybay-h-5 loyaltybay-w-5"
+                          className="pointbay-h-5 pointbay-w-5"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"

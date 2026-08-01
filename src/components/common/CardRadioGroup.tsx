@@ -41,16 +41,16 @@ export const CardRadioGroup: React.FC<CardRadioGroupProps> = ({
 
   switch (layout) {
     case "vertical":
-      containerClass = "loyaltybay-flex loyaltybay-flex-col loyaltybay-gap-4";
+      containerClass = "pointbay-flex pointbay-flex-col pointbay-gap-4";
       break;
     case "horizontal":
       containerClass =
-        "loyaltybay-flex loyaltybay-flex-row loyaltybay-gap-4 loyaltybay-overflow-x-auto loyaltybay-pb-2"; // Added overflow handling for safe horizontal scrolling if needed
+        "pointbay-flex pointbay-flex-row pointbay-gap-4 pointbay-overflow-x-auto pointbay-pb-2"; // Added overflow handling for safe horizontal scrolling if needed
       break;
     case "responsive":
     default:
       containerClass =
-        "loyaltybay-grid loyaltybay-grid-cols-1 md:!loyaltybay-grid-cols-2 loyaltybay-gap-4";
+        "pointbay-grid pointbay-grid-cols-1 md:!pointbay-grid-cols-2 pointbay-gap-4";
       break;
   }
 

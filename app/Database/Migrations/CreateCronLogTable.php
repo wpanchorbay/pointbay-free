@@ -2,22 +2,22 @@
 /**
  * Migration for the cron log table.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Database
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Database\Migrations;
+namespace PointBay\Database\Migrations;
 
-use LoyaltyBay\Database\MigrationInterface;
+use PointBay\Database\MigrationInterface;
 
 /**
  * Creates the cron log database table.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Database
+ * @package    PointBay
+ * @subpackage PointBay/Database
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class CreateCronLogTable implements MigrationInterface {
@@ -29,7 +29,7 @@ class CreateCronLogTable implements MigrationInterface {
 	 */
 	public function up() {
 		global $wpdb;
-		$table_name      = $wpdb->prefix . 'loyaltybay_cron_log';
+		$table_name      = $wpdb->prefix . 'pointbay_cron_log';
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE $table_name (
@@ -57,7 +57,7 @@ class CreateCronLogTable implements MigrationInterface {
 	 */
 	public function down() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'loyaltybay_cron_log';
+		$table_name = $wpdb->prefix . 'pointbay_cron_log';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Dropping this plugin's own table on rollback; no core API exists and the result is not cacheable.
 		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
 	}

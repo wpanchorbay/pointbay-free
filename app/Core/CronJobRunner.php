@@ -2,20 +2,20 @@
 /**
  * Cron job runner with state tracking and retries.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Core
  * @since      1.0.0
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 
-namespace LoyaltyBay\Core;
+namespace PointBay\Core;
 
 /**
  * Executes cron jobs with full state tracking, retries and dead-lettering.
  *
  * @since      1.0.0
- * @package    LoyaltyBay
- * @subpackage LoyaltyBay/Core
+ * @package    PointBay
+ * @subpackage PointBay/Core
  * @author     WPAnchorBay <https://wpanchorbay.com>
  */
 class CronJobRunner {
@@ -31,7 +31,7 @@ class CronJobRunner {
 	 */
 	public static function execute( $job_name, $callback, $payload = array(), $max_retries = 3 ) {
 		global $wpdb;
-		$table = $wpdb->prefix . 'loyaltybay_cron_log';
+		$table = $wpdb->prefix . 'pointbay_cron_log';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; job state must be read live.
 		$existing = $wpdb->get_row(
@@ -102,7 +102,7 @@ class CronJobRunner {
 				array( 'id' => $log_id )
 			);
 
-			loyaltybay_log( sprintf( 'Cron Job %s failed: %s', $job_name, $e->getMessage() ), 'error' );
+			pointbay_log( sprintf( 'Cron Job %s failed: %s', $job_name, $e->getMessage() ), 'error' );
 
 			return false;
 		}

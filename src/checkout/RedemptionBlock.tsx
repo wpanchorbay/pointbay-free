@@ -9,10 +9,10 @@ const { useDispatch } = window.wp.data;
 
 const RedemptionBlock = () => {
     const data = {
-        ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'loyaltybay_checkout_data' ) : null) || {}),
-        ...(window.loyaltybay_checkout_data || {})
+        ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'pointbay_checkout_data' ) : null) || {}),
+        ...(window.pointbay_checkout_data || {})
     };
-    window.loyaltybay_checkout_data = data;
+    window.pointbay_checkout_data = data;
 
     const maxPoints = parseInt(data.max_points, 10) || 0;
     const appliedPoints = parseInt(data.applied_points, 10) || 0;
@@ -64,7 +64,7 @@ const RedemptionBlock = () => {
                 beforeSend: (xhr) => xhr.setRequestHeader('X-WP-Nonce', data.nonce),
                 data: { points: points },
             });
-            window.loyaltybay_checkout_data.applied_points = points;
+            window.pointbay_checkout_data.applied_points = points;
             triggerCartUpdate();
         } catch (e) {
             setError(e.responseJSON?.message || 'An error occurred.');
@@ -81,7 +81,7 @@ const RedemptionBlock = () => {
                 method: 'DELETE',
                 beforeSend: (xhr) => xhr.setRequestHeader('X-WP-Nonce', data.nonce),
             });
-            window.loyaltybay_checkout_data.applied_points = 0;
+            window.pointbay_checkout_data.applied_points = 0;
             triggerCartUpdate();
         } catch (e) {
             setError('An error occurred.');
@@ -95,7 +95,7 @@ const RedemptionBlock = () => {
             <div className="wc-block-components-totals-wrapper">
                 <div className="wc-block-components-totals-item">
                     <span className="wc-block-components-totals-item__label">
-                        {sprintf(__('Awesome! You have redeemed %d points for a %s discount.', 'loyaltybay-loyalty-points-referral-rewards-woo'), appliedPoints, discountStr)}
+                        {sprintf(__('Awesome! You have redeemed %d points for a %s discount.', 'pointbay-loyalty-points-referral-rewards-woo'), appliedPoints, discountStr)}
                     </span>
                     <button 
                         onClick={removePoints} 
@@ -103,7 +103,7 @@ const RedemptionBlock = () => {
                         className="components-button is-link wc-block-components-totals-item__value"
                         style={{ color: '#ef4444', textDecoration: 'none', fontWeight: 500 }}
                     >
-                        {loading ? __('Removing...', 'loyaltybay-loyalty-points-referral-rewards-woo') : __('Remove', 'loyaltybay-loyalty-points-referral-rewards-woo')}
+                        {loading ? __('Removing...', 'pointbay-loyalty-points-referral-rewards-woo') : __('Remove', 'pointbay-loyalty-points-referral-rewards-woo')}
                     </button>
                 </div>
             </div>
@@ -116,17 +116,17 @@ const RedemptionBlock = () => {
         <div className="wc-block-components-totals-wrapper">
             <div className="wc-block-components-panel wc-block-components-totals-coupon">
                 <h3 className="wc-block-components-panel__title" style={{ fontSize: '1em' }}>
-                    {__('Redeem Loyalty Points', 'loyaltybay-loyalty-points-referral-rewards-woo')}
+                    {__('Redeem Loyalty Points', 'pointbay-loyalty-points-referral-rewards-woo')}
                 </h3>
                 <div className="wc-block-components-panel__content">
                     <p style={{ marginBottom: '12px', fontSize: '0.875em' }}>
-                        {sprintf(__('You have %d points available. (Max %d points for this order).', 'loyaltybay-loyalty-points-referral-rewards-woo'), balance, maxPoints)}
+                        {sprintf(__('You have %d points available. (Max %d points for this order).', 'pointbay-loyalty-points-referral-rewards-woo'), balance, maxPoints)}
                     </p>
                     
                     <div style={{ marginBottom: '16px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.875em' }}>
-                            <span>{__('Slide to adjust points:', 'loyaltybay-loyalty-points-referral-rewards-woo')}</span>
-                            <span>{sprintf(__('1 pt = %s', 'loyaltybay-loyalty-points-referral-rewards-woo'), formatPrice(pointsValue))}</span>
+                            <span>{__('Slide to adjust points:', 'pointbay-loyalty-points-referral-rewards-woo')}</span>
+                            <span>{sprintf(__('1 pt = %s', 'pointbay-loyalty-points-referral-rewards-woo'), formatPrice(pointsValue))}</span>
                         </div>
                         <input 
                             type="range" 
@@ -154,7 +154,7 @@ const RedemptionBlock = () => {
                                     setPoints(val);
                                 }}
                             />
-                            <label className="wc-block-components-text-input__label">{__('Points to redeem', 'loyaltybay-loyalty-points-referral-rewards-woo')}</label>
+                            <label className="wc-block-components-text-input__label">{__('Points to redeem', 'pointbay-loyalty-points-referral-rewards-woo')}</label>
                         </div>
                         <button 
                             className="wc-block-components-button wp-element-button wc-block-components-totals-coupon__button contained"
@@ -162,7 +162,7 @@ const RedemptionBlock = () => {
                             disabled={loading}
                         >
                             <span className="wc-block-components-button__text">
-                                {loading ? __('Applying...', 'loyaltybay-loyalty-points-referral-rewards-woo') : sprintf(__('Apply %s Discount', 'loyaltybay-loyalty-points-referral-rewards-woo'), discount)}
+                                {loading ? __('Applying...', 'pointbay-loyalty-points-referral-rewards-woo') : sprintf(__('Apply %s Discount', 'pointbay-loyalty-points-referral-rewards-woo'), discount)}
                             </span>
                         </button>
                     </div>

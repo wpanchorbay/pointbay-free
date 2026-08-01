@@ -2,13 +2,13 @@ import React from 'react';
 
 export const SkeletonLedger: React.FC = () => {
 	return (
-		<table className="wp-list-table widefat striped loyaltybay-animate-pulse">
+		<table className="wp-list-table widefat striped pointbay-animate-pulse">
 			<thead>
 				<tr>
 					{ Array.from( { length: 8 } ).map( ( _, i ) => (
 						<th key={ i }>
 							<div
-								className="loyaltybay-h-3 loyaltybay-bg-gray-200 loyaltybay-rounded"
+								className="pointbay-h-3 pointbay-bg-gray-200 pointbay-rounded"
 								style={ { width: '60%' } }
 							></div>
 						</th>
@@ -22,7 +22,7 @@ export const SkeletonLedger: React.FC = () => {
 							( colValue, col ) => (
 								<td key={ col }>
 									<div
-										className="loyaltybay-h-3 loyaltybay-bg-gray-200 loyaltybay-rounded"
+										className="pointbay-h-3 pointbay-bg-gray-200 pointbay-rounded"
 										style={ {
 											width: `${
 												Math.random() * 30 + 50

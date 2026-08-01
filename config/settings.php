@@ -4,7 +4,7 @@
  *
  * This file defines the default settings and REST API validation schema for the plugin.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Config
  * @since      1.0.0
  */

@@ -2,10 +2,10 @@
 /**
  * Ledger cache model.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Models;
+namespace PointBay\Models;
 
 /**
  * Caches the current loyalty points balance per user.
@@ -19,7 +19,7 @@ class LedgerCache extends Model {
 	 *
 	 * @var string
 	 */
-	protected $table = 'loyaltybay_ledger_cache';
+	protected $table = 'pointbay_ledger_cache';
 
 	/**
 	 * Primary key column for this table.

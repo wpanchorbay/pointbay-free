@@ -2,10 +2,10 @@
 /**
  * Ledger entry model.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Models;
+namespace PointBay\Models;
 
 /**
  * Represents a single row in the loyalty points ledger.
@@ -19,7 +19,7 @@ class LedgerEntry extends Model {
 	 *
 	 * @var string
 	 */
-	protected $table = 'loyaltybay_ledger';
+	protected $table = 'pointbay_ledger';
 
 	/**
 	 * Find a transaction to enforce idempotency.

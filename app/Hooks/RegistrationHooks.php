@@ -2,15 +2,15 @@
 /**
  * Hooks for awarding points on user registration.
  *
- * @package    LoyaltyBay
+ * @package    PointBay
  * @subpackage Hooks
  * @since      1.0.0
  */
 
-namespace LoyaltyBay\Hooks;
+namespace PointBay\Hooks;
 
-use LoyaltyBay\Services\LedgerService;
-use LoyaltyBay\Core\Settings;
+use PointBay\Services\LedgerService;
+use PointBay\Core\Settings;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -49,7 +49,7 @@ class RegistrationHooks {
 	 * Registers the WordPress hooks handled by this class.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The main plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The main plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -75,7 +75,7 @@ class RegistrationHooks {
 			$points,
 			'registration',
 			$user_id,
-			__( 'Points awarded for registration.', 'loyaltybay-loyalty-points-referral-rewards-woo' ),
+			__( 'Points awarded for registration.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			'system'
 		);
 	}

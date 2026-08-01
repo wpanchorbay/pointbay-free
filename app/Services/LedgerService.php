@@ -2,13 +2,13 @@
 /**
  * Ledger service for crediting, debiting, and clawing back loyalty points.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Services;
+namespace PointBay\Services;
 
-use LoyaltyBay\Models\LedgerEntry;
-use LoyaltyBay\Models\LedgerCache;
+use PointBay\Models\LedgerEntry;
+use PointBay\Models\LedgerCache;
 
 /**
  * Handles ledger transactions (credit, debit, clawback) for user loyalty points.
@@ -190,7 +190,7 @@ class LedgerService {
 				throw new \Exception( 'Failed to update ledger cache.' );
 			}
 
-			update_user_meta( $user_id, 'loyaltybay_balance', $new_balance );
+			update_user_meta( $user_id, 'pointbay_balance', $new_balance );
 
 			if ( ! $in_transaction ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
@@ -198,9 +198,9 @@ class LedgerService {
 			}
 
 			if ( $txn_type === 'credit' ) {
-				do_action( 'loyaltybay_points_credited', $user_id, $amount, $entry );
+				do_action( 'pointbay_points_credited', $user_id, $amount, $entry );
 			} else {
-				do_action( 'loyaltybay_points_debited', $user_id, $amount, $entry );
+				do_action( 'pointbay_points_debited', $user_id, $amount, $entry );
 			}
 
 			return $entry;

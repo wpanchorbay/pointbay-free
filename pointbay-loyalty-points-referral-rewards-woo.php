@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Loyaltybay - Loyalty Points & Referral Rewards for Woocommerce
- * Plugin URI:        https://wpanchorbay.com/plugins/loyaltybay-loyalty-points-referral-rewards-for-woocommerce
+ * Plugin Name:       PointBay - Loyalty Points & Referral Rewards for Woocommerce
+ * Plugin URI:        https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-for-woocommerce
  * Description:       Reward WooCommerce customers with loyalty points they earn on purchases and redeem for discounts at checkout.
  * Requires at least: 6.8
  * Requires PHP:      7.0
@@ -13,10 +13,10 @@
  * Author URI:        https://wpanchorbay.com
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       loyaltybay-loyalty-points-referral-rewards-woo
+ * Text Domain:       pointbay-loyalty-points-referral-rewards-woo
  * Domain Path:       /languages
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
 // If this file is called directly, abort.
@@ -24,22 +24,22 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'LOYALTYBAY_PATH', plugin_dir_path( __FILE__ ) );
-define( 'LOYALTYBAY_DIR', plugin_dir_path( __FILE__ ) );
-define( 'LOYALTYBAY_URL', plugin_dir_url( __FILE__ ) );
-define( 'LOYALTYBAY_VERSION', '1.0.0' );
-define( 'LOYALTYBAY_PLUGIN_NAME', 'loyaltybay' );
-define( 'LOYALTYBAY_TEXT_DOMAIN', 'loyaltybay' );
-define( 'LOYALTYBAY_OPTION_NAME', 'loyaltybay' );
+define( 'POINTBAY_PATH', plugin_dir_path( __FILE__ ) );
+define( 'POINTBAY_DIR', plugin_dir_path( __FILE__ ) );
+define( 'POINTBAY_URL', plugin_dir_url( __FILE__ ) );
+define( 'POINTBAY_VERSION', '1.0.0' );
+define( 'POINTBAY_PLUGIN_NAME', 'pointbay' );
+define( 'POINTBAY_REST_NAMESPACE', 'pointbay' );
+define( 'POINTBAY_OPTION_NAME', 'pointbay' );
 
 // Composer autoloader.
-if ( file_exists( LOYALTYBAY_PATH . 'vendor/autoload.php' ) ) {
-	require_once LOYALTYBAY_PATH . 'vendor/autoload.php';
+if ( file_exists( POINTBAY_PATH . 'vendor/autoload.php' ) ) {
+	require_once POINTBAY_PATH . 'vendor/autoload.php';
 }
 
 
 
-require_once LOYALTYBAY_PATH . 'app/functions.php';
+require_once POINTBAY_PATH . 'app/functions.php';
 
 /*
  * Declare WooCommerce feature compatibility.
@@ -64,18 +64,18 @@ add_action(
  *
  * @since 1.0.0
  */
-function loyaltybay_run() {
-	\LoyaltyBay\Core\Plugin::get_instance();
+function pointbay_run() {
+	\PointBay\Core\Plugin::get_instance();
 }
-loyaltybay_run();
+pointbay_run();
 
 /**
  * Activate the plugin.
  *
  * @since 1.0.0
  */
-function loyaltybay_activate() {
-	\LoyaltyBay\Core\Activator::activate();
+function pointbay_activate() {
+	\PointBay\Core\Activator::activate();
 }
 
 /**
@@ -83,9 +83,9 @@ function loyaltybay_activate() {
  *
  * @since 1.0.0
  */
-function loyaltybay_deactivate() {
-	\LoyaltyBay\Core\Deactivator::deactivate();
+function pointbay_deactivate() {
+	\PointBay\Core\Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'loyaltybay_activate' );
-register_deactivation_hook( __FILE__, 'loyaltybay_deactivate' );
+register_activation_hook( __FILE__, 'pointbay_activate' );
+register_deactivation_hook( __FILE__, 'pointbay_deactivate' );

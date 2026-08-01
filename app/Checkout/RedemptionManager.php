@@ -2,13 +2,13 @@
 /**
  * Manages the redemption of loyalty points during checkout.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
-use LoyaltyBay\Core\Settings;
-use LoyaltyBay\Services\LedgerService;
+use PointBay\Core\Settings;
+use PointBay\Services\LedgerService;
 
 /**
  * Manages loyalty points redemption state stored in the WooCommerce session.
@@ -25,7 +25,7 @@ class RedemptionManager {
 	 */
 	private static $instance = null;
 
-	const SESSION_KEY = 'loyaltybay_points_redemption';
+	const SESSION_KEY = 'pointbay_points_redemption';
 
 	/**
 	 * Gets an instance of this object.
@@ -59,13 +59,13 @@ class RedemptionManager {
 
 		if ( $points_to_redeem < $min_points ) {
 			// translators: %d: minimum number of points required to redeem.
-			return new \WP_Error( 'below_minimum', sprintf( __( 'Minimum points required to redeem is %d.', 'loyaltybay-loyalty-points-referral-rewards-woo' ), $min_points ) );
+			return new \WP_Error( 'below_minimum', sprintf( __( 'Minimum points required to redeem is %d.', 'pointbay-loyalty-points-referral-rewards-woo' ), $min_points ) );
 		}
 
 		$max_points = $this->get_max_redeemable_points( $user_id );
 
 		if ( $points_to_redeem > $max_points ) {
-			return new \WP_Error( 'insufficient_points', __( 'You do not have enough points or the cart value is lower than the points value.', 'loyaltybay-loyalty-points-referral-rewards-woo' ) );
+			return new \WP_Error( 'insufficient_points', __( 'You do not have enough points or the cart value is lower than the points value.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
 		}
 
 		WC()->session->set( self::SESSION_KEY, $points_to_redeem );

@@ -1,5 +1,5 @@
 /**
- * Type definitions for the LoyaltyBay plugin.
+ * Type definitions for the PointBay plugin.
  *
  * Customize these types for your own plugin's data structures.
  */
@@ -42,7 +42,7 @@ export interface PluginSettings {
 /**
  * The main store type, matching the data passed by PHP's wp_localize_script().
  */
-export interface LoyaltyBayStore {
+export interface PointBayStore {
     version: string;
     root_id: string;
     nonce: string;

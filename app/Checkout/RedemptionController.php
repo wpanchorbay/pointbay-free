@@ -2,10 +2,10 @@
 /**
  * REST controller for applying and removing point redemptions at checkout.
  *
- * @package LoyaltyBay
+ * @package PointBay
  */
 
-namespace LoyaltyBay\Checkout;
+namespace PointBay\Checkout;
 
 /**
  * Registers and handles the REST routes used to redeem loyalty points.
@@ -18,7 +18,7 @@ class RedemptionController {
 	 * Registers the WordPress hooks handled by this class.
 	 *
 	 * @since 1.0.0
-	 * @param \LoyaltyBay\Core\Plugin $plugin The main plugin instance.
+	 * @param \PointBay\Core\Plugin $plugin The main plugin instance.
 	 * @return void
 	 */
 	public function run( $plugin ) {
@@ -34,7 +34,7 @@ class RedemptionController {
 	 */
 	public function register_routes() {
 		register_rest_route(
-			'loyaltybay/v1',
+			'pointbay/v1',
 			'/redeem',
 			array(
 				array(
