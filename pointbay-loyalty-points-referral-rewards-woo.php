@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       PointBay - Loyalty Points & Referral Rewards for WooCommerce
- * Plugin URI:        https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-for-woocommerce
- * Description:       Reward WooCommerce customers with loyalty points they earn on purchases and redeem for discounts at checkout.
+ * Plugin URI:        https://github.com/wpanchorbay/pointbay-free
+ * Description:       Reward WooCommerce customers with loyalty points they earn on purchases and referrals, and redeem for discounts at checkout.
  * Requires at least: 6.8
  * Requires PHP:      7.0
  * Requires Plugins:  woocommerce
