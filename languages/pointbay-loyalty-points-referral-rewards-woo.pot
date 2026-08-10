@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-01T13:55:20+00:00\n"
+"POT-Creation-Date: 2026-08-08T19:56:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
@@ -39,11 +39,12 @@ msgstr ""
 msgid "https://wpanchorbay.com"
 msgstr ""
 
-#: app/Admin/Admin.php:288
+#: app/Admin/Admin.php:260
 msgid "Loading..."
 msgstr ""
 
 #: app/Admin/WCSettingsTab.php:27
+#: build/admin.js:14
 msgid "Loyalty Points"
 msgstr ""
 
@@ -290,6 +291,86 @@ msgstr ""
 
 #: config/admin.php:77
 msgid "Settings"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:105
+msgid "What information is sent?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:106
+msgid "Pressing submit sends the reason you select and any note you type, together with your site address, the email address of your account, and your WordPress version. Choose \"Skip & Deactivate\" to send nothing."
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:110
+msgid "I couldn't get it working"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:112
+msgid "What were you trying to configure?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:116
+msgid "It's missing a feature I need"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:118
+msgid "What feature?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:122
+msgid "It conflicted with my theme or another plugin"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:124
+msgid "Which theme/plugin?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:128
+msgid "It slowed down my site"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:130
+msgid "Please describe what felt slow"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:134
+msgid "I found a better alternative"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:136
+msgid "Which plugin?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:140
+msgid "It's too complicated to set up"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:142
+msgid "What part was confusing?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:146
+msgid "I no longer need a loyalty program on my store"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:151
+msgid "It's temporary — I'm troubleshooting/debugging"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:156
+msgid "Other"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:158
+msgid "Please share the reason"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:166
+msgid "Enjoying PointBay?"
+msgstr ""
+
+#: pointbay-loyalty-points-referral-rewards-woo.php:167
+msgid "You've been using PointBay for a few days now. If it's been helpful, would you mind leaving a quick review? It really helps!"
 msgstr ""
 
 #: build/admin.js:14
@@ -598,4 +679,12 @@ msgstr ""
 
 #: build/settings.js:14
 msgid "Purge all ledger data upon deletion"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Debug Logging"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Write diagnostic messages to the WordPress debug log"
 msgstr ""

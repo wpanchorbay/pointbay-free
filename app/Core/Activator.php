@@ -39,7 +39,7 @@ class Activator {
 	public static function activate() {
 		// Bail out (and deactivate) if WooCommerce isn't active — this plugin requires it.
 		if ( ! self::is_woocommerce_active() ) {
-			deactivate_plugins( plugin_basename( \POINTBAY_PATH . 'pointbay-loyalty-points-referral-rewards-woo.php' ) );
+			deactivate_plugins( \POINTBAY_PLUGIN_BASENAME );
 			wp_die(
 				esc_html__( 'PointBay requires WooCommerce to be installed and active.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				esc_html__( 'Plugin dependency check', 'pointbay-loyalty-points-referral-rewards-woo' ),

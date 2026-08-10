@@ -186,34 +186,6 @@ class Admin {
 	}
 
 	/**
-	 * Redirect to the main dashboard.
-	 *
-	 * @return void
-	 */
-	public function redirect_to_dashboard() {
-		$config      = $this->get_config();
-		$menu_config = $config['menu'] ?? array();
-		$show_main   = $config['show_main_menu'] ?? true;
-
-		$slug = \POINTBAY_PLUGIN_NAME;
-
-		if ( $show_main && ! empty( $menu_config['top_level']['menu_slug'] ) ) {
-			$slug = $menu_config['top_level']['menu_slug'];
-		} elseif ( ! empty( $menu_config['sub_menus'] ) ) {
-			foreach ( $menu_config['sub_menus'] as $sub ) {
-				if ( empty( $sub['is_link'] ) && ! empty( $sub['menu_slug'] ) ) {
-					$slug = $sub['menu_slug'];
-					break;
-				}
-			}
-		}
-
-		$redirect_url = admin_url( 'admin.php?page=' . $slug );
-		wp_safe_redirect( $redirect_url );
-		exit;
-	}
-
-	/**
 	 * Check if current page is our menu page.
 	 *
 	 * @access public
@@ -394,7 +366,6 @@ class Admin {
 		$loader->add_filter( 'admin_body_class', $this, 'add_has_sticky_header' );
 		$loader->add_action( 'admin_enqueue_scripts', $this, 'enqueue_resources' );
 
-		$plugin_basename = plugin_basename( \POINTBAY_PATH . 'pointbay-loyalty-points-referral-rewards-woo.php' );
-		$loader->add_filter( 'plugin_action_links_' . $plugin_basename, $this, 'add_plugin_action_links', 10, 1 );
+		$loader->add_filter( 'plugin_action_links_' . \POINTBAY_PLUGIN_BASENAME, $this, 'add_plugin_action_links', 10, 1 );
 	}
 }

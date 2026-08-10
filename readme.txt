@@ -1,5 +1,5 @@
 === PointBay - Loyalty Points & Referral Rewards for WooCommerce ===
-Contributors: wpanchorbay, sankarsan
+Contributors: sankarsan, wpanchorbay, forhadkhan, arifac, shuvendushekhar
 Tags: woocommerce, loyalty, rewards, points, referral
 Requires at least: 6.8
 Tested up to: 7.0
@@ -52,7 +52,7 @@ Reward WooCommerce customers with loyalty points they earn on purchases and refe
 1.  Make sure **WooCommerce** is installed and active.
 2.  In your WordPress admin, go to **Plugins > Add New > Upload Plugin** and choose the plugin zip file, or upload the `pointbay-loyalty-points-referral-rewards-woo` folder to `/wp-content/plugins/`.
 3.  Activate the plugin through the **Plugins** menu in WordPress.
-4.  Go to **WooCommerce > Settings > PointBay** to configure earning and redemption rules.
+4.  Go to **WooCommerce > Settings > Loyalty Points** to configure earning and redemption rules.
 
 == Frequently Asked Questions ==
 
@@ -88,6 +88,21 @@ No. If a customer follows their own referral link and registers a second account
 
 Every customer gets a **My Rewards** section under **My Account** showing their current balance, their referral link, and recent points history.
 
+== Privacy ==
+
+PointBay does not track your visitors, and it does not send anything anywhere while it is running. Points, referrals and ledger history are stored only in your own database.
+
+There is exactly one case where data leaves your site, and only if you choose it. When you deactivate PointBay from the Plugins screen, a short optional survey appears. If you select a reason and press **Submit & Deactivate**, the following is sent to WPAnchorBay at `https://dfs.wpanchorbay.com`:
+
+*   the reason you selected and any note you typed,
+*   your site address,
+*   the email address of the WordPress account you are signed in with,
+*   your WordPress version.
+
+The modal states this before you submit. Choosing **Skip & Deactivate**, closing the modal, or deactivating any other way sends nothing at all. The survey is never shown outside the Plugins screen, and nothing is transmitted during normal use of the plugin.
+
+The plugin sets one cookie, `pointbay_ref`, and only when the referral feature is switched on and a visitor arrives via a referral link. It holds the referral code and nothing else, and expires after 30 days.
+
 == Screenshots ==
 
 1.  PointBay settings screen inside WooCommerce settings.
@@ -101,11 +116,6 @@ Every customer gets a **My Rewards** section under **My Account** showing their 
 
 = 1.0.0 =
 *   Initial release.
-*   Earn points on purchases, on registration, and for product reviews.
-*   Redeem points at checkout as an order fee (discount) or as a coupon, on both the classic checkout and the Cart & Checkout blocks.
-*   Referral program: every customer gets a shareable referral link, and the referrer earns bonus points once the customer they referred completes a first order. The bonus is reversed automatically if that order is cancelled, fails, or is refunded in full.
-*   A My Rewards area in My Account showing the points balance, referral link, and recent history.
-*   A Points History ledger in the admin for auditing every transaction.
 
 == Development ==
 

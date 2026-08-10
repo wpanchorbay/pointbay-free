@@ -5,9 +5,15 @@ import { usePointBayStore } from "../../store/pointbayStore";
 interface ClassicLayoutProps {
   children: ReactNode;
   title?: string;
+  /**
+   * Set false when the wrapped page renders its own <h1> (the WordPress
+   * `wp-heading-inline` / `wp-header-end` pattern). Two <h1>s on one screen is
+   * a document-outline error and reads as a duplicated title.
+   */
+  showTitle?: boolean;
 }
 
-const ClassicLayout: FC<ClassicLayoutProps> = ({ children, title }) => {
+const ClassicLayout: FC<ClassicLayoutProps> = ({ children, title, showTitle = true }) => {
   const store = usePointBayStore();
 
   const getPageTitle = () => {
@@ -19,7 +25,7 @@ const ClassicLayout: FC<ClassicLayoutProps> = ({ children, title }) => {
 
   return (
     <div className="">
-      {context !== "settings" && (
+      {showTitle && context !== "settings" && (
         <h1 className="pointbay-ignore-preflight pointbay-font-[600] pointbay-text-[16px] pointbay-p-x-page-default pointbay-bg-white pointbay-m-0 pointbay-py-[18px]">
           {getPageTitle()}
         </h1>

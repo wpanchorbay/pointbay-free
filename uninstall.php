@@ -14,6 +14,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 define( 'POINTBAY_OPTION_NAME', 'pointbay' );
 define( 'POINTBAY_REST_NAMESPACE', 'pointbay' );
 define( 'POINTBAY_PATH', plugin_dir_path( __FILE__ ) );
+define( 'POINTBAY_WPORG_SLUG', 'pointbay-loyalty-points-referral-rewards-woo' );
 
 // Composer autoloader.
 if ( file_exists( POINTBAY_PATH . 'vendor/autoload.php' ) ) {
@@ -34,7 +35,27 @@ function pointbay_run_uninstall() {
 	if ( ! empty( $options['advanced_deleteAllOnUninstall'] ) && true === $options['advanced_deleteAllOnUninstall'] ) {
 		pointbay_drop_custom_tables();
 		pointbay_delete_plugin_options();
+		pointbay_delete_deactivation_feedback_data();
 		pointbay_remove_capabilities();
+	}
+}
+
+/**
+ * Delete the records left behind by the deactivation feedback package.
+ *
+ * These keys are namespaced `wpab_*` rather than `pointbay_*`, so the option
+ * sweep above does not reach them. Only this plugin's own slug is targeted —
+ * sibling plugins keep their records.
+ *
+ * @since 1.0.0
+ */
+function pointbay_delete_deactivation_feedback_data() {
+	delete_option( 'wpab_deactivation_feedback_log_' . POINTBAY_WPORG_SLUG );
+	delete_option( 'wpab_activated_at_' . POINTBAY_WPORG_SLUG );
+
+	if ( function_exists( 'delete_metadata' ) ) {
+		// Drops the dismissal flag for every user in one pass.
+		delete_metadata( 'user', 0, 'wpab_review_dismissed_' . POINTBAY_WPORG_SLUG, '', true );
 	}
 }
 

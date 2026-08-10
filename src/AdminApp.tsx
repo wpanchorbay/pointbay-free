@@ -1,3 +1,4 @@
+import { __ } from "@wordpress/i18n";
 import LedgerAdmin from "./pages/LedgerAdmin";
 import { PointBayProvider } from "./store/pointbayStore";
 import { ToastProvider } from "./store/toast/use-toast";
@@ -9,7 +10,11 @@ function AdminApp() {
     <PointBayProvider>
       <ToastProvider>
         <ToastContainer />
-        <ClassicLayout title="Loyalty Points">
+        {/* LedgerAdmin renders its own "Points History" <h1>, so the layout must not add a second one. */}
+        <ClassicLayout
+          title={__("Loyalty Points", "pointbay-loyalty-points-referral-rewards-woo")}
+          showTitle={false}
+        >
           <LedgerAdmin />
         </ClassicLayout>
       </ToastProvider>

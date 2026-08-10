@@ -73,8 +73,8 @@ copy_plugin_files() {
     # Strip dev-only metadata shipped inside composer packages (avoids "hidden files" flags).
     find "$DEST/vendor" \( -name '.gitignore' -o -name '.gitattributes' -o -name '.editorconfig' \
         -o -name 'phpcs.xml' -o -name 'phpunit.xml*' -o -name '.php-cs-fixer*' \) -delete 2>/dev/null || true
-    find "$DEST/vendor" -type d \( -name 'tests' -o -name 'test' -o -name 'docs' -o -name '.github' \) \
-        -exec rm -rf {} + 2>/dev/null || true
+    find "$DEST/vendor" -type d \( -name 'tests' -o -name 'test' -o -name 'docs' -o -name '.github' \
+        -o -name 'examples' \) -exec rm -rf {} + 2>/dev/null || true
 
     # Copy files
     cp index.php "$DEST/"

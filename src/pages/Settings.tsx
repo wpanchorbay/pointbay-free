@@ -462,6 +462,25 @@ const Settings: React.FC = () => {
 							/>
 						),
 					},
+					{
+						id: 'debug_enableMode',
+						label: __( 'Debug Logging', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ settings.debug_enableMode }
+								onChange={ ( val ) =>
+									setSettings( {
+										...settings,
+										debug_enableMode: val,
+									} )
+								}
+								label={ __(
+									'Write diagnostic messages to the WordPress debug log',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
 				] }
 			/>
 

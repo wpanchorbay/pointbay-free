@@ -1,12 +1,12 @@
 {
-    "name": "pointbay/pointbay",
-    "description": "A comprehensive WordPress plugin boilerplate with React/TypeScript frontend.",
+    "name": "wpanchorbay/pointbay-loyalty-points-referral-rewards-woo",
+    "description": "Loyalty points, referral rewards and checkout redemption for WooCommerce.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "PointBay",
-            "email": "pointbay@gmail.com"
+            "name": "WP Anchor Bay",
+            "email": "wpanchorbay@gmail.com"
         }
     ],
     "require": {
@@ -15,7 +15,8 @@
     },
     "autoload": {
         "psr-4": {
-            "PointBay\\": "app/"
+            "PointBay\\": "app/",
+            "WPAB\\DeactivationFeedback\\": "vendor/deactivation-feedback/src/"
         }
     }
 }

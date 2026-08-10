@@ -24,8 +24,6 @@ export const useMenuSync = (): void => {
                 });
 
                 const targetLink = getNewLink(allLinks, path) || baseLink;
-                // console.log('targetLink',targetLink);
-                // console.log('baseLink', baseLink);
 
                 if (targetLink) {
                     targetLink.classList.add('current');
