@@ -8,27 +8,23 @@
         }
     },
     "environments": {
-        "free-only": {
-            "plugins": []
-        },
-        "free-pro": {
+        "default": {
             "plugins": [
-                "../pointbaypro"
+                "woocommerce",
+                {
+                    "slug": "pointbaypro",
+                    "from": "local",
+                    "path": "../pointbaypro"
+                }
             ]
         }
     },
     "test_types": {
         "e2e": {
-            "free-only": {
-                "environment": "free-only",
+            "default": {
+                "environment": "default",
                 "test_packages": [
-                    "./tests/e2e-free"
-                ]
-            },
-            "free-pro": {
-                "environment": "free-pro",
-                "test_packages": [
-                    "./tests/e2e-pro"
+                    "./tests/e2e"
                 ]
             }
         }

@@ -1,0 +1,17 @@
+{
+    "name": "pointbay-loyalty-points-referral-rewards-woo-e2e",
+    "private": true,
+    "description": "QIT Playwright behavioral E2E suite (free + pro phases).",
+    "scripts": {
+        "test:e2e": "bash ../../run-all-tests.sh",
+        "test:e2e:free": "bash ../../run-free-tests.sh",
+        "contact-sheet": "node make-contact-sheet.js"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.47.0",
+        "playwright-ctrf-json-reporter": "^0.0.9"
+    },
+    "dependencies": {
+        "@woocommerce/qit-runtime": "*"
+    }
+}
