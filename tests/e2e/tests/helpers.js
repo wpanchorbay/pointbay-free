@@ -362,14 +362,13 @@ async function enableCustomerRegistration() {
     );
 }
 
-// Visits the real referral link (?ref=CODE) to set the pointbay_ref cookie via
-// ReferralManager::capture_referral_cookie() (hooked on `init`), THEN registers
-// through WooCommerce's real My Account registration form — this is the actual
-// mechanism (`user_register` reads the cookie), not a shortcut. Returns the new
-// user's id.
-async function registerViaReferralLink(page, { refCode, username, email, password }) {
-    await page.context().clearCookies();
-    await page.goto(`/?ref=${refCode}`, { waitUntil: 'domcontentloaded' });
+// Registers a brand-new customer through WooCommerce's real My Account
+// registration form — the actual mechanism behind user_register (registration
+// bonus points, referral attribution, etc.), not a wp-cli shortcut. Assumes
+// the caller has already navigated wherever it needs to (a referral link, or
+// just /my-account/ directly) and cleared cookies for a genuinely anonymous
+// session. Returns the new user's id.
+async function registerCustomer(page, { username, email, password }) {
     await page.goto('/my-account/', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#reg_email', { timeout: 20000 });
     await page.fill('#reg_email', email);
@@ -400,14 +399,24 @@ async function registerViaReferralLink(page, { refCode, username, email, passwor
         page.waitForSelector('.woocommerce-error, .woocommerce-notices-wrapper .woocommerce-error', { timeout: 20000 }),
     ]);
     const errorText = await page.locator('.woocommerce-error').first().textContent().catch(() => null);
-    if (errorText) throw new Error(`Registration via referral link rejected for ${email}: ${errorText.trim()}`);
+    if (errorText) throw new Error(`Registration rejected for ${email}: ${errorText.trim()}`);
     const newId = await wpEval(`$u = get_user_by('email','${email}'); echo $u ? $u->ID : '';`);
-    if (!newId) throw new Error(`Registration via referral link failed for ${email}`);
+    if (!newId) throw new Error(`Registration failed for ${email}`);
     // Force the login-friendly username the test expects, since WooCommerce
     // derives it from the email local-part by default and specs need a fixed,
     // predictable value for later login() calls.
     await wpEval(`global $wpdb; $wpdb->update($wpdb->users, ['user_login'=>'${username}'], ['ID'=>${newId}]); echo 'OK';`);
     return Number(newId);
+}
+
+// Visits the real referral link (?ref=CODE) to set the pointbay_ref cookie via
+// ReferralManager::capture_referral_cookie() (hooked on `init`), THEN registers
+// through the real form via registerCustomer() — this is the actual mechanism
+// (`user_register` reads the cookie), not a shortcut.
+async function registerViaReferralLink(page, { refCode, username, email, password }) {
+    await page.context().clearCookies();
+    await page.goto(`/?ref=${refCode}`, { waitUntil: 'domcontentloaded' });
+    return registerCustomer(page, { username, email, password });
 }
 
 // Sum of referral-related ledger rows for a user: pass 'referral' (credit) or
@@ -550,15 +559,110 @@ async function restorePointbayDefaultsOption() {
     );
 }
 
+// ── Product reviews (earning_pointsForReview) ────────────────────────────
+// Submits a review as whatever customer `page` is currently logged in as, via
+// the real storefront review form (WooCommerce's native #commentform on the
+// product page's Reviews tab — a plain <select id="rating"> and #comment
+// textarea, confirmed live; no WC Blocks equivalent, this form is shared by
+// both checkout modes). Returns the new comment's id.
+async function submitProductReview(page, { productSlug, rating = 5, text }) {
+    const productId = await getProductIdBySlug(productSlug);
+    // Something in this env transiently drops the comment POST entirely —
+    // no error, no redirect, no row — confirmed live: the identical flow
+    // (register brand-new customer, wait, submit) succeeded on some runs and
+    // silently produced nothing on others, with no code difference between
+    // them. This matches WordPress core's comment flood guard
+    // (wp_check_comment_flood(), a 15s minimum gap) more often than not, but
+    // wasn't 100% reproducible as exactly that, so rather than chase the
+    // precise cause, retry the whole submission with a growing wait — cheap,
+    // and correct regardless of which transient guard is responsible.
+    let newId = null;
+    let lastError = null;
+    for (let submitAttempt = 0; submitAttempt < 3 && !newId; submitAttempt++) {
+        try {
+            await page.goto(`/product/${productSlug}/#tab-reviews`, { waitUntil: 'domcontentloaded' });
+            await page.waitForSelector('#commentform', { timeout: 20000 });
+            await page.waitForTimeout(submitAttempt === 0 ? 2000 : 16000);
+            // The native <select id="rating"> is present but display:none —
+            // WooCommerce's star-rating JS hides it and drives it via a
+            // clickable star widget instead (confirmed live), so Playwright's
+            // actionability check on the hidden select itself times out. Set
+            // the value directly (what the star click does under the hood).
+            await page.locator('#rating').evaluate((el, val) => {
+                el.value = String(val);
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }, rating);
+            await page.fill('#comment', text);
+            // The redirect target after submission (?unapproved=N vs
+            // #comment-N vs staying on the same hash) was NOT consistent
+            // across runs in this env — confirmed live. Read the new comment
+            // id from the DB instead of parsing the post-submit URL: capture
+            // the max id before submitting, then find whatever landed above
+            // it for this exact product.
+            const beforeMaxId = await wpEval(`global $wpdb; echo (int) $wpdb->get_var("SELECT MAX(comment_ID) FROM {$wpdb->comments}");`);
+            // Same requestSubmit(submitter) requirement as registerCustomer()
+            // — see that function's comment for why a plain click doesn't
+            // reliably submit.
+            await page.locator('#commentform').evaluate((form) => {
+                const btn = form.querySelector('#submit');
+                form.requestSubmit(btn);
+            });
+            for (let poll = 0; poll < 20 && !newId; poll++) {
+                await new Promise((r) => setTimeout(r, 500));
+                const found = await wpEval(
+                    `global $wpdb; echo (int) $wpdb->get_var($wpdb->prepare(` +
+                    `"SELECT comment_ID FROM {$wpdb->comments} WHERE comment_post_ID = %d AND comment_ID > %d ORDER BY comment_ID DESC LIMIT 1", ${productId}, ${beforeMaxId}));`
+                );
+                if (Number(found) > 0) newId = Number(found);
+            }
+        } catch (err) {
+            lastError = err;
+        }
+    }
+    if (!newId) throw lastError || new Error(`Review submission produced no new comment row for product ${productId} after 3 attempts`);
+    return newId;
+}
+
+async function getCommentApprovalStatus(commentId) {
+    return wpEval(`$c = get_comment(${commentId}); echo $c ? $c->comment_approved : 'MISSING';`);
+}
+
+// Approves a comment via the real WooCommerce Reviews admin screen (the
+// actual UI a shop manager uses) — the approval transition itself is the
+// behavior a review-bonus spec is proving, so it goes through the browser
+// like every other UI-driven transition in this suite, not wp-cli.
+async function approveReviewViaAdmin(page, commentId) {
+    await page.goto('/wp-admin/edit.php?post_type=product&page=product-reviews', { waitUntil: 'domcontentloaded' });
+    const row = page.locator(`#comment-${commentId}`);
+    await row.waitFor({ state: 'visible', timeout: 20000 });
+    // WordPress admin list tables keep row actions (.row-actions, including
+    // "Approve") CSS-hidden until the row is hovered/focused — confirmed live,
+    // Playwright's actionability check found the link "visible" but
+    // positioned outside the viewport (zero-size while hidden) and retried
+    // for the full timeout. Hover the row first, matching what a real user
+    // does to reveal the action before clicking it.
+    await row.hover();
+    await row.locator('.approve a').click();
+    await page.waitForFunction(
+        (id) => {
+            const r = document.querySelector(`#comment-${id}`);
+            return r && !r.className.includes('unapproved');
+        },
+        commentId,
+        { timeout: 15000 }
+    ).catch(() => {});
+}
+
 module.exports = {
     wpEval, login, getSetting, updateSettings, openSettings, saveAndConfirm,
     settingRow, toggleCheckbox, selectOption, seedProduct, seedCustomer,
     disableComingSoon, enableCodGateway, clearCustomerCart, placeOrder, getProductIdBySlug,
     setOrderStatus, completeOrder, ledgerDeltaFor, creditPointsFixture,
     redeemPointsAtCheckout, orderHasPointsFee, orderHasPointsCoupon,
-    getReferralCode, deleteCustomerIfExists, registerViaReferralLink,
+    getReferralCode, deleteCustomerIfExists, registerViaReferralLink, registerCustomer,
     referralLedgerSum, getDisplayedReferralLink, enableCustomerRegistration,
     tailPointbayWcLog, pointbayWcLogLineCount, pointbayWcLogLinesSince,
     addToCartAndViewCart, runUninstallRoutine,
     pointbayTablesExist, pointbayOptionRowExists, recreatePointbayTables, restorePointbayDefaultsOption,
+    submitProductReview, getCommentApprovalStatus, approveReviewViaAdmin,
 };
