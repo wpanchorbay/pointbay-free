@@ -56,3 +56,38 @@ here, so the suite stays honestly green rather than hiding the bug.
   load-bearing.
 - **Spec status**: `tests/e2e/tests/02-redemption.spec.js` — both "fee" and "coupon" mode tests are
   green; the `test.fixme()` quarantine has been removed.
+
+## BUG-02: "Guest Notice" setting has no effect on the WooCommerce Blocks storefront
+
+- **Where**: `src/checkout/EarnNoticeBlock.tsx` (lines 52-67, the `!isLoggedIn` branch) and
+  `app/Checkout/BlockIntegration.php` (`get_script_data()`, lines 97-113).
+- **How found**: spec `tests/e2e/tests/04-display-system.spec.js` — "Guest Notice OFF hides the
+  earn-prompt to a logged-out visitor". Confirmed live: turning the setting off in the real Settings
+  UI and viewing the storefront cart as a logged-out visitor.
+- **Symptom**: On the WooCommerce Blocks storefront (the modern default checkout/cart, what
+  `/cart/` and `/checkout/` render unless the site is on the classic shortcode UI), the "Create an
+  account to earn N points on this order!" prompt shown to logged-out visitors renders
+  **unconditionally** whenever points would be earned on the cart — setting **Guest Notice to OFF
+  in Settings → Display & System has zero effect**. Only the classic-checkout PHP path
+  (`app/Checkout/GuestNotice.php`, gated correctly on `display_guestNoticeEnabled`) respects the
+  toggle; the modern default surface does not.
+- **Root cause**: the plugin ships a SEPARATE implementation of this notice for WC Blocks —
+  `EarnNoticeBlock.tsx`, a React component driven by client-side cart data. Its guest-facing branch
+  (`!isLoggedIn`) gates only on `points_to_award > 0` and never reads a
+  `display_guestNoticeEnabled`-equivalent flag. On the PHP side, `BlockIntegration::get_script_data()`
+  — which supplies all the data this component reads (`pointbay_checkout_data`/`pointbay_cart_data`)
+  — never passes the setting to the block at all, so there is nothing for the component to check
+  even if it wanted to.
+- **Impact**: Any store owner who disables the guest notice, expecting it to stop nudging logged-out
+  shoppers to register, sees no change on the storefront's default checkout/cart. Not a crash — a
+  silently ineffective setting.
+- **Not auto-fixed**: this would require editing both `EarnNoticeBlock.tsx` and
+  `BlockIntegration.php` and regenerating the compiled `build/block-cart.js`/`build/block-checkout.js`
+  bundles the plugin ships (a `build:prod`/`build.sh` step per `CLAUDE.md`, not a plain
+  `npm run build` — the shipped bundle format wasn't verified reproducible from this repo state).
+  Whether the Blocks-side notice *should* be gated the same way as the classic path is also a
+  product-design call for the plugin owner, not something to presume. Per this suite's rule, product
+  bugs are reported, not silently fixed.
+- **Spec status**: `tests/e2e/tests/04-display-system.spec.js` — the ON case (`enabled=true`) is
+  green and unaffected. The OFF case is quarantined with `test.fixme(...)`, asserting the intended
+  (currently broken) behavior.

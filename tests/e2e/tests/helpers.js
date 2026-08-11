@@ -434,6 +434,122 @@ async function getDisplayedReferralLink(page) {
     return input.inputValue();
 }
 
+// ── Display & System ─────────────────────────────────────────────────────
+// Debug Logging routes through WooCommerce's OWN logger (wc_get_logger()),
+// not core's wp-content/debug.log, despite the Settings UI caption saying
+// "WordPress debug log" — confirmed by reading app/functions.php's
+// pointbay_log(). Resolve the real file path via WC's own API rather than
+// guessing the {source}-{hash}.log naming.
+async function tailPointbayWcLog(lines = 50) {
+    const path = await wpEval(`echo function_exists('wc_get_log_file_path') ? wc_get_log_file_path('pointbay') : '';`);
+    if (!path) return '';
+    return wpEval(
+        `$p = '${path}'; if (!file_exists($p)) { echo ''; exit; }` +
+        `$all = file($p); echo implode('', array_slice($all, -${lines}));`
+    );
+}
+
+// The log file is cumulative across the WHOLE reused env's history — tailing
+// N lines can include stale entries from an EARLIER debug-enabled run and
+// produce a false positive. Confirmed live: `apply_fee` lines appeared in a
+// tail check taken right after setting debug OFF, purely because prior runs
+// (minutes earlier, debug ON) were still within the tail window. Use a
+// before/after line-count delta instead — count lines now, trigger the
+// action, then read only what was appended since.
+async function pointbayWcLogLineCount() {
+    const path = await wpEval(`echo function_exists('wc_get_log_file_path') ? wc_get_log_file_path('pointbay') : '';`);
+    if (!path) return 0;
+    const out = await wpEval(`$p = '${path}'; echo file_exists($p) ? count(file($p)) : 0;`);
+    return Number(out);
+}
+async function pointbayWcLogLinesSince(startCount) {
+    const path = await wpEval(`echo function_exists('wc_get_log_file_path') ? wc_get_log_file_path('pointbay') : '';`);
+    if (!path) return '';
+    return wpEval(
+        `$p = '${path}'; if (!file_exists($p)) { echo ''; exit; }` +
+        `$all = file($p); echo implode('', array_slice($all, ${startCount}));`
+    );
+}
+
+// Adds a product to cart as whatever identity `page` currently has (including
+// a guest with no session) via the classic ?add-to-cart= query param, which
+// redirects straight to the cart page — the simplest real path to a non-empty
+// cart without going through checkout.
+async function addToCartAndViewCart(page, productSlug) {
+    const productId = await getProductIdBySlug(productSlug);
+    await page.goto(`/cart/?add-to-cart=${productId}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+}
+
+// ── Uninstall (advanced_deleteAllOnUninstall) ────────────────────────────
+// uninstall.php is only ever invoked by WordPress's real "Delete" action,
+// which this suite can't trigger without deactivating pointbay for the rest
+// of the run. `wp eval-file` can't be combined with the WP_UNINSTALL_PLUGIN
+// define() in one wp-cli invocation (define() doesn't persist across
+// separate `wp` processes), so both the define and the include must happen
+// inside the SAME `wp eval` call — this runs the real uninstall.php source,
+// not a re-implementation of its logic.
+async function runUninstallRoutine() {
+    await wpEval(
+        `define('WP_UNINSTALL_PLUGIN', 'pointbay-loyalty-points-referral-rewards-woo/pointbay-loyalty-points-referral-rewards-woo.php');` +
+        `include WP_PLUGIN_DIR . '/pointbay-loyalty-points-referral-rewards-woo/uninstall.php';` +
+        `echo 'OK';`
+    );
+}
+
+// get_option('pointbay') is NOT a reliable way to check whether uninstall.php
+// actually deleted the row — WordPress core's register_setting() was called
+// with a 'default' array for this option (Settings::register()), and
+// get_option() falls back to that REGISTERED DEFAULT whenever the row is
+// missing, WITHOUT writing it back to the DB. Confirmed live: right after a
+// real uninstall run, get_option('pointbay') still returned a full default
+// settings array — looking exactly like nothing was deleted — while a raw
+// SQL read of wp_options showed the row was genuinely gone. Query the table
+// directly to see the real DB state, bypassing core's default-value masking.
+async function pointbayOptionRowExists() {
+    const out = await wpEval(
+        `global $wpdb; $row = $wpdb->get_var($wpdb->prepare('SELECT option_value FROM %i WHERE option_name = %s', $wpdb->options, 'pointbay')); echo $row === null ? 'ABSENT' : 'PRESENT';`
+    );
+    return out === 'PRESENT';
+}
+
+async function pointbayTablesExist() {
+    const out = await wpEval(
+        `global $wpdb; $t = $wpdb->get_col("SHOW TABLES LIKE '{$wpdb->prefix}pointbay_%'"); echo count($t);`
+    );
+    return Number(out) > 0;
+}
+
+// Recovery after a real (destructive-by-design) uninstall run: DbManager owns
+// the same migrations uninstall.php used to drop the tables, so re-running
+// create_tables() is the plugin's own, not hand-rolled, path back to a clean
+// schema — the same thing plugin (re)activation does.
+async function recreatePointbayTables() {
+    await wpEval(`\\PointBay\\Data\\DbManager::get_instance()->create_tables(); echo 'OK';`);
+}
+
+// Uninstall deletes the ENTIRE `pointbay` option, not just the one setting
+// under test — a plain updateSettings() patch afterward would merge into an
+// empty array and leave every OTHER setting undefined for the rest of the
+// suite. Rebuild the full option from the plugin's own default-settings
+// method (not a hand-maintained JS copy of config/settings.php).
+// update_option() alone is NOT enough here: WordPress core's update_option()
+// no-ops (skips the write) when the new value equals what get_option() already
+// returns — and get_option() for a MISSING row returns the register_setting()
+// default (see the discovery landmine), which is EXACTLY the value being
+// restored. Confirmed live: after uninstall.php deleted the row,
+// update_option('pointbay', <the same defaults>) silently did nothing — the
+// raw DB row stayed absent. delete_option() first removes any ambiguity, then
+// add_option() forces a genuine INSERT regardless of what get_option() would
+// have returned.
+async function restorePointbayDefaultsOption() {
+    await wpEval(
+        `delete_option('pointbay');` +
+        `$ok = add_option('pointbay', \\PointBay\\Core\\Settings::get_instance()->get_default_settings());` +
+        `echo $ok ? 'OK' : 'FAILED';`
+    );
+}
+
 module.exports = {
     wpEval, login, getSetting, updateSettings, openSettings, saveAndConfirm,
     settingRow, toggleCheckbox, selectOption, seedProduct, seedCustomer,
@@ -442,4 +558,7 @@ module.exports = {
     redeemPointsAtCheckout, orderHasPointsFee, orderHasPointsCoupon,
     getReferralCode, deleteCustomerIfExists, registerViaReferralLink,
     referralLedgerSum, getDisplayedReferralLink, enableCustomerRegistration,
+    tailPointbayWcLog, pointbayWcLogLineCount, pointbayWcLogLinesSince,
+    addToCartAndViewCart, runUninstallRoutine,
+    pointbayTablesExist, pointbayOptionRowExists, recreatePointbayTables, restorePointbayDefaultsOption,
 };
