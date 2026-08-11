@@ -57,12 +57,24 @@ test.describe('Earning extras (Free)', () => {
     });
 
     test('Points for Product Review credits only once the review is approved', async ({ page }) => {
+        // submitProductReview() retries the submission a couple times to ride
+        // out a genuine one-off drop of the comment POST — give it headroom
+        // against the global 120s test timeout.
+        test.setTimeout(180000);
         const log = new TestLogger('05-earning-extras.spec.js', 'points-for-review').attach(page);
         log.start();
         const original = await getSetting('earning_pointsForReview');
         const bonus = 30; // distinct from the 0 default
         const reviewerUsername = 'e2ereviewer';
         const reviewerEmail = 'e2ereviewer@example.com';
+        // WordPress core's duplicate-comment check (wp_allow_comment()) permanently
+        // blocks any resubmission matching the same post+author+email+content, with
+        // no time window — confirmed by reading wp-includes/comment.php. Since this
+        // env is reused across runs and old comment rows are never cleaned up, a
+        // fixed review text would work exactly once, ever, then fail every run after
+        // (this is what looked like a flaky "flood control" drop before — it wasn't).
+        // A unique marker per run sidesteps the collision entirely.
+        const reviewText = `E2E review — testing the review-bonus credit path. (run ${Date.now()})`;
 
         try {
             await log.step(1, 'Log in as admin, set Points for Product Review');
@@ -84,7 +96,7 @@ test.describe('Earning extras (Free)', () => {
             const commentId = await submitProductReview(page, {
                 productSlug: 'earn-test-product',
                 rating: 5,
-                text: 'E2E review — testing the review-bonus credit path.',
+                text: reviewText,
             });
             await log.snapshot(page, 'review-submitted');
 

@@ -567,15 +567,14 @@ async function restorePointbayDefaultsOption() {
 // both checkout modes). Returns the new comment's id.
 async function submitProductReview(page, { productSlug, rating = 5, text }) {
     const productId = await getProductIdBySlug(productSlug);
-    // Something in this env transiently drops the comment POST entirely —
-    // no error, no redirect, no row — confirmed live: the identical flow
-    // (register brand-new customer, wait, submit) succeeded on some runs and
-    // silently produced nothing on others, with no code difference between
-    // them. This matches WordPress core's comment flood guard
-    // (wp_check_comment_flood(), a 15s minimum gap) more often than not, but
-    // wasn't 100% reproducible as exactly that, so rather than chase the
-    // precise cause, retry the whole submission with a growing wait — cheap,
-    // and correct regardless of which transient guard is responsible.
+    // Retries the whole submission a couple times as a safety net for a
+    // genuine one-off drop of the POST. NOTE: this can NOT paper over WP
+    // core's permanent duplicate-comment check (wp_allow_comment() in
+    // wp-includes/comment.php, no time window — keyed on
+    // post+author+email+content) — resubmitting identical `text` just hits
+    // the same wall every attempt. Callers MUST pass content that's unique
+    // per test run (e.g. a timestamp in the text) since this env is reused
+    // across runs and old comment rows are never cleaned up.
     let newId = null;
     let lastError = null;
     for (let submitAttempt = 0; submitAttempt < 3 && !newId; submitAttempt++) {
