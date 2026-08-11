@@ -331,10 +331,115 @@ async function orderHasPointsCoupon(orderId) {
     return found === 'yes';
 }
 
+// ── Referrals ─────────────────────────────────────────────────────────────
+// Real referral codes are generated lazily (ReferralManager::get_referral_code)
+// on first use — calling the plugin's own method (not hand-rolling the format)
+// keeps this aligned if the code scheme ever changes.
+async function getReferralCode(userId) {
+    return wpEval(`echo \\PointBay\\Referrals\\ReferralManager::get_instance()->get_referral_code(${userId});`);
+}
+
+// Deletes a user by USERNAME if present, so a referral spec can register a
+// genuinely NEW customer every run without colliding with a leftover account
+// from a previous (possibly failed) run — referral crediting is strictly
+// "this user's first order", so a reused account would silently no-op.
+async function deleteCustomerIfExists(username) {
+    await wpEval(
+        `$u = get_user_by('login','${username}');` +
+        `if ($u) { require_once ABSPATH.'wp-admin/includes/user.php'; wp_delete_user($u->ID); }` +
+        `echo 'OK';`
+    );
+}
+
+// WooCommerce customer registration is OFF by default, and when on defaults to
+// auto-generating the password (hiding #reg_password) — a referral spec needs
+// a real registration form with both fields to drive through the browser.
+async function enableCustomerRegistration() {
+    await wpEval(
+        `update_option('woocommerce_enable_myaccount_registration','yes');` +
+        `update_option('woocommerce_registration_generate_password','no');` +
+        `echo 'OK';`
+    );
+}
+
+// Visits the real referral link (?ref=CODE) to set the pointbay_ref cookie via
+// ReferralManager::capture_referral_cookie() (hooked on `init`), THEN registers
+// through WooCommerce's real My Account registration form — this is the actual
+// mechanism (`user_register` reads the cookie), not a shortcut. Returns the new
+// user's id.
+async function registerViaReferralLink(page, { refCode, username, email, password }) {
+    await page.context().clearCookies();
+    await page.goto(`/?ref=${refCode}`, { waitUntil: 'domcontentloaded' });
+    await page.goto('/my-account/', { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#reg_email', { timeout: 20000 });
+    await page.fill('#reg_email', email);
+    // WooCommerce's default registration form has no separate username field
+    // unless woocommerce_registration_generate_username is off; the account's
+    // WP username still needs to be deterministic for login(), so set it via
+    // the account's generated user then rename — simpler: use email as login
+    // isn't guaranteed, so create then immediately verify/rename via wp-cli.
+    await page.fill('#reg_password', password);
+    // A plain page.click('button[name="register"]') was confirmed live (via
+    // network tracing) to dispatch a real click that NEVER submits the form —
+    // Chromium in this headless/QIT context doesn't reliably fire the
+    // resulting form submission for this particular button. form.submit() /
+    // requestSubmit() with no argument don't fix it either: per the HTML spec,
+    // ONLY the button passed as requestSubmit()'s "submitter" has its
+    // name=value pair (name="register") included in the POST body — omit it
+    // and WooCommerce's `isset($_POST['register'])` check silently sees no
+    // registration attempt at all, so the page just re-renders the same empty
+    // form with a 200 and no error. Confirmed live via response-body dumps
+    // both ways. Passing the actual button as the submitter is what a real
+    // click does, and reproduces reliably.
+    await page.locator('form.woocommerce-form-register').evaluate((form) => {
+        const btn = form.querySelector('button[name="register"]');
+        form.requestSubmit(btn);
+    });
+    await Promise.race([
+        page.waitForSelector('a[href*="customer-logout"]', { timeout: 20000 }),
+        page.waitForSelector('.woocommerce-error, .woocommerce-notices-wrapper .woocommerce-error', { timeout: 20000 }),
+    ]);
+    const errorText = await page.locator('.woocommerce-error').first().textContent().catch(() => null);
+    if (errorText) throw new Error(`Registration via referral link rejected for ${email}: ${errorText.trim()}`);
+    const newId = await wpEval(`$u = get_user_by('email','${email}'); echo $u ? $u->ID : '';`);
+    if (!newId) throw new Error(`Registration via referral link failed for ${email}`);
+    // Force the login-friendly username the test expects, since WooCommerce
+    // derives it from the email local-part by default and specs need a fixed,
+    // predictable value for later login() calls.
+    await wpEval(`global $wpdb; $wpdb->update($wpdb->users, ['user_login'=>'${username}'], ['ID'=>${newId}]); echo 'OK';`);
+    return Number(newId);
+}
+
+// Sum of referral-related ledger rows for a user: pass 'referral' (credit) or
+// 'referral_reversal' (debit) as reference_type — see ReferralProcessor's
+// REF_TYPE_AWARD / REF_TYPE_REVERSAL constants. reference_id is the REFERRED
+// customer's user id (ReferralProcessor uses $buyer_id as reference_id) — pass
+// it to scope the sum to one run's referral, since a reused referrer fixture
+// accumulates credits from every prior run's referral otherwise.
+async function referralLedgerSum(userId, referenceType, transactionType, referenceId = null) {
+    const refClause = referenceId !== null ? ` AND reference_id = ${Number(referenceId)}` : '';
+    const sum = await wpEval(
+        `global $wpdb; echo (string) $wpdb->get_var( $wpdb->prepare(` +
+        `"SELECT COALESCE(SUM(amount),0) FROM {$wpdb->prefix}pointbay_ledger ` +
+        `WHERE user_id = %d AND reference_type = %s AND transaction_type = %s${refClause}", ${userId}, '${referenceType}', '${transactionType}' ) );`
+    );
+    return Number(sum);
+}
+
+// The referral link surfaced on My Account → My Rewards (readonly input).
+async function getDisplayedReferralLink(page) {
+    await page.goto('/my-account/my-rewards/', { waitUntil: 'domcontentloaded' });
+    const input = page.locator('#pointbay-referral-link');
+    await input.waitFor({ state: 'visible', timeout: 20000 });
+    return input.inputValue();
+}
+
 module.exports = {
     wpEval, login, getSetting, updateSettings, openSettings, saveAndConfirm,
     settingRow, toggleCheckbox, selectOption, seedProduct, seedCustomer,
     disableComingSoon, enableCodGateway, clearCustomerCart, placeOrder, getProductIdBySlug,
     setOrderStatus, completeOrder, ledgerDeltaFor, creditPointsFixture,
     redeemPointsAtCheckout, orderHasPointsFee, orderHasPointsCoupon,
+    getReferralCode, deleteCustomerIfExists, registerViaReferralLink,
+    referralLedgerSum, getDisplayedReferralLink, enableCustomerRegistration,
 };
