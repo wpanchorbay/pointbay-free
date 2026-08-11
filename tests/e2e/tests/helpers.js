@@ -186,7 +186,7 @@ async function clearCustomerCart(username) {
 // real customer — guest checkout has no customer_id, so PointBay never awards
 // points on it; that's a real product behavior, not a test limitation).
 // Returns {orderId, total}.
-async function placeOrder(page, { productSlug, customerUsername, log } = {}) {
+async function placeOrder(page, { productSlug, customerUsername, beforePlaceOrder, log } = {}) {
     if (customerUsername) await clearCustomerCart(customerUsername);
     await page.goto(`/checkout/?add-to-cart=${await getProductIdBySlug(productSlug)}`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#email', { timeout: 30000 });
@@ -232,6 +232,10 @@ async function placeOrder(page, { productSlug, customerUsername, log } = {}) {
     await codRadio.waitFor({ state: 'visible', timeout: 20000 });
     if (!(await codRadio.isChecked())) await codRadio.check();
 
+    // Hook for specs that need to interact with checkout (e.g. redeem points)
+    // AFTER the form/payment method are ready but BEFORE placing the order.
+    if (beforePlaceOrder) await beforePlaceOrder(page);
+
     const placeOrderBtn = page.getByRole('button', { name: 'Place Order' });
     await expect(placeOrderBtn).toBeEnabled({ timeout: 20000 });
     await placeOrderBtn.click();
@@ -273,9 +277,64 @@ async function ledgerDeltaFor(orderId, referenceType = 'order') {
     return Number(sum);
 }
 
+// Directly credit a user's ledger for TEST FIXTURE purposes only (e.g. giving
+// a customer a redeemable balance for a redemption spec) — this is seeding,
+// not the behavior under test, same rationale as seedProduct. Never use this
+// to fake the outcome a spec is supposed to be proving.
+// IMPORTANT: use the plugin's own crediting method, never a raw SQL insert
+// into the ledger table. Confirmed live: a hand-rolled $wpdb->insert() wrote
+// the ledger row correctly but left the SEPARATE pointbay_ledger_cache table
+// (a materialized per-user balance the checkout UI actually reads) stale, so
+// the customer's displayed/usable balance silently didn't reflect the fixture
+// credit at all. `pointbay_log()`'s absence in the debug log was the tell —
+// LedgerService::credit() is what keeps both tables consistent.
+// referenceId MUST be unique per call: the ledger table's UNIQUE KEY is
+// (user_id, reference_type, reference_id, transaction_type) — confirmed live,
+// two specs both crediting the same user with the default reference_id=0
+// collided with "A transaction for this reference already exists" on the
+// second call. Date.now() is a fine default (Playwright specs are plain
+// Node.js, unlike Workflow scripts — no restriction on it here).
+async function creditPointsFixture(userId, amount, description = 'E2E fixture credit', referenceId = Date.now()) {
+    const result = await wpEval(
+        `$r = \\PointBay\\Services\\LedgerService::get_instance()->credit(${userId}, ${amount}, 'fixture', ${referenceId}, '${description}', 'system');` +
+        `echo is_wp_error($r) ? 'ERROR:' . $r->get_error_message() : 'OK';`
+    );
+    if (result.startsWith('ERROR:')) throw new Error(`creditPointsFixture failed: ${result}`);
+}
+
+// Real UI action: use the checkout's "Redeem Loyalty Points" panel (WC Blocks
+// sidebar, see src/checkout/RedemptionBlock.tsx — no element ids, class-based
+// selectors only) to apply a points discount. Call via placeOrder()'s
+// beforePlaceOrder hook so it runs once the checkout form is ready.
+async function redeemPointsAtCheckout(page, points) {
+    const panel = page.locator('.wc-block-components-totals-coupon', { has: page.locator('h3', { hasText: 'Redeem Loyalty Points' }) });
+    await panel.waitFor({ state: 'visible', timeout: 20000 });
+    const input = panel.locator('input[type="number"]');
+    await input.fill(String(points));
+    await panel.getByRole('button', { name: /Apply/ }).click();
+    // The REST call updates the WC Store API cart; wait for the redeemed-
+    // amount confirmation text rather than a fixed delay.
+    await page.waitForSelector('text=/redeemed .* points/', { timeout: 20000 });
+}
+
+// ── Order-level reads for redemption mode (fee vs coupon) ────────────────
+async function orderHasPointsFee(orderId) {
+    const found = await wpEval(
+        `$o = wc_get_order(${orderId}); foreach ($o->get_fees() as $f) { if (strpos($f->get_name(), 'PointBay Points Discount') !== false) { echo 'yes'; exit; } } echo 'no';`
+    );
+    return found === 'yes';
+}
+async function orderHasPointsCoupon(orderId) {
+    const found = await wpEval(
+        `$o = wc_get_order(${orderId}); foreach ($o->get_coupon_codes() as $c) { if (strpos($c, 'pointbay_points_') === 0) { echo 'yes'; exit; } } echo 'no';`
+    );
+    return found === 'yes';
+}
+
 module.exports = {
     wpEval, login, getSetting, updateSettings, openSettings, saveAndConfirm,
     settingRow, toggleCheckbox, selectOption, seedProduct, seedCustomer,
     disableComingSoon, enableCodGateway, clearCustomerCart, placeOrder, getProductIdBySlug,
-    setOrderStatus, completeOrder, ledgerDeltaFor,
+    setOrderStatus, completeOrder, ledgerDeltaFor, creditPointsFixture,
+    redeemPointsAtCheckout, orderHasPointsFee, orderHasPointsCoupon,
 };

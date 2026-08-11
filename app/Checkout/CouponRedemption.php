@@ -119,8 +119,18 @@ class CouponRedemption {
 			'id'                         => 0,
 			'amount'                     => $discount_value,
 			'discount_type'              => 'fixed_cart',
-			'usage_limit'                => 1,
-			'usage_limit_per_user'       => 1,
+			// Virtual coupons created via `woocommerce_get_shop_coupon_data` never get a
+			// data store (WC_Coupon::read_manual_coupon() sets props directly and never
+			// calls read_object_from_database(), which is what normally assigns one), so
+			// get_data_store() is null. WooCommerce's Store API only touches the data
+			// store when usage_limit_per_user is non-zero (see
+			// OrderController::validate_coupon_usage_limit()), so a non-zero value here
+			// fatals on Place Order. This coupon is already single-use by construction
+			// (regenerated per redemption amount, tied to the session), so relying on
+			// WooCommerce's own usage-limit bookkeeping is unnecessary — 0 (unlimited)
+			// avoids the null data store entirely.
+			'usage_limit'                => 0,
+			'usage_limit_per_user'       => 0,
 			'limit_usage_to_x_items'     => null,
 			'usage_count'                => 0,
 			'expiry_date'                => null,
