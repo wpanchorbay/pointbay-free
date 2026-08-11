@@ -1,0 +1,17 @@
+{
+    "package": "pointbay-loyalty-points-referral-rewards-woo/e2e-free",
+    "package_type": "test",
+    "requires": {
+        "network": false
+    },
+    "test_type": "e2e",
+    "test": {
+        "phases": {
+            "run": ["npx playwright test"]
+        },
+        "results": {
+            "ctrf-json": "./results/ctrf.json",
+            "blob-dir": "./results/blob"
+        }
+    }
+}

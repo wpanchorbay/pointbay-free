@@ -11,6 +11,9 @@ import { applyFilters } from '@wordpress/hooks';
 import { SkeletonSettings } from '../components/loading/SkeletonSettings';
 import { TopProgressBar } from '../components/loading/TopProgressBar';
 import apiFetch from '../utils/apiFetch';
+import { BuyProLock } from '../components/common/BuyProLock';
+import { VipTiersPreview } from '../components/upsell/VipTiersPreview';
+import { LicenseSettingsPreview } from '../components/upsell/LicenseSettingsPreview';
 
 interface SettingsData {
 	earning_pointsPerDollar: number;
@@ -139,6 +142,18 @@ const Settings: React.FC = () => {
 		);
 	}
 
+	// Pro registers this filter at module load time (see pro-extensions.tsx),
+	// so a null result here means Pro's script never ran — i.e. Pro isn't
+	// active. Used below to decide between rendering Pro's real sections and
+	// this file's own locked previews of them.
+	const proSections = applyFilters(
+		'pointbay_settings_sections',
+		null,
+		settings,
+		setSettings
+	) as React.ReactNode;
+	const isProActive = proSections !== null;
+
 	return (
 		<div className="pointbay-p-page-default pointbay-ignore-preflight">
 			<input
@@ -233,11 +248,11 @@ const Settings: React.FC = () => {
 									settings.earning_orderStatusTrigger ||
 									'completed'
 								}
-								onChange={ ( e ) =>
+								onChange={ ( value ) =>
 									setSettings( {
 										...settings,
 										earning_orderStatusTrigger:
-											e.target.value,
+											value,
 									} )
 								}
 								options={ [
@@ -296,10 +311,10 @@ const Settings: React.FC = () => {
 						render: () => (
 							<ClassicSelect
 								value={ settings.redemption_mode }
-								onChange={ ( e ) =>
+								onChange={ ( value ) =>
 									setSettings( {
 										...settings,
-										redemption_mode: e.target.value,
+										redemption_mode: value,
 									} )
 								}
 								options={ [
@@ -361,6 +376,39 @@ const Settings: React.FC = () => {
 					applyFilters(
 						'pointbay_referral_settings_fields',
 						[
+							...( isProActive
+								? []
+								: [
+										{
+											id: 'referrals_newCustomerPoints_locked',
+											label: __(
+												'New Customer Bonus Points',
+												'pointbay-loyalty-points-referral-rewards-woo'
+											),
+											render: () => (
+												<BuyProLock
+													feature={ __(
+														'Reward the new customer too, not just the referrer — only in PointBay Pro',
+														'pointbay-loyalty-points-referral-rewards-woo'
+													) }
+												>
+													<input
+														type="number"
+														value={ 100 }
+														disabled
+														readOnly
+														className="small-text"
+													/>
+													<p className="description pointbay-block pointbay-mt-1">
+														{ __(
+															"Points awarded to the new customer themselves after their first purchase via a referral link.",
+															'pointbay-loyalty-points-referral-rewards-woo'
+														) }
+													</p>
+												</BuyProLock>
+											),
+										},
+									] ),
 							{
 								id: 'referrals_enabled',
 								label: __( 'Enable Referrals', 'pointbay-loyalty-points-referral-rewards-woo' ),
@@ -484,14 +532,14 @@ const Settings: React.FC = () => {
 				] }
 			/>
 
-			{
-				applyFilters(
-					'pointbay_settings_sections',
-					null,
-					settings,
-					setSettings
-				) as React.ReactNode
-			}
+			{ isProActive ? (
+				proSections
+			) : (
+				<>
+					<VipTiersPreview />
+					<LicenseSettingsPreview />
+				</>
+			) }
 		</div>
 	);
 };
