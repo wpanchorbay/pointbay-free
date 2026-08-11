@@ -34,6 +34,16 @@ async function login(page, log, { username = 'admin', password = 'password' } = 
     await page.fill('#user_pass', password);
     await page.click('#wp-submit');
     await page.waitForLoadState('domcontentloaded').catch(() => {});
+    // On a genuinely FRESH env (no prior admin session ever completed the
+    // WooCommerce onboarding), the very first admin login is redirected into
+    // the WC Setup Wizard / wc-admin welcome flow, which replaces the normal
+    // admin chrome entirely — #wpadminbar exists in the DOM there but stays
+    // `display:none` for the full wait window, so waiting for it hangs for
+    // the full 45s. Confirmed live: this only reproduces on a genuinely fresh
+    // env, never on one already warmed up manually. Escape it explicitly.
+    if (/wc-admin&path=%2Fsetup-wizard|wc-setup/.test(page.url())) {
+        await page.goto('/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
+    }
     // #wpadminbar covers a login that lands in wp-admin (e.g. admin), but
     // `body.logged-in` is a FRONTEND-only class from body_class() — wp-admin
     // pages never carry it. And the admin bar itself only renders on the
@@ -147,15 +157,26 @@ async function enableCodGateway() {
     await wpEval(php);
 }
 
-// A prior interrupted test run (a failure mid-checkout, a killed process) can
-// leave items in a logged-in customer's PERSISTENT cart (WooCommerce saves it
-// to user meta). The next placeOrder() would then silently check out extra
-// items and inflate the total — confirmed live: a leftover item doubled an
-// order's total and broke a delta assertion. Clear it before every order.
+// A prior interrupted test run (a failure mid-checkout, a killed process, or
+// even a HUMAN debugging session that logged in as this same test customer
+// and added something to cart without checking out) can leave a stray item
+// behind in TWO separate places WooCommerce tracks cart state:
+//   1. The PERSISTENT cart, saved to user meta — restored into a fresh
+//      session at login.
+//   2. The ACTIVE SESSION cart in `wp_woocommerce_sessions`, keyed by user ID
+//      (not by cookie) for logged-in customers — a brand-new Playwright
+//      browser context still inherits it purely by authenticating as that
+//      user, with no cookie in common with whatever session created it.
+// Clearing only #1 leaves #2 silently inflating the next order's total.
+// Confirmed live: a leftover item from an earlier manual debugging session
+// (different browser entirely) doubled an order's total via #2 alone, well
+// after #1 had already been correctly cleared.
 async function clearCustomerCart(username) {
     await wpEval(
         `$u = get_user_by('login','${username}');` +
-        `if ($u) { global $wpdb; $wpdb->delete($wpdb->usermeta, ['user_id'=>$u->ID,'meta_key'=>'_woocommerce_persistent_cart_' . get_current_blog_id()]); }` +
+        `if ($u) { global $wpdb;` +
+        ` $wpdb->delete($wpdb->usermeta, ['user_id'=>$u->ID,'meta_key'=>'_woocommerce_persistent_cart_' . get_current_blog_id()]);` +
+        ` $wpdb->delete($wpdb->prefix.'woocommerce_sessions', ['session_key'=>$u->ID]); }` +
         `echo 'OK';`
     );
 }
@@ -185,8 +206,15 @@ async function placeOrder(page, { productSlug, customerUsername, log } = {}) {
     // (the first has no saved address yet, so the raw form shows normally).
     // The saved address is already valid, so just use it — no need to force
     // the form open.
-    const addressCard = page.locator('.wc-block-components-address-card');
-    if (await addressCard.count()) {
+    // `.count()` alone is a false positive: WC Blocks keeps the card wrapper
+    // element in the DOM (empty/invisible) even for a brand-new customer with
+    // no saved address — confirmed live: a fresh customer's checkout skipped
+    // filling because the card "existed" per .count(), submitted an empty
+    // form, and hung on client-side validation errors instead of navigating.
+    // Check the raw form field's actual visibility instead — the thing this
+    // code is about to interact with.
+    const firstNameVisible = await page.locator('#billing-first_name').isVisible().catch(() => false);
+    if (!firstNameVisible) {
         await log?.step?.(0, 'Reusing saved billing address (confirmed-address card shown)');
     } else {
         await log?.step?.(0, 'Fill checkout billing details');

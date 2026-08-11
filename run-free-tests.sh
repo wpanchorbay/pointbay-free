@@ -16,6 +16,7 @@ if [ "$1" != "--keep" ]; then
 fi
 
 cd tests/e2e
+rm -rf screenshots  # stale shots from a prior run would bleed into this run's contact sheet
 source "$(qit env:source 2>/dev/null | tail -1)"
 export WP_URL="$QIT_BASE_URL" WP_BASE_URL="$QIT_BASE_URL"
 echo "    Target: $WP_URL"

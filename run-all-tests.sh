@@ -14,6 +14,7 @@ echo "==> Spinning up QIT environment (woocommerce + free SUT + pro sibling)"
 qit env:up -e default -n
 
 cd tests/e2e
+rm -rf screenshots  # stale shots from a prior run would bleed into this run's contact sheet
 echo "==> Sourcing environment"
 source "$(qit env:source 2>/dev/null | tail -1)"     # tail -1 strips the "update available" banner
 export WP_URL="$QIT_BASE_URL" WP_BASE_URL="$QIT_BASE_URL"
