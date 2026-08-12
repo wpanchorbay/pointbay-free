@@ -130,8 +130,14 @@ class UserPointsController extends ApiController {
 		// below rather than creating a second entry. Optional (not required) so
 		// existing direct API callers that don't send one keep working exactly
 		// as before.
+		// 7 hex chars (28 bits, max 0xFFFFFFF = 268,435,455) keeps hexdec()'s
+		// result a native int even on a 32-bit PHP build (max signed int
+		// 2,147,483,647) — a wider hash would silently become a float there,
+		// losing precision once it reaches the bigint reference_id column and
+		// breaking the idempotency match this exists to provide. 28 bits is
+		// still collision-negligible at admin-action volume.
 		$request_id = $request->get_param( 'request_id' );
-		$ref_id     = $request_id ? hexdec( substr( sha1( $request_id ), 0, 15 ) ) : time() + wp_rand( 100, 999 );
+		$ref_id     = $request_id ? hexdec( substr( sha1( $request_id ), 0, 7 ) ) : time() + wp_rand( 100, 999 );
 
 		if ( $validated['type'] === 'credit' ) {
 			$result = $ledger->credit( $validated['user_id'], $validated['amount'], 'admin', $ref_id, $validated['reason'], 'admin' );
