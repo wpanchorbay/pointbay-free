@@ -126,6 +126,15 @@ class LedgerService {
 	private function process_transaction( $user_id, $txn_type, $amount, $ref_type, $ref_id, $description, $in_transaction = false, $origin = 'system', $allow_negative = false ) {
 		global $wpdb;
 
+		// Defensive check for every caller (REST layer, hooks, pro add-ons) —
+		// runs before any transaction control statement, so it's safe to return
+		// early here even on the $in_transaction path; the caller that opened
+		// the outer transaction is responsible for rolling it back on WP_Error,
+		// which every current caller already does via is_wp_error()+catch.
+		if ( ! get_userdata( $user_id ) ) {
+			return new \WP_Error( 'invalid_user', 'The specified user does not exist.' );
+		}
+
 		if ( ! $in_transaction ) {
 			$existing = LedgerEntry::find_by_reference( $user_id, $ref_type, $ref_id, $txn_type );
 			if ( $existing ) {

@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { applyFilters } from '@wordpress/hooks';
 import { ClassicTable } from '../components/classics/ClassicTable';
@@ -25,6 +25,8 @@ interface LedgerEntry {
 	reference_type: string;
 	description: string;
 	created_at: string;
+	is_reversed?: boolean;
+	is_reversal?: boolean;
 }
 
 // Drives both the display label and the filter dropdown options, so a type
@@ -40,6 +42,7 @@ const REFERENCE_TYPE_LABELS: Record< string, string > = applyFilters(
 		referral: 'Referral Bonus',
 		referral_reversal: 'Referral Reversal',
 		admin: 'Manual Adjustment',
+		reversal: 'Reversal',
 	}
 ) as Record< string, string >;
 
@@ -66,7 +69,17 @@ const LedgerAdmin: FC = () => {
 	const [ adjAmount, setAdjAmount ] = useState( '' );
 	const [ adjType, setAdjType ] = useState( 'credit' );
 	const [ adjReason, setAdjReason ] = useState( '' );
+	const [ adjRequestId, setAdjRequestId ] = useState( '' );
 	const { addToast } = useToast();
+
+	// Fresh idempotency token per modal open, so a double-click/double-submit
+	// of the same open form can't create two ledger entries, while a genuinely
+	// separate adjustment (reopening the modal) still gets its own token.
+	useEffect( () => {
+		if ( adjustOpen ) {
+			setAdjRequestId( crypto.randomUUID() );
+		}
+	}, [ adjustOpen ] );
 
 	const [ search, setSearch ] = useState( '' );
 	const [ searchInput, setSearchInput ] = useState( '' );
@@ -81,6 +94,8 @@ const LedgerAdmin: FC = () => {
 		[]
 	);
 	const [ bulkAction, setBulkAction ] = useState( '' );
+	const [ reverseConfirmOpen, setReverseConfirmOpen ] = useState( false );
+	const [ reversing, setReversing ] = useState( false );
 
 	const perPage = 20;
 	const totalPages = Math.max( 1, Math.ceil( total / perPage ) );
@@ -148,6 +163,7 @@ const LedgerAdmin: FC = () => {
 					amount: amount,
 					type: adjType,
 					reason: adjReason,
+					request_id: adjRequestId,
 				},
 			} );
 			addToast( 'Points adjusted successfully.', 'success' );
@@ -223,12 +239,62 @@ const LedgerAdmin: FC = () => {
 		}
 	};
 
+	// Rows eligible to be reversed: selected, and not already a reversal or
+	// already-reversed entry. Computed client-side as a UX guard mirroring
+	// the backend's own rejection, so the confirmation dialog's count is
+	// accurate before any request is made.
+	const reversibleSelectedRows = data.filter(
+		( row ) =>
+			selected.includes( row.id ) &&
+			! row.is_reversed &&
+			! row.is_reversal
+	);
+
 	const handleApplyBulkAction = () => {
 		if ( bulkAction === 'export_selected' ) {
 			const rows = data.filter( ( row ) => selected.includes( row.id ) );
 			exportRows( rows, 'selected' );
+			setBulkAction( '' );
+			return;
+		}
+		if ( bulkAction === 'reverse_selected' ) {
+			setReverseConfirmOpen( true );
+			return;
 		}
 		setBulkAction( '' );
+	};
+
+	const handleConfirmReverse = async () => {
+		setReversing( true );
+		let succeeded = 0;
+		let failed = 0;
+		// Sequential, not Promise.all — concurrent reversals for the same user
+		// would otherwise contend on that user's ledger cache row lock.
+		for ( const row of reversibleSelectedRows ) {
+			try {
+				await apiFetch( {
+					path: `/pointbay/v1/ledger/${ row.id }/reverse`,
+					method: 'POST',
+				} );
+				succeeded++;
+			} catch ( e: any ) {
+				failed++;
+			}
+		}
+		setReversing( false );
+		setReverseConfirmOpen( false );
+		setBulkAction( '' );
+		if ( succeeded ) {
+			addToast(
+				failed
+					? `${ succeeded } reversed, ${ failed } failed.`
+					: `${ succeeded } reversed successfully.`,
+				failed ? 'error' : 'success'
+			);
+		} else {
+			addToast( 'No entries were reversed.', 'error' );
+		}
+		fetchData();
 	};
 
 	const handleSort = ( columnKey: string ) => {
@@ -298,6 +364,12 @@ const LedgerAdmin: FC = () => {
 						</option>
 						<option value="export_selected">
 							{ __( 'Export Selected', 'pointbay-loyalty-points-referral-rewards-woo' ) }
+						</option>
+						<option value="reverse_selected">
+							{ __(
+								'Reverse Selected',
+								'pointbay-loyalty-points-referral-rewards-woo'
+							) }
 						</option>
 					</select>
 					<ClassicButton
@@ -510,6 +582,66 @@ const LedgerAdmin: FC = () => {
 				<form id="pointbay-adjust-points-form" onSubmit={ handleAdjust }>
 					<ClassicSettingsTable fields={ adjustFields } />
 				</form>
+			</CustomModal>
+
+			<CustomModal
+				isOpen={ reverseConfirmOpen }
+				onClose={ () => setReverseConfirmOpen( false ) }
+				title={ __(
+					'Reverse Selected Entries',
+					'pointbay-loyalty-points-referral-rewards-woo'
+				) }
+				footer={
+					<>
+						<ClassicButton
+							variant="secondary"
+							onClick={ () => setReverseConfirmOpen( false ) }
+							disabled={ reversing }
+						>
+							{ __(
+								'Cancel',
+								'pointbay-loyalty-points-referral-rewards-woo'
+							) }
+						</ClassicButton>
+						<ClassicButton
+							variant="primary"
+							onClick={ handleConfirmReverse }
+							disabled={
+								reversing || reversibleSelectedRows.length === 0
+							}
+						>
+							{ reversing
+								? __(
+										'Reversing…',
+										'pointbay-loyalty-points-referral-rewards-woo'
+								  )
+								: __(
+										'Reverse',
+										'pointbay-loyalty-points-referral-rewards-woo'
+								  ) }
+						</ClassicButton>
+					</>
+				}
+			>
+				{ reversibleSelectedRows.length > 0 ? (
+					<p>
+						{ sprintf(
+							/* translators: %d: number of ledger entries about to be reversed. */
+							__(
+								'This will create a compensating entry for %d selected ledger transaction(s). This cannot be undone.',
+								'pointbay-loyalty-points-referral-rewards-woo'
+							),
+							reversibleSelectedRows.length
+						) }
+					</p>
+				) : (
+					<p>
+						{ __(
+							'None of the selected entries can be reversed — they may already be reversed, or are themselves reversal entries.',
+							'pointbay-loyalty-points-referral-rewards-woo'
+						) }
+					</p>
+				) }
 			</CustomModal>
 
 			<form

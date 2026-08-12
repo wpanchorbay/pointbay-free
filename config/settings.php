@@ -49,6 +49,7 @@ return array(
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_text_field',
 			'default'           => 'completed',
+			'enum'              => array( 'completed', 'processing', 'on-hold' ),
 		),
 		'redemption_pointsValue'        => array(
 			'type'              => 'number',
@@ -59,6 +60,7 @@ return array(
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_text_field',
 			'default'           => 'fee',
+			'enum'              => array( 'fee', 'coupon' ),
 		),
 		'redemption_minPoints'          => array(
 			'type'              => 'integer',

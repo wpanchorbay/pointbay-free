@@ -131,6 +131,25 @@ class CheckoutProcessor {
 			// Lock the cache row (blocks until lock is acquired)
 			$balance = \PointBay\Models\LedgerCache::lock_for_update( $user_id );
 
+			// Re-validate the held redemption against the order's actual final
+			// total, not just the amount that was true when the discount was
+			// applied earlier in checkout — the cart may have shrunk since then
+			// (item removed, coupon added), which would otherwise let the debit
+			// exceed what this order can actually support.
+			$order_total_basis    = max( 0.0, (float) $order->get_subtotal() - (float) $order->get_total_discount() );
+			$max_points_for_order = $redemption_manager->get_max_points_for_amount( $order_total_basis );
+			$points               = min( $points, $max_points_for_order );
+
+			if ( $points <= 0 ) {
+				// The order's fee/coupon already reflects the originally-applied
+				// points discount — silently debiting nothing here would let the
+				// customer keep both the discount and their points, the exact
+				// inverse of the over-debit this re-validation exists to prevent.
+				// Abort like the insufficient-balance case below, rather than
+				// letting a mismatched order through.
+				throw new \Exception( __( 'Your points discount could no longer be applied to this order. Please try checkout again.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
+			}
+
 			if ( $balance < $points ) {
 				throw new \Exception( __( 'Insufficient points balance. Your points may have been used elsewhere.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
 			}

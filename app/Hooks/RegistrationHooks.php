@@ -70,7 +70,7 @@ class RegistrationHooks {
 			return;
 		}
 
-		LedgerService::get_instance()->credit(
+		$result = LedgerService::get_instance()->credit(
 			$user_id,
 			$points,
 			'registration',
@@ -78,5 +78,9 @@ class RegistrationHooks {
 			__( 'Points awarded for registration.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			'system'
 		);
+
+		if ( is_wp_error( $result ) ) {
+			pointbay_log( "RegistrationHooks: Failed to credit {$points} registration points for user {$user_id}: " . $result->get_error_message(), 'ERROR' );
+		}
 	}
 }

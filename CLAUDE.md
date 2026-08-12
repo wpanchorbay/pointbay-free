@@ -17,6 +17,9 @@ The pro add-on (`../pointbaypro`) extends this plugin through public extension p
 - `apply_filters( 'pointbay_settings_sections', … )` in `src/pages/Settings.tsx` — pro injects extra settings cards.
 - `apply_filters( 'pointbay_cron_jobs', array() )` in `app/Core/Cron.php` — pro registers the tier recalculation job. This is why the `pointbay_cron_log` table is created here even though free never writes to it.
 - `do_action( 'pointbay_my_rewards_after_balance', $user_id )` in `app/Dashboard/MyRewardsEndpoint.php`.
+- `apply_filters( 'pointbay_settings_defaults', … )` and `apply_filters( 'pointbay_options_properties', … )` in `app/Core/Settings.php` — pro adds its own setting keys (e.g. `license_key`) into free's settings defaults/schema so they flow through the same read/write pipeline.
+- `apply_filters( 'pointbay_admin_localize', … )` in `app/Admin/Admin.php` — pro adds data to the object localized on every PointBay admin screen.
+- `apply_filters( 'pointbay_settings_response', $settings )` in `app/Api/SettingsController.php` (`get_settings()` and `update_settings()`) and `app/Admin/Admin.php`'s `plugin_settings` localize entry — the read/display-only redaction seam, e.g. pro uses this to mask `license_key` before it reaches the browser. Never applied inside `Settings::get_settings()` itself, since that's the internal read path business logic depends on.
 
 Pro also declares `Requires Plugins: pointbay-loyalty-points-referral-rewards-woo`, so while pro is active WordPress renders free's "Deactivate" action as plain text rather than a link — the deactivation feedback modal cannot fire in that state.
 

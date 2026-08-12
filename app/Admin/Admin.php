@@ -312,7 +312,17 @@ class Admin {
 					'dateFormat' => get_option( 'date_format' ),
 					'timeFormat' => get_option( 'time_format' ),
 				),
-				'plugin_settings' => Settings::get_instance()->get_settings(),
+				/**
+				 * Filters the settings array inlined into every PointBay admin
+				 * screen. Same seam as SettingsController's REST responses —
+				 * see that filter's docblock for why this isn't applied inside
+				 * Settings::get_settings() itself.
+				 *
+				 * @since 1.0.0
+				 * @hook pointbay_settings_response
+				 * @param array $settings The full settings array being localized to the browser.
+				 */
+				'plugin_settings' => apply_filters( 'pointbay_settings_response', Settings::get_instance()->get_settings() ),
 				'products_url'    => admin_url( 'edit.php?post_type=product' ),
 				'settings_url'    => admin_url( 'admin.php?page=wc-settings&tab=' . \POINTBAY_PLUGIN_NAME ),
 				'context'         => $context,

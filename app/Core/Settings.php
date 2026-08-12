@@ -250,7 +250,11 @@ class Settings {
 					$sanitized_output[ $key ] = (array) $value;
 					break;
 				case 'string':
-					$sanitized_output[ $key ] = sanitize_text_field( $value );
+					$sanitized = sanitize_text_field( $value );
+					if ( isset( $details['enum'] ) && ! in_array( $sanitized, $details['enum'], true ) ) {
+						$sanitized = $details['default'] ?? $sanitized;
+					}
+					$sanitized_output[ $key ] = $sanitized;
 					break;
 				default:
 					$sanitized_output[ $key ] = sanitize_text_field( (string) $value );
