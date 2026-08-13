@@ -6,5 +6,27 @@
             "type": "local",
             "path": "."
         }
+    },
+    "environments": {
+        "default": {
+            "plugins": [
+                "woocommerce",
+                {
+                    "slug": "pointbaypro",
+                    "from": "local",
+                    "path": "../pointbaypro"
+                }
+            ]
+        }
+    },
+    "test_types": {
+        "e2e": {
+            "default": {
+                "environment": "default",
+                "test_packages": [
+                    "./tests/e2e"
+                ]
+            }
+        }
     }
 }

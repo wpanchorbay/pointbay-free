@@ -4,7 +4,7 @@ Tags: woocommerce, loyalty, rewards, points, referral
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,10 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 6.  The admin Points History ledger.
 
 == Changelog ==
+
+= 1.0.1 =
+*   Added a Buy Pro upsell preview for VIP Tiers and License Settings.
+*   Fixed Order Status Trigger and Redemption Mode dropdowns not saving.
 
 = 1.0.0 =
 *   Initial release.

@@ -161,6 +161,21 @@ class Settings {
 		}
 		update_option( \POINTBAY_OPTION_NAME, $options );
 		$this->load_settings();
+
+		/**
+		 * Fires after the settings option is saved, with the settings actually
+		 * written to the DB (not just the merged-with-defaults read-back).
+		 *
+		 * Add-ons can use this to defensively re-seed their own option keys —
+		 * e.g. Pro re-populating `tiers_config` if it was ever saved empty —
+		 * without relying on `array_merge()` in load_settings() to recover a
+		 * key that's present-but-empty rather than truly missing.
+		 *
+		 * @since 1.0.0
+		 * @hook pointbay_settings_updated
+		 * @param array $options The settings actually written to the option.
+		 */
+		do_action( 'pointbay_settings_updated', $this->settings );
 	}
 
 	/**

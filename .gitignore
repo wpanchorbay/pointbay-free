@@ -13,9 +13,24 @@ pointbay-loyalty-points-referral-rewards-woo.zip
 Woocommerce.php
 /test-results/
 /results/
-/tests/e2e/results/
-/tests/e2e/test-results/
 dist/
+
+# QIT E2E artifacts — regenerated every run, never tracked. Only test
+# SOURCE (specs, helpers, configs, runner scripts, E2E_TEST_CASES.md) is committed.
+/tests/e2e/node_modules
+/tests/e2e/screenshots
+/tests/e2e/results
+/tests/e2e/test-results
+/tests/e2e/ctrf
+/tests/e2e/playwright-report
+/tests/e2e/.last-run.json
+/tests/e2e-*/node_modules
+/tests/e2e-*/screenshots
+/tests/e2e-*/results
+/tests/e2e-*/test-results
+/tests/e2e-*/ctrf
+/tests/e2e-*/playwright-report
+/tests/e2e-*/.last-run.json
 /.claude
 .claude
 /.vscode
