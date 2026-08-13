@@ -1,6 +1,6 @@
 {
   "name": "pointbay-loyalty-points-referral-rewards-woo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Loyalty points, referral rewards and checkout redemption for WooCommerce.",
   "main": "index.js",
   "scripts": {

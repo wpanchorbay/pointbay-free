@@ -116,7 +116,10 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 
 = 1.0.1 =
 *   Added a Buy Pro upsell preview for VIP Tiers and License Settings.
-*   Fixed Order Status Trigger and Redemption Mode dropdowns not saving.
+*   Fixed Order Status Trigger and Redemption Mode dropdowns not saving, and hardened both against invalid values.
+*   Fixed a bug where ordinary product-page comments could earn review points.
+*   Hardened the points ledger against invalid users, double-submitted adjustments, and a first-transaction race condition, and added the ability to reverse a ledger entry from the admin screen.
+*   Fixed points redemption not being re-checked against the order's final total at checkout.
 
 = 1.0.0 =
 *   Initial release.
