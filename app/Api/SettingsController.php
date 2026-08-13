@@ -134,6 +134,25 @@ class SettingsController extends ApiController {
 	}
 
 	/**
+	 * Filter a settings array just before it's persisted.
+	 *
+	 * The write-side counterpart to filter_settings_response() above: a
+	 * caller that redacts a value on the way out (e.g. pro masking
+	 * `license_key`) needs a chance here to recognize its own redaction
+	 * sentinel coming back in — the admin settings page keeps one shared
+	 * settings object client-side and its Save button POSTs the whole
+	 * thing, masked fields included, on every save.
+	 *
+	 * @since 1.0.0
+	 * @hook pointbay_settings_update_request
+	 * @param array $settings The sanitized settings array about to be saved.
+	 * @return array The filtered settings array.
+	 */
+	private function filter_settings_update_request( $settings ) {
+		return apply_filters( 'pointbay_settings_update_request', $settings );
+	}
+
+	/**
 	 * Handle POST request to update settings.
 	 *
 	 * @since 1.0.0
@@ -148,6 +167,7 @@ class SettingsController extends ApiController {
 		// Since Settings class sanitizes input via sanitize_settings_object,
 		// we can pass the body directly or re-sanitize it.
 		$sanitized_body = $settings_instance->sanitize_settings_object( $body );
+		$sanitized_body = $this->filter_settings_update_request( $sanitized_body );
 		$settings_instance->update_settings( $sanitized_body );
 
 		$res = $this->filter_settings_response( $settings_instance->get_settings() );
