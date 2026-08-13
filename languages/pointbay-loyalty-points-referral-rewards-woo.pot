@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for WooCommerce 1.0.0\n"
+"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for WooCommerce 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pointbay-loyalty-points-referral-rewards-woo\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-08T19:56:05+00:00\n"
+"POT-Creation-Date: 2026-08-13T09:50:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #. Plugin URI of the plugin
 #: pointbay-loyalty-points-referral-rewards-woo.php
-msgid "https://github.com/wpanchorbay/pointbay-free"
+msgid "https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-woo/"
 msgstr ""
 
 #. Description of the plugin
@@ -43,8 +43,34 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
+#: app/Admin/LedgerController.php:243
+msgid "Ledger entry not found."
+msgstr ""
+
+#: app/Admin/LedgerController.php:247
+msgid "A reversal entry cannot itself be reversed."
+msgstr ""
+
+#: app/Admin/LedgerController.php:251
+msgid "The user for this entry no longer exists."
+msgstr ""
+
+#: app/Admin/LedgerController.php:258
+msgid "This entry has already been reversed."
+msgstr ""
+
+#. translators: %d: the original ledger entry ID being reversed.
+#: app/Admin/LedgerController.php:264
+#, php-format
+msgid "Reversal of ledger entry #%d."
+msgstr ""
+
+#: app/Admin/UserPointsController.php:122
+msgid "The selected user does not exist."
+msgstr ""
+
 #: app/Admin/WCSettingsTab.php:27
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Loyalty Points"
 msgstr ""
 
@@ -73,11 +99,15 @@ msgstr ""
 msgid "Invalid data provided."
 msgstr ""
 
-#: app/Api/SettingsController.php:134
+#: app/Api/SettingsController.php:178
 msgid "Settings updated successfully."
 msgstr ""
 
-#: app/Checkout/CheckoutProcessor.php:135
+#: app/Checkout/CheckoutProcessor.php:150
+msgid "Your points discount could no longer be applied to this order. Please try checkout again."
+msgstr ""
+
+#: app/Checkout/CheckoutProcessor.php:154
 msgid "Insufficient points balance. Your points may have been used elsewhere."
 msgstr ""
 
@@ -184,37 +214,37 @@ msgid "No activity yet."
 msgstr ""
 
 #. translators: 1: order ID, 2: new order status.
-#: app/Hooks/OrderHooks.php:148
+#: app/Hooks/OrderHooks.php:151
 #, php-format
 msgid "Points reversed: COD order #%1$d was %2$s."
 msgstr ""
 
-#: app/Hooks/OrderHooks.php:228
+#: app/Hooks/OrderHooks.php:231
 msgid "Points Earned:"
 msgstr ""
 
 #. translators: %d: number of points earned.
-#: app/Hooks/OrderHooks.php:230
+#: app/Hooks/OrderHooks.php:233
 #, php-format
 msgid "+%d points"
 msgstr ""
 
-#: app/Hooks/OrderHooks.php:245
+#: app/Hooks/OrderHooks.php:248
 msgid "Pending Points:"
 msgstr ""
 
 #. translators: %d: number of points the customer will earn.
-#: app/Hooks/OrderHooks.php:247
+#: app/Hooks/OrderHooks.php:250
 #, php-format
 msgid "You will earn %d points"
 msgstr ""
 
-#: app/Hooks/OrderHooks.php:255
+#: app/Hooks/OrderHooks.php:258
 msgid "Points Redeemed:"
 msgstr ""
 
 #. translators: %d: number of points redeemed.
-#: app/Hooks/OrderHooks.php:257
+#: app/Hooks/OrderHooks.php:260
 #, php-format
 msgid "-%d points"
 msgstr ""
@@ -223,7 +253,7 @@ msgstr ""
 msgid "Points awarded for registration."
 msgstr ""
 
-#: app/Hooks/ReviewHooks.php:130
+#: app/Hooks/ReviewHooks.php:155
 msgid "Points awarded for product review."
 msgstr ""
 
@@ -274,7 +304,7 @@ msgstr ""
 #: config/admin.php:88
 #: config/admin.php:89
 #: config/admin.php:90
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "PointBay"
 msgstr ""
 
@@ -386,6 +416,10 @@ msgid "Export Selected"
 msgstr ""
 
 #: build/admin.js:14
+msgid "Reverse Selected"
+msgstr ""
+
+#: build/admin.js:14
 msgid "Apply"
 msgstr ""
 
@@ -454,38 +488,64 @@ msgid "Submit"
 msgstr ""
 
 #: build/admin.js:14
+msgid "Reverse Selected Entries"
+msgstr ""
+
+#: build/admin.js:14
+msgid "Cancel"
+msgstr ""
+
+#: build/admin.js:14
+msgid "Reversing…"
+msgstr ""
+
+#: build/admin.js:14
+msgid "Reverse"
+msgstr ""
+
+#. translators: %d: number of ledger entries about to be reversed.
+#: build/admin.js:15
+#, js-format
+msgid "This will create a compensating entry for %d selected ledger transaction(s). This cannot be undone."
+msgstr ""
+
+#: build/admin.js:15
+msgid "None of the selected entries can be reversed — they may already be reversed, or are themselves reversal entries."
+msgstr ""
+
+#: build/admin.js:15
 msgid "Search Ledger"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Search by user name or email"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Filter by type"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "All types"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Credit"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Debit"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Filter by reference"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "All references"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:15
 msgid "Apply Filters"
 msgstr ""
 
@@ -535,6 +595,70 @@ msgstr ""
 #: build/block-checkout.js:12
 #, js-format
 msgid "Apply %s Discount"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Buy Pro"
+msgstr ""
+
+#: build/settings.js:14
+msgid "PRO"
+msgstr ""
+
+#: build/settings.js:14
+msgid "VIP Tiers"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Group customers into tiers with earning multipliers based on annual points."
+msgstr ""
+
+#: build/settings.js:14
+msgid "Enable VIP Tiers"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Reward repeat customers with a faster earning rate — only in PointBay Pro"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Enable automatic tier recalculation"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Tiers Configuration"
+msgstr ""
+
+#: build/settings.js:14
+msgid "License Settings"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Activate your license key to enable automatic updates."
+msgstr ""
+
+#: build/settings.js:14
+msgid "License Status"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Unlock automatic updates and support — only in PointBay Pro"
+msgstr ""
+
+#: build/settings.js:14
+msgid "INACTIVE"
+msgstr ""
+
+#: build/settings.js:14
+msgid "License Key"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Activate"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Enter your WPAnchorBay license key. You can find it in your purchase receipt."
 msgstr ""
 
 #: build/settings.js:14
@@ -635,6 +759,18 @@ msgstr ""
 
 #: build/settings.js:14
 msgid "Reward customers for referring their friends."
+msgstr ""
+
+#: build/settings.js:14
+msgid "New Customer Bonus Points"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Reward the new customer too, not just the referrer — only in PointBay Pro"
+msgstr ""
+
+#: build/settings.js:14
+msgid "Points awarded to the new customer themselves after their first purchase via a referral link."
 msgstr ""
 
 #: build/settings.js:14
