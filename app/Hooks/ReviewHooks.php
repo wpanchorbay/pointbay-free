@@ -60,8 +60,15 @@ class ReviewHooks {
 		// is also registered defensively in case a review ever has the default type.
 		$loader->add_action( 'comment_approved_review', $this, 'award_review_points', 10, 2 );
 		$loader->add_action( 'comment_approved_comment', $this, 'award_review_points', 10, 2 );
-		// Also catch comments that are approved on creation (status = 1).
-		$loader->add_action( 'wp_insert_comment', $this, 'maybe_award_on_insert', 10, 2 );
+		// Also catch comments that are approved on creation (status = 1). Hooked
+		// to comment_post, not wp_insert_comment: WordPress fires wp_insert_comment
+		// *inside* wp_insert_comment() and comment_post afterwards (see
+		// wp_new_comment() in wp-includes/comment.php), and WooCommerce's own
+		// rating-meta write (WC_Comments::add_comment_rating(), also on
+		// comment_post, priority 1) only happens in that gap — so hooking
+		// wp_insert_comment would read the 'rating' meta before WooCommerce has
+		// written it. Priority 20 keeps this safely after WC's priority-1 write.
+		$loader->add_action( 'comment_post', $this, 'maybe_award_on_insert', 20, 3 );
 	}
 
 	/**
@@ -77,11 +84,21 @@ class ReviewHooks {
 	/**
 	 * Award points if a comment is approved immediately on insertion.
 	 *
-	 * @param int         $comment_id The comment ID.
-	 * @param \WP_Comment $comment    The comment object.
+	 * Hooked to comment_post, which passes the raw approval status and
+	 * commentdata array rather than a WP_Comment — fetch the actual comment
+	 * object for process_review() once we know it's worth processing.
+	 *
+	 * @param int        $comment_id       The comment ID.
+	 * @param int|string $comment_approved 1 if approved, 0 if held for moderation, or 'spam'.
+	 * @param array      $commentdata      The raw comment data. Unused; kept for the comment_post signature.
 	 */
-	public function maybe_award_on_insert( $comment_id, $comment ) {
-		if ( (int) $comment->comment_approved === 1 ) {
+	public function maybe_award_on_insert( $comment_id, $comment_approved, $commentdata ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Required by the comment_post action signature.
+		if ( (int) $comment_approved !== 1 ) {
+			return;
+		}
+
+		$comment = get_comment( $comment_id );
+		if ( $comment ) {
 			$this->process_review( $comment );
 		}
 	}
@@ -94,8 +111,16 @@ class ReviewHooks {
 	private function process_review( $comment ) {
 		pointbay_log( "ReviewHooks: Processing comment {$comment->comment_ID} for post {$comment->comment_post_ID} type {$comment->comment_type}", 'DEBUG' );
 
-		// Must be a product review (WooCommerce stores reviews as comments on products).
-		if ( 'review' !== $comment->comment_type && get_post_type( $comment->comment_post_ID ) !== 'product' ) {
+		// Must be a genuine product review. WooCommerce retypes *any* approved
+		// comment on a product to comment_type 'review' (see WC_Comments::update_comment_type()),
+		// so comment_type alone can't distinguish a review from an ordinary comment.
+		// The 'rating' postmeta is only ever written for a submission that included
+		// a star rating, so that's the one signal that actually gates this. Trade-off:
+		// on a store where wc_review_ratings_enabled() is false, or ratings are
+		// enabled but not required and the reviewer skips the stars, no 'rating'
+		// meta is ever written — earning_pointsForReview then never pays out on
+		// that submission. That's an accepted consequence of this gate, not a bug.
+		if ( 'product' !== get_post_type( $comment->comment_post_ID ) || ! get_comment_meta( $comment->comment_ID, 'rating', true ) ) {
 			return;
 		}
 
@@ -122,7 +147,7 @@ class ReviewHooks {
 			return;
 		}
 
-		$ledger->credit(
+		$result = $ledger->credit(
 			$user_id,
 			$points,
 			'review',
@@ -130,6 +155,12 @@ class ReviewHooks {
 			__( 'Points awarded for product review.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			'system'
 		);
+
+		if ( is_wp_error( $result ) ) {
+			pointbay_log( "ReviewHooks: Failed to credit {$points} points for comment {$comment->comment_ID} (user {$user_id}): " . $result->get_error_message(), 'ERROR' );
+			return;
+		}
+
 		pointbay_log( "ReviewHooks: Credited $points points for comment {$comment->comment_ID}", 'DEBUG' );
 	}
 }

@@ -106,10 +106,11 @@ class UserPointsController extends ApiController {
 		$validated = $this->validate(
 			$request,
 			array(
-				'user_id' => 'required|integer',
-				'amount'  => 'required|integer|min:1',
-				'type'    => 'required|in:credit,debit',
-				'reason'  => 'required|min:3',
+				'user_id'    => 'required|integer',
+				'amount'     => 'required|integer|min:1',
+				'type'       => 'required|in:credit,debit',
+				'reason'     => 'required|min:3',
+				'request_id' => 'min:8',
 			)
 		);
 
@@ -117,9 +118,26 @@ class UserPointsController extends ApiController {
 			return $validated;
 		}
 
+		if ( ! get_userdata( $validated['user_id'] ) ) {
+			return new \WP_REST_Response( array( 'message' => __( 'The selected user does not exist.', 'pointbay-loyalty-points-referral-rewards-woo' ) ), 400 );
+		}
+
 		$ledger = LedgerService::get_instance();
 
-		$ref_id = time() + wp_rand( 100, 999 );
+		// Callers that supply a request_id get a stable, idempotent reference —
+		// a retried/double-submitted request with the same request_id lands on
+		// the same reference_id and is caught by the ledger's uniqueness check
+		// below rather than creating a second entry. Optional (not required) so
+		// existing direct API callers that don't send one keep working exactly
+		// as before.
+		// 7 hex chars (28 bits, max 0xFFFFFFF = 268,435,455) keeps hexdec()'s
+		// result a native int even on a 32-bit PHP build (max signed int
+		// 2,147,483,647) — a wider hash would silently become a float there,
+		// losing precision once it reaches the bigint reference_id column and
+		// breaking the idempotency match this exists to provide. 28 bits is
+		// still collision-negligible at admin-action volume.
+		$request_id = $request->get_param( 'request_id' );
+		$ref_id     = $request_id ? hexdec( substr( sha1( $request_id ), 0, 7 ) ) : time() + wp_rand( 100, 999 );
 
 		if ( $validated['type'] === 'credit' ) {
 			$result = $ledger->credit( $validated['user_id'], $validated['amount'], 'admin', $ref_id, $validated['reason'], 'admin' );
@@ -128,6 +146,17 @@ class UserPointsController extends ApiController {
 		}
 
 		if ( is_wp_error( $result ) ) {
+			// A replayed request_id lands here as 'duplicate_transaction' — treat
+			// the retry as an idempotent success rather than an error.
+			if ( $request_id && 'duplicate_transaction' === $result->get_error_code() ) {
+				return new \WP_REST_Response(
+					array(
+						'success'   => true,
+						'duplicate' => true,
+					),
+					200
+				);
+			}
 			return new \WP_REST_Response( array( 'message' => $result->get_error_message() ), 400 );
 		}
 

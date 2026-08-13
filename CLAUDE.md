@@ -17,6 +17,10 @@ The pro add-on (`../pointbaypro`) extends this plugin through public extension p
 - `apply_filters( 'pointbay_settings_sections', … )` in `src/pages/Settings.tsx` — pro injects extra settings cards.
 - `apply_filters( 'pointbay_cron_jobs', array() )` in `app/Core/Cron.php` — pro registers the tier recalculation job. This is why the `pointbay_cron_log` table is created here even though free never writes to it.
 - `do_action( 'pointbay_my_rewards_after_balance', $user_id )` in `app/Dashboard/MyRewardsEndpoint.php`.
+- `apply_filters( 'pointbay_settings_defaults', … )` and `apply_filters( 'pointbay_options_properties', … )` in `app/Core/Settings.php` — pro adds its own setting keys (e.g. `license_key`) into free's settings defaults/schema so they flow through the same read/write pipeline.
+- `apply_filters( 'pointbay_admin_localize', … )` in `app/Admin/Admin.php` — pro adds data to the object localized on every PointBay admin screen.
+- `apply_filters( 'pointbay_settings_response', $settings )` in `app/Api/SettingsController.php` (`get_settings()` and `update_settings()`) and `app/Admin/Admin.php`'s `plugin_settings` localize entry — the read/display-only redaction seam, e.g. pro uses this to mask `license_key` before it reaches the browser. Never applied inside `Settings::get_settings()` itself, since that's the internal read path business logic depends on.
+- `apply_filters( 'pointbay_settings_update_request', $settings )` in `app/Api/SettingsController.php`'s `update_settings()`, applied to the sanitized body just before it's persisted — the write-side counterpart to `pointbay_settings_response` above. The admin settings page keeps one shared settings object client-side and its Save button POSTs the whole thing on every save, so a value redacted on the way out (e.g. pro's masked `license_key`) needs this seam to recognize its own redaction sentinel coming back in and restore the real stored value, rather than letting the mask overwrite it.
 
 Pro also declares `Requires Plugins: pointbay-loyalty-points-referral-rewards-woo`, so while pro is active WordPress renders free's "Deactivate" action as plain text rather than a link — the deactivation feedback modal cannot fire in that state.
 
@@ -53,3 +57,13 @@ WordPress.org screenshots belong in `.wordpress-org/` at the repo root — **not
 - PHP classes generally follow a Singleton `get_instance()` pattern (e.g. `Plugin`, `Settings`).
 - `phpcs.xml.dist` excludes `vendor/`, `node_modules/`, `dist/`, `build/`, `assets/` — don't lint-fix generated output.
 - There is no top-level admin menu (`config/admin.php` sets `show_main_menu => false`); both screens hang off the WooCommerce menu.
+
+## Release process
+
+Triggers: "make a zip", "make a release zip", "update the version", "is it ready to release".
+
+- **Version bump:** fetch `https://api.wordpress.org/plugins/info/1.0/pointbay-loyalty-points-referral-rewards-woo.json`, take its `"version"`, bump the patch number by 1. Compare to the version already in the plugin header — use whichever is higher, never decrease.
+- **Update the version** in: `pointbay-loyalty-points-referral-rewards-woo.php` `Version:` header, `define( 'POINTBAY_VERSION', ... )`, `package.json` `"version"`, `readme.txt` `Stable tag:` (also what `package.sh` reads to derive the build version — see Overview above, so bump this **first**), `languages/pointbay-loyalty-points-referral-rewards-woo.pot` `Project-Id-Version`.
+- **Changelog / Upgrade Notice:** draft a new `== Changelog ==` entry in `readme.txt` from what was built this session, matching the existing `*   ...` bullet style. This readme has **no `== Upgrade Notice ==` section yet** — only add one if the release includes a change users must act on, matching the format used in the sibling plugins' readme.txt files. Confirm the draft with the user before writing it.
+- **Build & zip:** `npm run zip` (`package.sh`) already derives the version from `readme.txt`'s `Stable tag`, so bump that first, then run it.
+- **Ready to release** = version synced everywhere above, changelog written, `npm run zip` succeeds. Mention the `wp-plugin-review` skill as an optional deeper security/WPCS check — don't run it automatically.

@@ -40,10 +40,22 @@ class LedgerController extends ApiController {
 				),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace . $this->version,
+			'/ledger/(?P<id>\d+)/reverse',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'reverse_entry' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+				),
+			)
+		);
 	}
 
 	const SORTABLE_COLUMNS = array( 'id', 'amount', 'created_at' );
-	const REFERENCE_TYPES  = array( 'order', 'order_reversal', 'refund', 'review', 'referral', 'referral_signup', 'referral_reversal', 'referral_signup_reversal', 'admin' );
+	const REFERENCE_TYPES  = array( 'order', 'order_reversal', 'refund', 'review', 'referral', 'referral_signup', 'referral_reversal', 'referral_signup_reversal', 'admin', 'reversal' );
 
 	/**
 	 * Retrieve a paginated, filtered list of ledger entries.
@@ -165,10 +177,39 @@ class LedgerController extends ApiController {
 			)
 		);
 
+		// One bulk query for the whole page rather than a per-row lookup, to flag
+		// which of these entries already have a reversal recorded against them.
+		$item_ids     = array_map(
+			function ( $item ) {
+				return (int) $item->id;
+			},
+			$items
+		);
+		$reversed_ids = array();
+		if ( $item_ids ) {
+			// Same fixed-string-query approach as the FIND_IN_SET filters above:
+			// the id list travels in as one bound comma-separated string rather
+			// than a variable-length placeholder list, so the SQL stays a hard-coded
+			// literal no matter how many rows are on the page.
+			$item_ids_csv = implode( ',', array_map( 'absint', $item_ids ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; must reflect the live reversal state for this page.
+			$reversed_ids = $wpdb->get_col(
+				$wpdb->prepare(
+					'SELECT reference_id FROM %i WHERE reference_type = %s AND FIND_IN_SET( reference_id, %s ) > 0',
+					$table,
+					'reversal',
+					$item_ids_csv
+				)
+			);
+			$reversed_ids = array_map( 'absint', $reversed_ids );
+		}
+
 		foreach ( $items as &$item ) {
-			$user             = get_userdata( $item->user_id );
-			$item->user_email = $user ? $user->user_email : 'Unknown';
-			$item->user_name  = $user ? $user->display_name : 'Unknown';
+			$user              = get_userdata( $item->user_id );
+			$item->user_email  = $user ? $user->user_email : 'Unknown';
+			$item->user_name   = $user ? $user->display_name : 'Unknown';
+			$item->is_reversal = 'reversal' === $item->reference_type;
+			$item->is_reversed = in_array( (int) $item->id, $reversed_ids, true );
 		}
 
 		$response = new \WP_REST_Response(
@@ -178,5 +219,76 @@ class LedgerController extends ApiController {
 			)
 		);
 		return $response;
+	}
+
+	/**
+	 * Reverse a ledger entry by inserting a compensating transaction.
+	 *
+	 * Ledger rows are append-only (enforced by the unique_transaction
+	 * constraint), so this never deletes or mutates the original row — it
+	 * records an offsetting credit/debit keyed to the original entry's own
+	 * ID, which both keeps a full audit trail and gives idempotent
+	 * "already reversed" detection via the same uniqueness constraint every
+	 * other transaction path relies on.
+	 *
+	 * @since 1.0.0
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_REST_Response The result of the reversal.
+	 */
+	public function reverse_entry( $request ) {
+		$id    = absint( $request['id'] );
+		$entry = \PointBay\Models\LedgerEntry::find( $id );
+
+		if ( ! $entry ) {
+			return new \WP_REST_Response( array( 'message' => __( 'Ledger entry not found.', 'pointbay-loyalty-points-referral-rewards-woo' ) ), 404 );
+		}
+
+		if ( 'reversal' === $entry->reference_type ) {
+			return new \WP_REST_Response( array( 'message' => __( 'A reversal entry cannot itself be reversed.', 'pointbay-loyalty-points-referral-rewards-woo' ) ), 400 );
+		}
+
+		if ( ! get_userdata( $entry->user_id ) ) {
+			return new \WP_REST_Response( array( 'message' => __( 'The user for this entry no longer exists.', 'pointbay-loyalty-points-referral-rewards-woo' ) ), 400 );
+		}
+
+		$opposite_type     = 'credit' === $entry->transaction_type ? 'debit' : 'credit';
+		$existing_reversal = \PointBay\Models\LedgerEntry::find_by_reference( $entry->user_id, 'reversal', $entry->id, $opposite_type );
+
+		if ( $existing_reversal ) {
+			return new \WP_REST_Response( array( 'message' => __( 'This entry has already been reversed.', 'pointbay-loyalty-points-referral-rewards-woo' ) ), 409 );
+		}
+
+		$reason = $request->get_param( 'reason' ) ?
+			sanitize_text_field( $request->get_param( 'reason' ) ) :
+			// translators: %d: the original ledger entry ID being reversed.
+			sprintf( __( 'Reversal of ledger entry #%d.', 'pointbay-loyalty-points-referral-rewards-woo' ), $entry->id );
+
+		$ledger = \PointBay\Services\LedgerService::get_instance();
+
+		// Reversing a credit must be allowed to drive the balance negative —
+		// the points may have already been spent elsewhere — so it goes
+		// through clawback(), not debit(). Reversing a debit is a plain credit.
+		if ( 'credit' === $entry->transaction_type ) {
+			$result = $ledger->clawback( $entry->user_id, $entry->amount, 'reversal', $entry->id, $reason, false, 'admin' );
+		} else {
+			$result = $ledger->credit( $entry->user_id, $entry->amount, 'reversal', $entry->id, $reason, 'admin' );
+		}
+
+		if ( is_wp_error( $result ) ) {
+			$status = 'duplicate_transaction' === $result->get_error_code() ? 409 : 400;
+			return new \WP_REST_Response( array( 'message' => $result->get_error_message() ), $status );
+		}
+
+		/**
+		 * Fires after a ledger entry has been reversed via the admin UI/API.
+		 *
+		 * @since 1.0.0
+		 * @param int                              $user_id The ID of the user the entry belonged to.
+		 * @param int                              $entry_id The original entry's ID (also the new reversal's reference_id).
+		 * @param \PointBay\Models\LedgerEntry|null $result   The newly created reversal entry.
+		 */
+		do_action( 'pointbay_ledger_entry_reversed', $entry->user_id, $entry->id, $result );
+
+		return new \WP_REST_Response( array( 'success' => true ), 200 );
 	}
 }

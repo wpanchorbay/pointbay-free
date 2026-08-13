@@ -96,7 +96,10 @@ class OrderHooks {
 		$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
 
 		if ( $points_to_award > 0 ) {
-			$ledger_service->credit( $user_id, $points_to_award, 'order', $order_id, 'Points earned for order #' . $order_id, 'system' );
+			$result = $ledger_service->credit( $user_id, $points_to_award, 'order', $order_id, 'Points earned for order #' . $order_id, 'system' );
+			if ( is_wp_error( $result ) ) {
+				pointbay_log( "OrderHooks: Failed to credit {$points_to_award} points for order #{$order_id} (user {$user_id}): " . $result->get_error_message(), 'ERROR' );
+			}
 		}
 	}
 

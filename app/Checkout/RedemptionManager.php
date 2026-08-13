@@ -124,13 +124,27 @@ class RedemptionManager {
 		// (Our own points fee is applied later via woocommerce_cart_calculate_fees,
 		// so it's intentionally excluded here to avoid a circular dependency.)
 		$cart_total = (float) WC()->cart->get_subtotal() - (float) WC()->cart->get_discount_total();
-		$cart_total = max( 0.0, $cart_total );
 
+		return min( $balance, $this->get_max_points_for_amount( $cart_total ) );
+	}
+
+	/**
+	 * Convert a monetary amount into the maximum number of points redeemable
+	 * against it, given the current redemption_pointsValue setting.
+	 *
+	 * Shared arithmetic between get_max_redeemable_points() (cart-time cap)
+	 * and CheckoutProcessor::debit_for_order() (order-time re-validation
+	 * against the order's final total, in case the cart changed between the
+	 * two).
+	 *
+	 * @since 1.0.0
+	 * @param float $amount The monetary amount to convert, e.g. a cart or order total basis.
+	 * @return int|float The maximum number of points redeemable against that amount.
+	 */
+	public function get_max_points_for_amount( $amount ) {
 		$settings     = Settings::get_instance();
 		$points_value = (float) $settings->get_settings( 'redemption_pointsValue' );
 
-		$max_points_for_cart = $points_value > 0 ? floor( $cart_total / $points_value ) : 0;
-
-		return min( $balance, $max_points_for_cart );
+		return $points_value > 0 ? floor( max( 0.0, (float) $amount ) / $points_value ) : 0;
 	}
 }
