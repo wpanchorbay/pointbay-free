@@ -56,3 +56,13 @@ WordPress.org screenshots belong in `.wordpress-org/` at the repo root — **not
 - PHP classes generally follow a Singleton `get_instance()` pattern (e.g. `Plugin`, `Settings`).
 - `phpcs.xml.dist` excludes `vendor/`, `node_modules/`, `dist/`, `build/`, `assets/` — don't lint-fix generated output.
 - There is no top-level admin menu (`config/admin.php` sets `show_main_menu => false`); both screens hang off the WooCommerce menu.
+
+## Release process
+
+Triggers: "make a zip", "make a release zip", "update the version", "is it ready to release".
+
+- **Version bump:** fetch `https://api.wordpress.org/plugins/info/1.0/pointbay-loyalty-points-referral-rewards-woo.json`, take its `"version"`, bump the patch number by 1. Compare to the version already in the plugin header — use whichever is higher, never decrease.
+- **Update the version** in: `pointbay-loyalty-points-referral-rewards-woo.php` `Version:` header, `define( 'POINTBAY_VERSION', ... )`, `package.json` `"version"`, `readme.txt` `Stable tag:` (also what `package.sh` reads to derive the build version — see Overview above, so bump this **first**), `languages/pointbay-loyalty-points-referral-rewards-woo.pot` `Project-Id-Version`.
+- **Changelog / Upgrade Notice:** draft a new `== Changelog ==` entry in `readme.txt` from what was built this session, matching the existing `*   ...` bullet style. This readme has **no `== Upgrade Notice ==` section yet** — only add one if the release includes a change users must act on, matching the format used in the sibling plugins' readme.txt files. Confirm the draft with the user before writing it.
+- **Build & zip:** `npm run zip` (`package.sh`) already derives the version from `readme.txt`'s `Stable tag`, so bump that first, then run it.
+- **Ready to release** = version synced everywhere above, changelog written, `npm run zip` succeeds. Mention the `wp-plugin-review` skill as an optional deeper security/WPCS check — don't run it automatically.
