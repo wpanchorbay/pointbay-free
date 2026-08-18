@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-13T09:50:00+00:00\n"
+"POT-Creation-Date: 2026-08-18T11:49:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
@@ -70,7 +70,7 @@ msgid "The selected user does not exist."
 msgstr ""
 
 #: app/Admin/WCSettingsTab.php:27
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Loyalty Points"
 msgstr ""
 
@@ -112,7 +112,7 @@ msgid "Insufficient points balance. Your points may have been used elsewhere."
 msgstr ""
 
 #: app/Checkout/ClassicCheckoutUI.php:91
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 msgid "Redeem Loyalty Points"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgid "You have %1$s points available. (Max %2$s points for this order)."
 msgstr ""
 
 #: app/Checkout/ClassicCheckoutUI.php:113
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 msgid "Slide to adjust points:"
 msgstr ""
 
@@ -299,28 +299,44 @@ msgstr ""
 msgid "Referral bonus reversed: order #%d was cancelled or refunded."
 msgstr ""
 
-#: config/admin.php:39
-#: config/admin.php:40
-#: config/admin.php:88
-#: config/admin.php:89
-#: config/admin.php:90
-#: build/admin.js:15
+#: config/admin.php:43
+#: config/admin.php:44
+#: config/admin.php:126
+#: config/admin.php:127
+#: config/admin.php:128
+#: build/admin.js:14
 msgid "PointBay"
 msgstr ""
 
-#: config/admin.php:54
-#: config/admin.php:55
-#: build/admin.js:14
+#: config/admin.php:58
+#: config/admin.php:59
+#: build/admin.js:13
 msgid "Points History"
 msgstr ""
 
-#: config/admin.php:61
-#: config/admin.php:62
+#: config/admin.php:65
+#: config/admin.php:66
 msgid "Loyalty"
 msgstr ""
 
-#: config/admin.php:77
+#: config/admin.php:87
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: config/admin.php:93
 msgid "Settings"
+msgstr ""
+
+#: config/admin.php:107
+msgid "Docs"
+msgstr ""
+
+#: config/admin.php:111
+msgid "Support"
+msgstr ""
+
+#: config/admin.php:115
+msgid "Rate ★★★★★"
 msgstr ""
 
 #: pointbay-loyalty-points-referral-rewards-woo.php:105
@@ -403,424 +419,424 @@ msgstr ""
 msgid "You've been using PointBay for a few days now. If it's been helpful, would you mind leaving a quick review? It really helps!"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Select bulk action"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Bulk actions"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Export Selected"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Reverse Selected"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Apply"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "1 item"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "items"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "First page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Previous page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Current Page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "of"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Next page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Last page"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "User"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Search users…"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Type"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Amount"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Reason"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Export to CSV"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Adjust Points"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Submit"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Reverse Selected Entries"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Cancel"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Reversing…"
 msgstr ""
 
-#: build/admin.js:14
+#: build/admin.js:13
 msgid "Reverse"
 msgstr ""
 
 #. translators: %d: number of ledger entries about to be reversed.
-#: build/admin.js:15
+#: build/admin.js:14
 #, js-format
 msgid "This will create a compensating entry for %d selected ledger transaction(s). This cannot be undone."
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "None of the selected entries can be reversed — they may already be reversed, or are themselves reversal entries."
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Search Ledger"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Search by user name or email"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Filter by type"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "All types"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Credit"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Debit"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Filter by reference"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "All references"
 msgstr ""
 
-#: build/admin.js:15
+#: build/admin.js:14
 msgid "Apply Filters"
 msgstr ""
 
-#: build/block-cart.js:12
-#: build/block-checkout.js:12
+#: build/block-cart.js:11
+#: build/block-checkout.js:11
 #, js-format
 msgid "Complete this order to earn %d points!"
 msgstr ""
 
-#: build/block-cart.js:12
-#: build/block-checkout.js:12
+#: build/block-cart.js:11
+#: build/block-checkout.js:11
 #, js-format
 msgid "Create an account to earn %d points on this order!"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 #, js-format
 msgid "Awesome! You have redeemed %d points for a %s discount."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 msgid "Removing..."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 msgid "Remove"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 #, js-format
 msgid "You have %d points available. (Max %d points for this order)."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 #, js-format
 msgid "1 pt = %s"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 msgid "Points to redeem"
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 msgid "Applying..."
 msgstr ""
 
-#: build/block-checkout.js:12
+#: build/block-checkout.js:11
 #, js-format
 msgid "Apply %s Discount"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Buy Pro"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "PRO"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "VIP Tiers"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Group customers into tiers with earning multipliers based on annual points."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Enable VIP Tiers"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Reward repeat customers with a faster earning rate — only in PointBay Pro"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Enable automatic tier recalculation"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Tiers Configuration"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "License Settings"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Activate your license key to enable automatic updates."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "License Status"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Unlock automatic updates and support — only in PointBay Pro"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "INACTIVE"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "License Key"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Activate"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Enter your WPAnchorBay license key. You can find it in your purchase receipt."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Failed to load settings."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Settings saved successfully."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Failed to save settings."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Earning Points"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Configure how customers earn loyalty points."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Points Per Dollar"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "How many points the customer earns for every $1 spent."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Points for Registration"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Give new users this many points when they register."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Points for Product Review"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Reward points for an approved product review."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Order Status Trigger"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "The WooCommerce order status that triggers points crediting."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Redemption Rules"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Configure how points are converted to discounts."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Point Value ($)"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "The monetary value of a single point."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Redemption Mode"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Cart Fee (WC_Fee)"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Virtual Coupon (WC_Coupon)"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "How the discount is applied to the cart."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Minimum Points to Redeem"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "The minimum amount of points needed before the redemption form is shown."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Referrals"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Reward customers for referring their friends."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "New Customer Bonus Points"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Reward the new customer too, not just the referrer — only in PointBay Pro"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Points awarded to the new customer themselves after their first purchase via a referral link."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Enable Referrals"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Turn on the referral program"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Gives every customer a shareable link that credits them when a friend they refer completes a first order."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Referral Bonus Points"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Points awarded to the referrer after the new customer's first purchase."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Display & System"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Additional display and maintenance options."
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Guest Notice"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Show login/register prompt on checkout"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Purge all ledger data upon deletion"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Debug Logging"
 msgstr ""
 
-#: build/settings.js:14
+#: build/settings.js:13
 msgid "Write diagnostic messages to the WordPress debug log"
 msgstr ""

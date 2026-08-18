@@ -16,6 +16,10 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+// Defined once and reused below (plugin_action_links + plugin_data) so the
+// two never drift apart.
+$pointbay_buy_pro_url = 'https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-woo/#pricing';
+
 return array(
 
 	/**
@@ -73,9 +77,43 @@ return array(
 	 * These links appear next to "Activate/Deactivate" on the WordPress Plugins page.
 	 */
 	'plugin_action_links' => array(
+		// Keyed 'upgrade' on purpose: PointBay Pro's
+		// remove_free_upgrade_link() (app/Core/Plugin.php) unsets this exact
+		// key once Pro is active, so an already-paying customer never sees an
+		// upgrade nag on their own plugin row. Do not rename this key without
+		// updating that removal too.
+		array(
+			'key'    => 'upgrade',
+			'text'   => __( 'Upgrade to Pro', 'pointbay-loyalty-points-referral-rewards-woo' ),
+			'url'    => $pointbay_buy_pro_url,
+			'target' => '_blank',
+			'style'  => 'color:#f02a74;font-weight:600;',
+		),
 		array(
 			'text' => __( 'Settings', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			'url'  => admin_url( 'admin.php?page=wc-settings&tab=' . \POINTBAY_PLUGIN_NAME ),
+		),
+	),
+
+	/**
+	 * Plugin Row Meta
+	 *
+	 * Informational links rendered under the plugin description on the Plugins
+	 * screen (alongside "View details"). High-intent actions live in
+	 * `plugin_action_links` above; these are references.
+	 */
+	'plugin_row_meta'     => array(
+		array(
+			'text' => __( 'Docs', 'pointbay-loyalty-points-referral-rewards-woo' ),
+			'url'  => 'https://docs.wpanchorbay.com/pointbay/',
+		),
+		array(
+			'text' => __( 'Support', 'pointbay-loyalty-points-referral-rewards-woo' ),
+			'url'  => 'https://wpanchorbay.com/support/',
+		),
+		array(
+			'text' => __( 'Rate ★★★★★', 'pointbay-loyalty-points-referral-rewards-woo' ),
+			'url'  => 'https://wordpress.org/support/plugin/' . \POINTBAY_WPORG_SLUG . '/reviews/#new-post',
 		),
 	),
 
@@ -92,8 +130,9 @@ return array(
 		'menu_icon'   => 'dashicons-awards',
 		'author_name' => 'WPAnchorBay',
 		'author_uri'  => 'https://wpanchorbay.com',
-		'support_uri' => 'https://wpanchorbay.com/support',
-		'docs_uri'    => 'https://wpanchorbay.com/docs',
+		'support_uri' => 'https://wpanchorbay.com/support/',
+		'docs_uri'    => 'https://docs.wpanchorbay.com/pointbay/',
+		'buy_pro_url' => $pointbay_buy_pro_url,
 		'position'    => 57,
 	),
 );

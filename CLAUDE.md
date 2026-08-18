@@ -46,7 +46,7 @@ CI is `.github/workflows/phpcs.yml` only. Verify changes by exercising the plugi
 
 ## Packaging
 
-`package.sh` is an **allowlist** — files are only shipped if explicitly copied, so nothing leaks by accident, and new top-level files must be added there deliberately. It ships `app/`, `languages/`, `assets/`, `build/`, `vendor/`, `config/`, `src/` plus the build config, and strips source maps, legacy bundles, and vendor dev metadata. `src/` and the build config ship on purpose so the plugin is rebuildable from the zip alone, as `readme.txt` promises.
+`package.sh` is an **allowlist** — files are only shipped if explicitly copied, so nothing leaks by accident, and new top-level files must be added there deliberately. It ships `app/`, `languages/`, `assets/`, `build/`, `vendor/`, `config/` plus a few root files (`index.php`, `readme.txt`, `uninstall.php`, the main plugin file, `composer.json`), and strips source maps, legacy bundles, and vendor dev metadata. `src/` and the JS build config (`package.json`, `webpack.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`) are **not** shipped — the zip only carries compiled output. Each compiled `build/*.js`/`*.css` file's header (added by `build.sh`) links back to the public source repo instead, which is where `readme.txt`'s `== Development ==` section points users to rebuild from.
 
 WordPress.org screenshots belong in `.wordpress-org/` at the repo root — **not** in `assets/`, which `package.sh` copies into the release zip.
 

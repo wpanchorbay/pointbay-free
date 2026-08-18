@@ -352,14 +352,53 @@ class Admin {
 		$links  = $config['plugin_action_links'] ?? array();
 
 		foreach ( $links as $link ) {
-			$actions[] = sprintf(
-				'<a href="%s">%s</a>',
+			$target = ! empty( $link['target'] ) ? sprintf( ' target="%s" rel="noopener"', esc_attr( $link['target'] ) ) : '';
+			$style  = ! empty( $link['style'] ) ? sprintf( ' style="%s"', esc_attr( $link['style'] ) ) : '';
+			$html   = sprintf(
+				'<a href="%1$s"%2$s%3$s>%4$s</a>',
+				esc_url( $link['url'] ),
+				$target,
+				$style,
+				esc_html( $link['text'] )
+			);
+
+			// Preserve a stable key when provided so other plugins (Pro) can
+			// target the link for removal; fall back to an appended entry.
+			if ( ! empty( $link['key'] ) ) {
+				$actions[ $link['key'] ] = $html;
+			} else {
+				$actions[] = $html;
+			}
+		}
+
+		return $actions;
+	}
+
+	/**
+	 * Append informational row-meta links under the plugin description.
+	 *
+	 * @since 1.1.0
+	 * @param string[] $meta        Existing row meta links.
+	 * @param string   $plugin_file The plugin file being rendered.
+	 * @return string[]
+	 */
+	public function add_plugin_row_meta( $meta, $plugin_file ) {
+		if ( plugin_basename( \POINTBAY_PATH . 'pointbay-loyalty-points-referral-rewards-woo.php' ) !== $plugin_file ) {
+			return $meta;
+		}
+
+		$config = $this->get_config();
+		$links  = $config['plugin_row_meta'] ?? array();
+
+		foreach ( $links as $link ) {
+			$meta[] = sprintf(
+				'<a href="%s" target="_blank" rel="noopener">%s</a>',
 				esc_url( $link['url'] ),
 				esc_html( $link['text'] )
 			);
 		}
 
-		return $actions;
+		return $meta;
 	}
 
 	/**
@@ -377,5 +416,6 @@ class Admin {
 		$loader->add_action( 'admin_enqueue_scripts', $this, 'enqueue_resources' );
 
 		$loader->add_filter( 'plugin_action_links_' . \POINTBAY_PLUGIN_BASENAME, $this, 'add_plugin_action_links', 10, 1 );
+		$loader->add_filter( 'plugin_row_meta', $this, 'add_plugin_row_meta', 10, 2 );
 	}
 }

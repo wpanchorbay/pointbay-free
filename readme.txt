@@ -14,6 +14,13 @@ Reward WooCommerce customers with loyalty points they earn on purchases and refe
 
 **PointBay** is a loyalty, rewards and referral system for WooCommerce. Let your customers earn points when they shop, invite their friends for a bonus, and spend those points for instant savings at checkout. Everything is configured from a single settings screen, and customers can track their balance right inside their WooCommerce account.
 
+**Documentation & Support:**
+
+*   [PointBay](https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-woo/) – Plugin homepage and full feature list.
+*   [PointBay Pro](https://wpanchorbay.com/plugins/pointbay-loyalty-points-referral-rewards-woo/#pricing) – Get more advanced features.
+*   [Official Documentation](https://docs.wpanchorbay.com/pointbay/) – Step-by-step guides.
+*   [Support Forum](https://wpanchorbay.com/support/) – Get help from our team.
+
 **Earning points**
 
 *   Award points based on how much a customer spends (points per currency unit).
@@ -115,27 +122,28 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 == Changelog ==
 
 = 1.0.1 =
-*   Added a Buy Pro upsell preview for VIP Tiers and License Settings.
 *   Fixed Order Status Trigger and Redemption Mode dropdowns not saving, and hardened both against invalid values.
 *   Fixed a bug where ordinary product-page comments could earn review points.
 *   Hardened the points ledger against invalid users, double-submitted adjustments, and a first-transaction race condition, and added the ability to reverse a ledger entry from the admin screen.
 *   Fixed points redemption not being re-checked against the order's final total at checkout.
+*   Added an "Upgrade to Pro" action link and Docs / Support / Rate links to the WordPress Plugins screen.
+*   Fixed the documentation link to point to docs.wpanchorbay.com, and linked the plugin page and Buy Pro pricing page from the readme.
 
 = 1.0.0 =
 *   Initial release.
 
 == Development ==
 
-PointBay is fully open source. The complete, human-readable source — the React/TypeScript admin interface and the Sass stylesheets in the `src/` directory that compile to the minified files in `build/`, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`) — ships inside the plugin, so it can be rebuilt from the downloaded plugin alone. The same source is also published publicly at:
+PointBay is fully open source. The compiled files in `build/` are minified from the React/TypeScript admin interface and Sass stylesheets in the `src/` directory. The complete, human-readable source, together with the build configuration (`package.json`, `webpack.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`), is published publicly at:
 
 https://github.com/wpanchorbay/pointbay-free
 
-The admin interface is built with @wordpress/scripts (webpack + Babel); the stylesheets are compiled from Sass with Tailwind CSS via PostCSS by the same build. To regenerate the compiled assets from source, from the plugin directory:
+The admin interface is built with @wordpress/scripts (webpack + Babel); the stylesheets are compiled from Sass with Tailwind CSS via PostCSS by the same build. To regenerate the compiled assets from source, clone the repository above, then from its root:
 
 1.  Run `npm install` to install the build tooling.
 2.  Run `npm run build` to produce the production bundles in `build/`.
 
-PHP dependencies are managed with Composer (`composer install`); third-party libraries live under `vendor/`. React and ReactDOM are provided by WordPress core and are not bundled. For a byte-for-byte reproducible build, the public repository above also includes the pinned `package-lock.json`.
+PHP dependencies are managed with Composer (`composer install`); third-party libraries live under `vendor/`. React and ReactDOM are provided by WordPress core and are not bundled. For a byte-for-byte reproducible build, the repository also includes the pinned `package-lock.json`.
 
 **Uncompressed source of the minified files**
 

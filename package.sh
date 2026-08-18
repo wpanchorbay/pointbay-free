@@ -54,11 +54,6 @@ copy_plugin_files() {
     cp -r vendor "$DEST/"
     cp -r config "$DEST/"
 
-    # Ship the React source alongside the compiled build so the plugin satisfies
-    # WordPress.org's "source must be publicly accessible" guideline out of the box
-    # (the readme also links the public repo). build/*.js is compiled from src/.
-    cp -r src "$DEST/"
-
     # Strip source maps from the release build (dev-only, large, not for production).
     find "$DEST/build" -name '*.map' -delete
 
@@ -82,17 +77,6 @@ copy_plugin_files() {
     cp uninstall.php "$DEST/"
     cp pointbay-loyalty-points-referral-rewards-woo.php "$DEST/"
     cp composer.json "$DEST/"
-
-    # Ship the JS build-tooling config so the bundled src/ is self-buildable from
-    # the zip alone (npm install && npm run build reproduces build/*.js). This
-    # makes the readme "Development" build steps runnable without the repo and
-    # fully satisfies the "source must be publicly accessible" guideline. The
-    # public repo additionally carries package-lock.json for byte-exact pinning.
-    cp package.json "$DEST/"
-    cp webpack.config.js "$DEST/"
-    cp tsconfig.json "$DEST/"
-    cp tailwind.config.js "$DEST/"
-    cp postcss.config.js "$DEST/"
 
     # Copy changelog if exists
     if [ -f "changelog.txt" ]; then
