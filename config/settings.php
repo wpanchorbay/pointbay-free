@@ -29,6 +29,7 @@ return array(
 		'display_showAdminMenu'         => true,
 		'advanced_deleteAllOnUninstall' => false,
 		'debug_enableMode'              => false,
+		'setup_wizard_completed'        => false,
 	),
 	'schema'   => array(
 		'earning_pointsPerDollar'       => array(
@@ -90,6 +91,10 @@ return array(
 			'default' => false,
 		),
 		'debug_enableMode'              => array(
+			'type'    => 'boolean',
+			'default' => false,
+		),
+		'setup_wizard_completed'        => array(
 			'type'    => 'boolean',
 			'default' => false,
 		),

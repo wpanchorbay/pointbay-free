@@ -15,6 +15,7 @@ export interface PluginData {
     support_uri: string;
     docs_uri: string;
     position: number;
+    setup_wizard_url: string;
 }
 
 export interface WpSettings {

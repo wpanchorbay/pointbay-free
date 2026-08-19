@@ -149,16 +149,17 @@ return array(
 	 * General data used throughout the admin dashboard and JS localization.
 	 */
 	'plugin_data'         => array(
-		'plugin_name' => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
-		'short_name'  => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
-		'menu_label'  => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
-		'custom_icon' => \POINTBAY_URL . 'assets/img/logo-64px.png',
-		'menu_icon'   => 'dashicons-awards',
-		'author_name' => 'WPAnchorBay',
-		'author_uri'  => 'https://wpanchorbay.com',
-		'support_uri' => 'https://wpanchorbay.com/support/',
-		'docs_uri'    => 'https://docs.wpanchorbay.com/pointbay/',
-		'buy_pro_url' => $pointbay_buy_pro_url,
-		'position'    => 57,
+		'plugin_name'      => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
+		'short_name'       => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
+		'menu_label'       => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
+		'custom_icon'      => \POINTBAY_URL . 'assets/img/logo-64px.png',
+		'menu_icon'        => 'dashicons-awards',
+		'author_name'      => 'WPAnchorBay',
+		'author_uri'       => 'https://wpanchorbay.com',
+		'support_uri'      => 'https://wpanchorbay.com/support/',
+		'docs_uri'         => 'https://docs.wpanchorbay.com/pointbay/',
+		'buy_pro_url'      => $pointbay_buy_pro_url,
+		'position'         => 57,
+		'setup_wizard_url' => admin_url( 'admin.php?page=pointbay-setup-wizard' ),
 	),
 );

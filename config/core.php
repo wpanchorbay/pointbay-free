@@ -19,6 +19,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 return array(
 	\PointBay\Admin\Admin::class,
+	\PointBay\Admin\Wizard\WizardController::class,
 	\PointBay\Core\Settings::class,
 	\PointBay\Core\Cron::class,
 	\PointBay\Hooks\OrderHooks::class,

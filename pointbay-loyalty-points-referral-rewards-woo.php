@@ -186,6 +186,13 @@ function pointbay_activate() {
 	if ( ! get_option( $activated_at_key ) ) {
 		update_option( $activated_at_key, time(), false );
 	}
+
+	// Same reasoning as the review-notice stamp above: placed after
+	// Activator::activate(), which already wp_die()s if WooCommerce is
+	// missing, so reaching this line means WC is confirmed active and the
+	// wizard can safely run. Read/deleted once on admin_init by
+	// WizardController::maybe_redirect_to_wizard().
+	set_transient( 'pointbay_activation_redirect', true, 30 );
 }
 
 /**

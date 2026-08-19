@@ -1,0 +1,86 @@
+/**
+ * PointBay setup wizard styles.
+ *
+ * Source Code: https://github.com/wpanchorbay/pointbay-free/
+ *
+ * Plain, hand-written -- no build step. Enqueued only on the wizard page
+ * itself, see WizardController::maybe_enqueue_assets().
+ *
+ * @since 1.1.0
+ */
+
+.pointbay-wizard {
+	max-width: 760px;
+}
+
+.pointbay-wizard__steps {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0;
+	list-style: none;
+	margin: 18px 0 24px;
+	padding: 0;
+}
+
+.pointbay-wizard__steps li {
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	box-sizing: border-box;
+	color: #646970;
+	flex: 1 1 auto;
+	font-size: 13px;
+	font-weight: 600;
+	padding: 10px 14px;
+	text-align: center;
+}
+
+.pointbay-wizard__steps li + li {
+	margin-left: -1px;
+}
+
+.pointbay-wizard__steps li.is-current {
+	background: #f0f6fc;
+	border-color: #2271b1;
+	color: #1d2327;
+}
+
+.pointbay-wizard__form {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	box-sizing: border-box;
+	padding: 20px;
+}
+
+.pointbay-wizard__form .form-table {
+	margin-top: 0;
+}
+
+/*
+ * Not using WordPress's `.notice` class: this plugin's own admin CSS
+ * (src/styles/index.scss) hides `.toplevel_page_pointbay #wpbody-content
+ * .notice` outright to keep WP-core/WooCommerce's generic notices off the
+ * React dashboard, which would silently swallow this too.
+ */
+.pointbay-dashboard-notice {
+	background: #f0f6fc;
+	border: 1px solid #c3c4c7;
+	border-left: 4px solid #2271b1;
+	border-radius: 4px;
+	box-sizing: border-box;
+	margin: 0 0 16px;
+	padding: 14px 16px;
+}
+
+.pointbay-dashboard-notice--success {
+	background: #f6fbf8;
+	border-left-color: #00a32a;
+}
+
+.pointbay-dashboard-notice p:first-child {
+	margin-top: 0;
+}
+
+.pointbay-dashboard-notice p:last-child {
+	margin-bottom: 0;
+}

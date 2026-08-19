@@ -14,6 +14,7 @@ import apiFetch from '../utils/apiFetch';
 import { BuyProLock } from '../components/common/BuyProLock';
 import { VipTiersPreview } from '../components/upsell/VipTiersPreview';
 import { LicenseSettingsPreview } from '../components/upsell/LicenseSettingsPreview';
+import { usePointBayStore } from '../store/pointbayStore';
 
 interface SettingsData {
 	earning_pointsPerDollar: number;
@@ -39,6 +40,7 @@ const Settings: React.FC = () => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( true );
 	const { addToast } = useToast();
+	const store = usePointBayStore();
 
 	useEffect( () => {
 		fetchSettings();
@@ -507,6 +509,21 @@ const Settings: React.FC = () => {
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
+						),
+					},
+					{
+						id: 'setup_wizard',
+						label: __( 'Setup Wizard', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<a
+								href={ store.pluginData?.setup_wizard_url }
+								className="button"
+							>
+								{ __(
+									'Run Setup Wizard',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							</a>
 						),
 					},
 					{

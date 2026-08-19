@@ -303,11 +303,33 @@ class Admin {
 	 * @return void
 	 */
 	public function add_setting_root_div() {
+		if ( $this->is_dashboard_screen() ) {
+			\PointBay\Admin\Wizard\WizardController::get_instance()->render_dashboard_prompt();
+		}
+
 		echo '<div id="' . esc_attr( \POINTBAY_PLUGIN_NAME ) . '">
 			<div class="pointbay-loader-container">
 				<p>' . esc_html__( 'Loading...', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</p>
 			</div>
 		</div>';
+	}
+
+	/**
+	 * Is the current request PointBay's own dashboard (the Points History
+	 * ledger, reachable both as the top-level menu's own page and as the
+	 * WooCommerce-nested "Points History" entry — both render via this same
+	 * callback). Narrower than is_menu_page(), which also matches the
+	 * Loyalty Settings / WooCommerce tab screens the dashboard prompt has no
+	 * business appearing on.
+	 *
+	 * @since 1.1.0
+	 * @access private
+	 * @return bool
+	 */
+	private function is_dashboard_screen() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		return in_array( $page, array( \POINTBAY_PLUGIN_NAME, 'pointbay-ledger' ), true );
 	}
 
 	/**
