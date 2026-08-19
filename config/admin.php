@@ -152,7 +152,7 @@ return array(
 		'plugin_name'      => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
 		'short_name'       => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
 		'menu_label'       => esc_html__( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
-		'custom_icon'      => \POINTBAY_URL . 'assets/img/logo-64px.png',
+		'custom_icon'      => \POINTBAY_URL . 'assets/img/pointbay.svg',
 		'menu_icon'        => 'dashicons-awards',
 		'author_name'      => 'WPAnchorBay',
 		'author_uri'       => 'https://wpanchorbay.com',
