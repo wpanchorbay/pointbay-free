@@ -26,6 +26,7 @@ interface SettingsData {
 	referrals_enabled: boolean;
 	referrals_bonusPoints: number;
 	display_guestNoticeEnabled: boolean;
+	display_showAdminMenu: boolean;
 	advanced_deleteAllOnUninstall: boolean;
 	debug_enableMode: boolean;
 	[ key: string ]: any;
@@ -484,6 +485,25 @@ const Settings: React.FC = () => {
 								}
 								label={ __(
 									'Show login/register prompt on checkout',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'display_showAdminMenu',
+						label: __( 'Admin Sidebar Menu', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ settings.display_showAdminMenu }
+								onChange={ ( val ) =>
+									setSettings( {
+										...settings,
+										display_showAdminMenu: val,
+									} )
+								}
+								label={ __(
+									'Show a dedicated PointBay menu in the WordPress admin sidebar (Points History and Loyalty settings stay available under WooCommerce either way)',
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
 							/>

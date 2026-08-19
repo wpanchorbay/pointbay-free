@@ -26,6 +26,7 @@ return array(
 		'referrals_enabled'             => false,
 		'referrals_bonusPoints'         => 1000,
 		'display_guestNoticeEnabled'    => true,
+		'display_showAdminMenu'         => true,
 		'advanced_deleteAllOnUninstall' => false,
 		'debug_enableMode'              => false,
 	),
@@ -77,6 +78,10 @@ return array(
 			'default'           => 1000,
 		),
 		'display_guestNoticeEnabled'    => array(
+			'type'    => 'boolean',
+			'default' => true,
+		),
+		'display_showAdminMenu'         => array(
 			'type'    => 'boolean',
 			'default' => true,
 		),

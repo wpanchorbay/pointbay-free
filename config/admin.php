@@ -25,10 +25,11 @@ return array(
 	/**
 	 * Toggle the main top-level menu.
 	 *
-	 * Set to true to show a dedicated "PointBay" menu in the sidebar.
-	 * Set to false if you only want to register submenus under other items (like Products or Tools).
+	 * Plugin-level master switch. When true, the top-level "PointBay" menu is
+	 * registered subject to the live 'display_showAdminMenu' user setting
+	 * (see Admin::add_admin_menu()) — this flag is not itself user-facing.
 	 */
-	'show_main_menu'      => false,
+	'show_main_menu'      => true,
 
 	/**
 	 * Menu registration details.
@@ -44,7 +45,18 @@ return array(
 			'menu_title' => __( 'PointBay', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			'capability' => 'manage_pointbay',
 			'menu_slug'  => \POINTBAY_PLUGIN_NAME,
-			'icon_url'   => 'dashicons-awards',
+			// PointBay brand icon (assets/img/icon-pointbay.svg), base64-
+			// inlined like productbay's menu icon. WordPress's
+			// wp-admin/js/svg-painter.js recolors this icon client-side
+			// after page load, and its regex-based rewrite wholesale
+			// replaces any element's `style="..."` attribute rather than
+			// merging into it — so a `style="display:none;..."` element
+			// would have its display:none silently stripped and reappear.
+			// The source SVG's originally-hidden background rect was
+			// therefore deleted outright (not just hidden) so nothing is
+			// left for that script to accidentally resurrect; only the
+			// white rounded-square-with-star-cutout path remains.
+			'icon_url'   => 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjExOS41NzQyMyIKICAgaGVpZ2h0PSIxMTkuNTU0NjkiCiAgIHZpZXdCb3g9IjAgMCAxMTkuNTc0MjMgMTE5LjU1NDY5IgogICBmaWxsPSJub25lIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxOCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcwogICAgIGlkPSJkZWZzMjIiIC8+CiAgPHBhdGgKICAgICBpZD0icmVjdDQxNCIKICAgICBzdHlsZT0iZGlzcGxheTppbmxpbmU7ZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxIgogICAgIGQ9Ik0gMjkuOTE5OTIyLDAgQyAxMy4zNDQ3MTksMCAwLDEyLjY5NjAxMyAwLDI4LjQ2NDg0NCB2IDYyLjYyNjk1MyBjIDAsMTUuNzY4ODIzIDEzLjM0NDcxOSwyOC40NjI4OTMgMjkuOTE5OTIyLDI4LjQ2Mjg5MyBoIDU5LjczNDM3NSBjIDE2LjU3NTE5MywwIDI5LjkxOTkyMywtMTIuNjk0MDcgMjkuOTE5OTIzLC0yOC40NjI4OTMgViAyOC40NjQ4NDQgQyAxMTkuNTc0MjIsMTIuNjk2MDEzIDEwNi4yMjk0OSwwIDg5LjY1NDI5NywwIFogTSA1OS44NzY5NTMsMjAuODM3ODkxIFYgNjMuOTQ1MzEzIEwgNjkuNTUwNzgxLDUwLjYzMDg2IEggMTAwLjg3Njk1IEwgNzUuNDkyMTg3LDY5LjAyMzQzOCA1OS44NzY5NTMsNjMuOTQ1MzEzIDg1LjE2NjAxNSw5OC44MTQ0NTMgNTkuODc2OTUzLDgwLjQyMTg3NSAzNC41ODc4OTEsOTguODE0NDUzIDQ0LjI2MTcxOSw2OS4wMjM0MzggMTguODc2OTUzLDUwLjYzMDg2IGggMzEuMzI0MjE5IHoiIC8+Cjwvc3ZnPgo=',
 			'position'   => 57,
 		),
 
@@ -54,19 +66,33 @@ return array(
 		 */
 		'sub_menus' => array(
 			array(
-				'parent_slug' => 'woocommerce',
-				'page_title'  => __( 'Points History', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				'menu_title'  => __( 'Points History', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				'capability'  => 'manage_pointbay',
-				'menu_slug'   => 'pointbay-ledger',
+				'parent_slug'   => 'woocommerce',
+				'page_title'    => __( 'Points History', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'menu_title'    => __( 'Points History', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'capability'    => 'manage_pointbay',
+				'menu_slug'     => 'pointbay-ledger',
+				// When mirrored under PointBay's own top-level menu, reuse
+				// the top-level menu's own slug (PointBay\Core, resolved in
+				// Admin::add_admin_menu()) instead of 'pointbay-ledger' —
+				// this is the same screen add_menu_page() already renders,
+				// and WordPress only skips auto-inserting its own duplicate
+				// first row when a submenu's slug exactly matches the
+				// parent's own slug.
+				'menu_slug_top' => \POINTBAY_PLUGIN_NAME,
 			),
 			array(
-				'parent_slug' => 'woocommerce',
-				'page_title'  => __( 'Loyalty', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				'menu_title'  => __( 'Loyalty', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				'capability'  => 'manage_pointbay',
-				'menu_slug'   => 'admin.php?page=wc-settings&tab=' . \POINTBAY_PLUGIN_NAME,
-				'is_link'     => true,
+				'parent_slug'    => 'woocommerce',
+				'page_title'     => __( 'Loyalty Settings', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'menu_title'     => __( 'Loyalty Settings', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'capability'     => 'manage_pointbay',
+				'menu_slug'      => 'admin.php?page=wc-settings&tab=' . \POINTBAY_PLUGIN_NAME,
+				'is_link'        => true,
+				// Used instead of page_title/menu_title only when this entry
+				// is mirrored under PointBay's own top-level menu — "Loyalty"
+				// is redundant there since the whole menu is already scoped
+				// to PointBay.
+				'page_title_top' => __( 'Settings', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'menu_title_top' => __( 'Settings', 'pointbay-loyalty-points-referral-rewards-woo' ),
 			),
 		),
 	),

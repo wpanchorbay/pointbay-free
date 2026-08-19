@@ -114,7 +114,12 @@ class Admin {
 
 		$config      = $this->get_config();
 		$menu_config = $config['menu'] ?? array();
-		$show_main   = $config['show_main_menu'] ?? true;
+		// Plugin-level master switch AND the live user-facing setting both
+		// have to allow it — Settings::get_settings() merges filtered
+		// defaults over the stored option, so this is safe to read this
+		// early (a plain get_option() under the hood, no register_setting()
+		// dependency).
+		$show_main = ( $config['show_main_menu'] ?? true ) && (bool) Settings::get_instance()->get_settings( 'display_showAdminMenu' );
 
 		// 1. Add top-level menu
 		if ( $show_main && ! empty( $menu_config['top_level'] ) ) {
@@ -128,17 +133,38 @@ class Admin {
 				$top['icon_url'],
 				$top['position']
 			);
+
+			// No self-registered submenu is added here on purpose: WordPress
+			// only auto-adds its own duplicate first row (titled the same as
+			// the top-level menu) when NOTHING is registered with a matching
+			// parent slug. The sub-menus loop below always registers
+			// "Points History" first, so that becomes the flyout's first row
+			// with no separate placeholder needed.
 		}
 
 		// 2. Add sub-menus
 		/**
-		 * Filters the list of WooCommerce sub-menu pages this plugin registers.
+		 * Filters the list of sub-menu pages this plugin registers.
 		 *
-		 * Lets any other plugin register its own submenu page without this
-		 * plugin needing any prior knowledge of it. Each entry supports the
-		 * same shape as the built-in config/admin.php entries, plus an
-		 * optional 'callback' (defaults to add_setting_root_div) so an add-on
-		 * can render its own root div / mount point instead of the default.
+		 * Lets any other plugin (namely PointBay Pro) register its own
+		 * submenu page without this plugin needing any prior knowledge of
+		 * it. Each entry supports the same shape as the built-in
+		 * config/admin.php entries, plus an optional 'callback' (defaults to
+		 * add_setting_root_div) so an add-on can render its own root div /
+		 * mount point instead of the default.
+		 *
+		 * An entry's 'parent_slug' controls where it lives:
+		 * - Anything other than PointBay's own top-level menu slug (e.g.
+		 *   'woocommerce') registers under that parent AND is automatically
+		 *   mirrored under PointBay's own top-level menu too, so both
+		 *   navigation paths work. Use the optional 'page_title_top' /
+		 *   'menu_title_top' to give the mirrored copy a different label
+		 *   (e.g. dropping a now-redundant "Loyalty" qualifier once it's
+		 *   already scoped under the "PointBay" menu) — both fall back to
+		 *   'page_title' / 'menu_title' when omitted.
+		 * - PointBay's own top-level menu slug registers ONLY there (no
+		 *   mirroring, since it's already on the top-level menu) — use this
+		 *   for a page that has no reason to also live under WooCommerce.
 		 *
 		 * @since 1.0.0
 		 * @hook pointbay_admin_sub_menus
@@ -148,6 +174,8 @@ class Admin {
 		$sub_menus = apply_filters( 'pointbay_admin_sub_menus', $menu_config['sub_menus'] ?? array() );
 
 		if ( ! empty( $sub_menus ) ) {
+			$top_level_slug = $menu_config['top_level']['menu_slug'] ?? '';
+
 			foreach ( $sub_menus as $sub ) {
 				// A sub-menu flagged 'is_link' points at an existing admin URL
 				// (e.g. the WooCommerce Settings tab) rather than rendering its
@@ -169,6 +197,26 @@ class Admin {
 					$sub['menu_slug'],
 					$callback
 				);
+
+				// Mirror the same page under PointBay's own top-level menu
+				// too (same callback -> same screen), so both navigation
+				// paths work. Skipped when the entry's own parent_slug
+				// already IS the top-level slug, to avoid registering it
+				// twice. 'menu_slug_top' lets an entry reuse the top-level
+				// menu's own slug instead of its regular one — required for
+				// exactly one entry (the first row) so WordPress recognizes
+				// it as that menu's self-referencing item and skips
+				// auto-inserting its own duplicate first row.
+				if ( $show_main && '' !== $top_level_slug && $sub['parent_slug'] !== $top_level_slug ) {
+					add_submenu_page(
+						$top_level_slug,
+						$sub['page_title_top'] ?? $sub['page_title'],
+						$sub['menu_title_top'] ?? $sub['menu_title'],
+						$sub['capability'],
+						$sub['menu_slug_top'] ?? $sub['menu_slug'],
+						$callback
+					);
+				}
 			}
 		}
 	}
