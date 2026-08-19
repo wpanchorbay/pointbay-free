@@ -13,7 +13,7 @@
     "lint:js": "wp-scripts lint-js src",
     "lint:js:fix": "wp-scripts lint-js src --fix",
     "format": "wp-scripts format src",
-    "makepot": "wp i18n make-pot . languages/pointbay-loyalty-points-referral-rewards-woo.pot --domain=pointbay-loyalty-points-referral-rewards-woo --slug=pointbay-loyalty-points-referral-rewards-woo --exclude='node_modules,vendor,src'",
+    "makepot": "wp i18n make-pot . languages/pointbay-loyalty-points-referral-rewards-woo.pot --domain=pointbay-loyalty-points-referral-rewards-woo --slug=pointbay-loyalty-points-referral-rewards-woo --exclude='node_modules,vendor,src,dist'",
     "make-json": "wp i18n make-json languages --no-purge",
     "zip": "bash package.sh",
     "rebranding": "bash rename.sh"

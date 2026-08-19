@@ -50,6 +50,7 @@ Reward WooCommerce customers with loyalty points they earn on purchases and refe
 
 **For store owners**
 
+*   A guided setup wizard on first activation walks you through earning, redemption and referral settings, and can be re-run any time from Settings.
 *   A **Points History** ledger in the admin lists every points transaction for auditing.
 *   A clean, modern settings screen integrated into WooCommerce settings.
 *   A custom `manage_pointbay` capability so you control which roles can manage the program.
@@ -122,6 +123,8 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 == Changelog ==
 
 = 1.0.1 =
+*   Added a first-run setup wizard that walks through earning, redemption and referral settings, with a "Run Setup Wizard" link in Settings to launch it again any time.
+*   Added a dedicated PointBay entry to the WordPress admin menu, with a setting to hide it again.
 *   Fixed Order Status Trigger and Redemption Mode dropdowns not saving, and hardened both against invalid values.
 *   Fixed a bug where ordinary product-page comments could earn review points.
 *   Hardened the points ledger against invalid users, double-submitted adjustments, and a first-transaction race condition, and added the ability to reverse a ledger entry from the admin screen.

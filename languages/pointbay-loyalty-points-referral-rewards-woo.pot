@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T10:17:50+00:00\n"
+"POT-Creation-Date: 2026-08-19T11:58:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "https://wpanchorbay.com"
 msgstr ""
 
-#: app/Admin/Admin.php:308
+#: app/Admin/Admin.php:312
 msgid "Loading..."
 msgstr ""
 
@@ -72,6 +72,134 @@ msgstr ""
 #: app/Admin/WCSettingsTab.php:27
 #: build/admin.js:14
 msgid "Loyalty Points"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:87
+msgid "PointBay Setup Wizard"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:88
+#: build/settings.js:13
+msgid "Setup Wizard"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:182
+msgid "PointBay is set up and ready to go!"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:197
+msgid "Finish setting up PointBay"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:198
+msgid "Complete the quick setup wizard to configure how customers earn and redeem points."
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:200
+#: app/Admin/Wizard/WizardController.php:353
+msgid "Get Started"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:201
+msgid "Snooze"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:215
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:275
+msgid "PointBay Setup"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:292
+msgid "Continue"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:298
+msgid "Skip setup"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:350
+msgid "Welcome"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:357
+#: build/settings.js:13
+msgid "Earning Points"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:363
+msgid "Redemption"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:369
+#: build/settings.js:13
+msgid "Referrals"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:375
+msgid "Finish"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:378
+msgid "Go to Points History"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:390
+msgid "Welcome to PointBay! Let's set up your loyalty program in a few quick steps."
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:414
+msgid "Points per $1 spent"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:418
+msgid "Points for creating an account"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:422
+msgid "Points for leaving a product review"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:426
+msgid "Award points when order status becomes"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:477
+msgid "Redemption method"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:480
+msgid "Discount at checkout"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:481
+msgid "Generate a coupon"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:486
+msgid "Value of 1 point"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:490
+msgid "Minimum points required to redeem"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:534
+msgid "Referral program"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:538
+msgid "Reward customers for referring new customers"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:543
+msgid "Bonus points per successful referral"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:577
+msgid "You're all set! PointBay is ready to start rewarding your customers."
 msgstr ""
 
 #: app/Api/ApiController.php:101
@@ -692,10 +820,6 @@ msgid "Failed to save settings."
 msgstr ""
 
 #: build/settings.js:13
-msgid "Earning Points"
-msgstr ""
-
-#: build/settings.js:13
 msgid "Configure how customers earn loyalty points."
 msgstr ""
 
@@ -772,10 +896,6 @@ msgid "The minimum amount of points needed before the redemption form is shown."
 msgstr ""
 
 #: build/settings.js:13
-msgid "Referrals"
-msgstr ""
-
-#: build/settings.js:13
 msgid "Reward customers for referring their friends."
 msgstr ""
 
@@ -833,6 +953,10 @@ msgstr ""
 
 #: build/settings.js:13
 msgid "Show a dedicated PointBay menu in the WordPress admin sidebar (Points History and Loyalty settings stay available under WooCommerce either way)"
+msgstr ""
+
+#: build/settings.js:13
+msgid "Run Setup Wizard"
 msgstr ""
 
 #: build/settings.js:13
