@@ -26,6 +26,15 @@ class LedgerService {
 	private static $instance = null;
 
 	/**
+	 * Actions queued while credit_batch() has a transaction open, or null when
+	 * nothing is being batched.
+	 *
+	 * @since 1.1.0
+	 * @var array|null
+	 */
+	private $deferred_actions = null;
+
+	/**
 	 * Gets an instance of this object.
 	 *
 	 * @since 1.0.0
@@ -206,7 +215,11 @@ class LedgerService {
 				$wpdb->query( 'COMMIT' );
 			}
 
-			if ( $txn_type === 'credit' ) {
+			if ( null !== $this->deferred_actions ) {
+				// Inside credit_batch(): listeners must only hear about rows that
+				// are actually committed, so the batch fires these after COMMIT.
+				$this->deferred_actions[] = array( $txn_type, $user_id, $amount, $entry );
+			} elseif ( 'credit' === $txn_type ) {
 				do_action( 'pointbay_points_credited', $user_id, $amount, $entry );
 			} else {
 				do_action( 'pointbay_points_debited', $user_id, $amount, $entry );
@@ -380,7 +393,8 @@ class LedgerService {
 
 		LedgerCache::lock_for_update( $user_id );
 
-		$entries = array();
+		$entries                = array();
+		$this->deferred_actions = array();
 
 		foreach ( $credits as $credit ) {
 			$entry = $this->process_transaction(
@@ -397,6 +411,7 @@ class LedgerService {
 			if ( is_wp_error( $entry ) ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 				$wpdb->query( 'ROLLBACK' );
+				$this->deferred_actions = null;
 				return $entry;
 			}
 
@@ -406,10 +421,18 @@ class LedgerService {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 		$wpdb->query( 'COMMIT' );
 
-		// No do_action() here: process_transaction() fires
-		// `pointbay_points_credited` for every row it writes, including on the
-		// $in_transaction path, so re-firing it per entry would double-notify
-		// every listener.
+		// process_transaction() queued one `pointbay_points_credited` per row
+		// instead of firing it; release them now that the batch is committed.
+		$queued                 = $this->deferred_actions;
+		$this->deferred_actions = null;
+		foreach ( $queued as $action ) {
+			if ( 'credit' === $action[0] ) {
+				do_action( 'pointbay_points_credited', $action[1], $action[2], $action[3] );
+			} else {
+				do_action( 'pointbay_points_debited', $action[1], $action[2], $action[3] );
+			}
+		}
+
 		return $entries;
 	}
 
