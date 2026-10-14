@@ -67,14 +67,23 @@ class FeeRedemption {
 		}
 
 		$redemption_manager = RedemptionManager::get_instance();
-		$points             = $redemption_manager->get_applied_points();
+
+		// Deliberately NOT reconciling here. This hook also runs during the
+		// place-order request, and clamping the session mid-checkout turns an
+		// honest "your points discount could no longer be applied, please try
+		// again" into a silent full-price order — the customer expected a
+		// discount and is charged without it. Reconciliation happens when a
+		// checkout page is rendered instead, where the shopper can see the
+		// adjustment notice and decide. Order-time safety is still handled by
+		// CheckoutProcessor, which re-validates against the locked balance.
+		$points = $redemption_manager->get_applied_points();
 		pointbay_log( 'PointBay FeeRedemption: apply_fee points: ' . $points . ', Session exists: ' . ( isset( WC()->session ) ? 'yes' : 'no' ) );
 
 		if ( $points <= 0 ) {
 			return;
 		}
 
-		$discount_value = $redemption_manager->calculate_discount_value( $points );
+		$discount_value = $redemption_manager->calculate_discount_value( $points, get_current_user_id(), array( 'source' => 'cart' ) );
 
 		if ( $discount_value > 0 ) {
 			$cart->add_fee( __( 'PointBay Points Discount', 'pointbay-loyalty-points-referral-rewards-woo' ), -$discount_value, true );

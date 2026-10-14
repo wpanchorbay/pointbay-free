@@ -69,7 +69,15 @@ class CouponRedemption {
 		}
 
 		$redemption_manager = RedemptionManager::get_instance();
-		$points             = $redemption_manager->get_applied_points();
+
+		// Deliberately NOT reconciling here, for two reasons. This runs on
+		// woocommerce_before_calculate_totals, where the cart subtotal has not
+		// been computed yet — the ceiling would be measured against zero and
+		// clear the customer's redemption outright. And the discount is a
+		// coupon in this mode, so it is inside get_discount_total(): recomputing
+		// the ceiling from a total that already has the discount in it is
+		// circular, the same trap get_max_redeemable_points() documents for fees.
+		$points = $redemption_manager->get_applied_points();
 
 		$applied_coupons = $cart->get_applied_coupons();
 		foreach ( $applied_coupons as $coupon_code ) {
@@ -113,7 +121,7 @@ class CouponRedemption {
 			return false;
 		}
 
-		$discount_value = $redemption_manager->calculate_discount_value( $points );
+		$discount_value = $redemption_manager->calculate_discount_value( $points, get_current_user_id(), array( 'source' => 'cart' ) );
 
 		return array(
 			'id'                         => 0,

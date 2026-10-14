@@ -4,7 +4,7 @@
 // and silently drops those strings from the .pot.
 import { __, sprintf } from '@wordpress/i18n';
 
-const { useState } = window.wp.element;
+const { useState, useEffect } = window.wp.element;
 const { useDispatch } = window.wp.data;
 
 const RedemptionBlock = () => {
@@ -18,6 +18,9 @@ const RedemptionBlock = () => {
     const appliedPoints = parseInt(data.applied_points, 10) || 0;
     const balance = parseInt(data.balance, 10) || 0;
     const pointsValue = parseFloat(data.points_value) || 0;
+    // Off means all-or-nothing: no slider, no amount field, one button that
+    // spends the whole allowance.
+    const allowPartial = data.allow_partial !== false;
 
     // Hooks must always run in the same order regardless of data/props, so
     // they're called unconditionally before any early returns below.
@@ -27,7 +30,21 @@ const RedemptionBlock = () => {
 
     const cartDispatch = useDispatch('wc/store/cart');
 
+    // WooCommerce bakes `couponsEnabled` into the page at render time and never
+    // re-reads it, so applying points over AJAX would otherwise leave the coupon
+    // panel on screen. The server has already stopped accepting coupons at that
+    // point (CartApplyCoupon checks wc_coupons_enabled), so this only hides a
+    // form whose submissions are rejected anyway.
+    useEffect(() => {
+        if (!data.hide_coupon_form) return;
+        document.body.classList.toggle('pointbay-points-applied', appliedPoints > 0);
+    }, [appliedPoints, data.hide_coupon_form]);
+
     if (!data.is_logged_in) return null;
+
+    // A customer who is not permitted to redeem is shown nothing at all, rather
+    // than a control that would fail on submit.
+    if (data.can_redeem === false) return null;
 
     // We must return early if there are no points to redeem, UNLESS points are already applied (so they can be removed)
     if (maxPoints <= 0 && appliedPoints <= 0) return null;
@@ -123,6 +140,7 @@ const RedemptionBlock = () => {
                         {sprintf(__('You have %d points available. (Max %d points for this order).', 'pointbay-loyalty-points-referral-rewards-woo'), balance, maxPoints)}
                     </p>
                     
+                    {allowPartial && (
                     <div style={{ marginBottom: '16px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.875em' }}>
                             <span>{__('Slide to adjust points:', 'pointbay-loyalty-points-referral-rewards-woo')}</span>
@@ -137,8 +155,10 @@ const RedemptionBlock = () => {
                             style={{ width: '100%', cursor: 'pointer' }} 
                         />
                     </div>
+                    )}
 
                     <div className="wc-block-components-totals-coupon__form">
+                        {allowPartial && (
                         <div className={`wc-block-components-text-input wc-block-components-totals-coupon__input ${points !== '' && points !== null ? 'is-active' : ''}`}>
                             <input 
                                 type="number" 
@@ -156,6 +176,7 @@ const RedemptionBlock = () => {
                             />
                             <label className="wc-block-components-text-input__label">{__('Points to redeem', 'pointbay-loyalty-points-referral-rewards-woo')}</label>
                         </div>
+                        )}
                         <button 
                             className="wc-block-components-button wp-element-button wc-block-components-totals-coupon__button contained"
                             onClick={applyPoints}

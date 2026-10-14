@@ -61,12 +61,21 @@ class RedemptionController {
 	/**
 	 * Checks whether the current request is allowed to redeem points.
 	 *
+	 * Being logged in is necessary but no longer sufficient — the same
+	 * `pointbay_can_redeem` gate the cart and the UI consult is enforced here,
+	 * so a restriction cannot be sidestepped by posting to the endpoint
+	 * directly.
+	 *
 	 * @since 1.0.0
-	 * @return bool True when the current user is logged in.
+	 * @return bool True when the current user may redeem points.
 	 */
 	public function check_permission() {
 		// nonce check is handled by WP REST API if using X-WP-Nonce header
-		return is_user_logged_in();
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
+		return RedemptionManager::get_instance()->can_redeem( get_current_user_id(), array( 'source' => 'api' ) );
 	}
 
 	/**
@@ -95,13 +104,9 @@ class RedemptionController {
 		$points  = $request->get_param( 'points' );
 		$user_id = get_current_user_id();
 
-		$manager    = RedemptionManager::get_instance();
-		$max_points = $manager->get_max_redeemable_points( $user_id );
+		$manager = RedemptionManager::get_instance();
 
 		$result = $manager->apply_points_discount( $user_id, $points );
-
-		$has_session = isset( WC()->session ) ? 'yes' : 'no';
-		$session_val = isset( WC()->session ) ? WC()->session->get( RedemptionManager::SESSION_KEY, 0 ) : 'N/A';
 
 		if ( is_wp_error( $result ) ) {
 			return new \WP_REST_Response( array( 'message' => $result->get_error_message() ), 400 );

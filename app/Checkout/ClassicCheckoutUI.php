@@ -69,28 +69,40 @@ class ClassicCheckoutUI {
 	 * @return void
 	 */
 	public function display_redemption_form() {
-		$user_id        = get_current_user_id();
-		$manager        = RedemptionManager::get_instance();
-		$max_points     = $manager->get_max_redeemable_points( $user_id );
-		$applied_points = $manager->get_applied_points();
+		$user_id = get_current_user_id();
 
 		if ( ! $user_id ) {
 			return;
 		}
 
+		$manager = RedemptionManager::get_instance();
+
+		// Hidden entirely rather than shown disabled: a control the customer
+		// cannot use is worse than no control at all.
+		if ( ! $manager->can_redeem( $user_id, array( 'source' => 'cart' ) ) ) {
+			return;
+		}
+
+		$manager->reconcile_applied_points( $user_id );
+
+		$max_points     = $manager->get_max_redeemable_points( $user_id );
+		$applied_points = $manager->get_applied_points();
+
 		if ( $max_points <= 0 && $applied_points <= 0 ) {
 			return;
 		}
 
-		$balance      = \PointBay\Services\LedgerService::get_instance()->get_balance( $user_id );
-		$points_value = (float) \PointBay\Core\Settings::get_instance()->get_settings( 'redemption_pointsValue' );
-		$max_discount = $max_points * $points_value;
+		$balance       = \PointBay\Services\LedgerService::get_instance()->get_balance( $user_id );
+		$points_value  = (float) \PointBay\Core\Settings::get_instance()->get_settings( 'redemption_pointsValue' );
+		$max_discount  = $manager->calculate_discount_value( $max_points, $user_id, array( 'source' => 'cart' ) );
+		$allow_partial = (bool) \PointBay\Core\Settings::get_instance()->get_settings( 'redemption_allowPartial' );
 
 		?>
 		<div class="pointbay-redemption-wrapper" style="margin-bottom: 2em;">
 			<h3 id="pointbay-redemption-heading"><?php esc_html_e( 'Redeem Loyalty Points', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></h3>
 			<?php if ( $applied_points > 0 ) : ?>
-				<?php $applied_discount = wc_price( $applied_points * $points_value ); ?>
+				<?php // Through the manager, not a bare multiplication, so a non-linear conversion is reflected here too. ?>
+				<?php $applied_discount = wc_price( $manager->calculate_discount_value( $applied_points, $user_id, array( 'source' => 'cart' ) ) ); ?>
 				<div class="woocommerce-info">
 					<p>
 						<?php
@@ -108,22 +120,39 @@ class ClassicCheckoutUI {
 					?>
 				</p>
 				
-				<div class="pointbay-slider-container" style="margin-bottom: 1em;">
-					<label for="pointbay-points-range" style="display:flex; justify-content: space-between; margin-bottom: 0.5em;">
-						<span><?php esc_html_e( 'Slide to adjust points:', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></span>
-						<span>1 pt = <?php echo wp_kses_post( wc_price( $points_value ) ); ?></span>
-					</label>
-					<input type="range" id="pointbay-points-range" min="0" max="<?php echo esc_attr( $max_points ); ?>" value="<?php echo esc_attr( $max_points ); ?>" style="width: 100%; cursor: pointer;">
-				</div>
-
-				<div style="display:flex; align-items: center; flex-wrap: wrap; gap: 1em;">
-					<div style="display: flex; align-items: center; gap: 0.5em;">
-						<input type="number" class="input-text" id="pointbay-points-input" min="0" max="<?php echo esc_attr( $max_points ); ?>" value="<?php echo esc_attr( $max_points ); ?>" style="width: 100px; text-align: center;">
-						<span> <?php esc_html_e( 'points for', 'pointbay-loyalty-points-referral-rewards-woo' ); ?> </span>
-						<strong id="pointbay-discount-display"><?php echo wp_kses_post( wc_price( $max_discount ) ); ?></strong>
+				<?php if ( $allow_partial ) : ?>
+					<div class="pointbay-slider-container" style="margin-bottom: 1em;">
+						<label for="pointbay-points-range" style="display:flex; justify-content: space-between; margin-bottom: 0.5em;">
+							<span><?php esc_html_e( 'Slide to adjust points:', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></span>
+							<span>1 pt = <?php echo wp_kses_post( wc_price( $points_value ) ); ?></span>
+						</label>
+						<input type="range" id="pointbay-points-range" min="0" max="<?php echo esc_attr( $max_points ); ?>" value="<?php echo esc_attr( $max_points ); ?>" style="width: 100%; cursor: pointer;">
 					</div>
-					<button type="button" class="button alt" id="pointbay-apply-points"><?php esc_html_e( 'Apply Discount', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></button>
-				</div>
+
+					<div style="display:flex; align-items: center; flex-wrap: wrap; gap: 1em;">
+						<div style="display: flex; align-items: center; gap: 0.5em;">
+							<input type="number" class="input-text" id="pointbay-points-input" min="0" max="<?php echo esc_attr( $max_points ); ?>" value="<?php echo esc_attr( $max_points ); ?>" style="width: 100px; text-align: center;">
+							<span> <?php esc_html_e( 'points for', 'pointbay-loyalty-points-referral-rewards-woo' ); ?> </span>
+							<strong id="pointbay-discount-display"><?php echo wp_kses_post( wc_price( $max_discount ) ); ?></strong>
+						</div>
+						<button type="button" class="button alt" id="pointbay-apply-points"><?php esc_html_e( 'Apply Discount', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></button>
+					</div>
+				<?php else : ?>
+					<?php // All-or-nothing: the hidden input keeps the existing apply handler working unchanged. ?>
+					<div style="display:flex; align-items: center; flex-wrap: wrap; gap: 1em;">
+						<input type="hidden" id="pointbay-points-input" value="<?php echo esc_attr( $max_points ); ?>">
+						<button type="button" class="button alt" id="pointbay-apply-points">
+							<?php
+							printf(
+								// translators: 1: number of points, 2: formatted discount amount.
+								esc_html__( 'Redeem %1$s points for %2$s', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								'<strong>' . esc_html( $max_points ) . '</strong>',
+								wp_kses_post( wc_price( $max_discount ) )
+							);
+							?>
+						</button>
+					</div>
+				<?php endif; ?>
 			<?php endif; ?>
 			<div id="pointbay-redemption-message" class="woocommerce-error" style="display: none; margin-top: 1em;"></div>
 		</div>
