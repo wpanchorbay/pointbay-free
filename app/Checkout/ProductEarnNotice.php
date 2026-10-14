@@ -135,7 +135,7 @@ class ProductEarnNotice {
 				continue;
 			}
 
-			$price = (float) wc_get_price_to_display( $variation );
+			$price = $this->get_price_for_basis( $variation );
 
 			if ( $price <= 0 ) {
 				continue;
@@ -152,6 +152,24 @@ class ProductEarnNotice {
 		}
 
 		return $map;
+	}
+
+	/**
+	 * The price to measure points against, matching the configured basis.
+	 *
+	 * Subtotal mode excludes tax, so a tax-inclusive shop must not feed its
+	 * display price in; total mode keeps the price the shopper sees.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Product $product The product or variation.
+	 * @return float The price.
+	 */
+	private function get_price_for_basis( $product ) {
+		if ( 'subtotal' === EarningCalculator::get_instance()->get_basis_mode() ) {
+			return (float) wc_get_price_excluding_tax( $product );
+		}
+
+		return (float) wc_get_price_to_display( $product );
 	}
 
 	/**
@@ -173,7 +191,7 @@ class ProductEarnNotice {
 			return;
 		}
 
-		$price = (float) wc_get_price_to_display( $product );
+		$price = $this->get_price_for_basis( $product );
 
 		if ( $price <= 0 ) {
 			return;
