@@ -104,6 +104,23 @@ class OrderHooks {
 	const META_BREAKDOWN = '_pointbay_award_breakdown';
 
 	/**
+	 * Ledger reference type for points re-awarded when an order whose earned
+	 * points were reversed on cancellation is reopened to the earning status.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_ORDER_REAWARD = 'order_reaward';
+
+	/**
+	 * Order meta counting how many times reversed earned points were re-awarded.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const META_AWARD_CYCLE = '_pointbay_award_cycle';
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @since 1.0.0
@@ -208,6 +225,7 @@ class OrderHooks {
 		// re-fired status transition from re-reading settings and re-saving meta.
 		foreach ( self::award_reference_types() as $ref_type ) {
 			if ( $ledger->has_existing_transaction( $user_id, $ref_type, $order_id, 'credit' ) ) {
+				$this->maybe_reaward_reversed_points( $order, $user_id );
 				return;
 			}
 		}
@@ -291,6 +309,62 @@ class OrderHooks {
 	}
 
 	/**
+	 * Ledger reference ID for the reversal / re-award of a given award cycle.
+	 *
+	 * Cycle 0 is the plain order ID, so existing reversals keep their reference.
+	 *
+	 * @since 1.1.0
+	 * @param int $order_id The order.
+	 * @param int $cycle    Award cycle.
+	 * @return int Reference ID.
+	 */
+	private function award_cycle_ref_id( $order_id, $cycle ) {
+		return (int) $order_id + ( (int) $cycle * 10000000000 );
+	}
+
+	/**
+	 * Gives back earned points that a cancellation reversed, once per cycle.
+	 *
+	 * Runs when an already-awarded order reaches the earning status again. Only
+	 * the amount actually reversed in the current cycle is returned, so an order
+	 * whose award was already clawed back by refunds (nothing left to reverse)
+	 * gets nothing, and a second pass in the same cycle is a no-op.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order   The order.
+	 * @param int       $user_id The customer.
+	 * @return void
+	 */
+	private function maybe_reaward_reversed_points( $order, $user_id ) {
+		$ledger = LedgerService::get_instance();
+		$cycle  = (int) $order->get_meta( self::META_AWARD_CYCLE );
+		$ref_id = $this->award_cycle_ref_id( $order->get_id(), $cycle );
+
+		$reversal = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, self::REF_ORDER_REVERSAL, $ref_id, 'debit' );
+		if ( ! $reversal || (int) $reversal->amount <= 0 ) {
+			return;
+		}
+
+		if ( ! $ledger->has_existing_transaction( $user_id, self::REF_ORDER_REAWARD, $ref_id, 'credit' ) ) {
+			$result = $ledger->credit(
+				$user_id,
+				(int) $reversal->amount,
+				self::REF_ORDER_REAWARD,
+				$ref_id,
+				// translators: %d: order ID.
+				sprintf( __( 'Points restored: order #%d was reopened.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order->get_id() ),
+				'system'
+			);
+			if ( is_wp_error( $result ) ) {
+				return;
+			}
+		}
+
+		$order->update_meta_data( self::META_AWARD_CYCLE, $cycle + 1 );
+		$order->save_meta_data();
+	}
+
+	/**
 	 * Reads back the breakdown an order was awarded on.
 	 *
 	 * Orders awarded before the breakdown meta existed get a synthesized one, so
@@ -366,7 +440,9 @@ class OrderHooks {
 
 		$ledger_service = LedgerService::get_instance();
 
-		if ( $ledger_service->has_existing_transaction( $user_id, self::REF_ORDER_REVERSAL, $order_id, 'debit' ) ) {
+		$award_cycle = (int) $order->get_meta( self::META_AWARD_CYCLE );
+		$reversal_id = $this->award_cycle_ref_id( $order_id, $award_cycle );
+		if ( $ledger_service->has_existing_transaction( $user_id, self::REF_ORDER_REVERSAL, $reversal_id, 'debit' ) ) {
 			return;
 		}
 
@@ -383,6 +459,15 @@ class OrderHooks {
 		}
 		$awarded -= (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
 
+		// Earlier cancel/reopen cycles reversed some of the award and gave it back;
+		// those cancel out, so only the current award needs reversing.
+		$prior_cycles = array();
+		for ( $c = 0; $c < $award_cycle; $c++ ) {
+			$prior_cycles[] = $this->award_cycle_ref_id( $order_id, $c );
+		}
+		$awarded += (int) $ledger_service->sum_by_reference( $user_id, self::REF_ORDER_REAWARD, $prior_cycles, 'credit' )
+			- (int) $ledger_service->sum_by_reference( $user_id, self::REF_ORDER_REVERSAL, $prior_cycles, 'debit' );
+
 		if ( $awarded <= 0 ) {
 			return;
 		}
@@ -391,7 +476,7 @@ class OrderHooks {
 			$user_id,
 			$awarded,
 			self::REF_ORDER_REVERSAL,
-			$order_id,
+			$reversal_id,
 			// translators: 1: order ID, 2: new order status.
 			sprintf( __( 'Points reversed: COD order #%1$d was %2$s.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id, $new_status ),
 			false,
