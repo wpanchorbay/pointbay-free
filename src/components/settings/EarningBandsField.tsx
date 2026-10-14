@@ -96,23 +96,29 @@ export const EarningBandsField: React.FC< EarningBandsFieldProps > = ( {
 	};
 
 	const add = () => {
-		const highest = rows.reduce(
-			( acc, band ) =>
-				band.max === null || band.max === undefined
-					? acc
-					: Math.max( acc, Number( band.max ) ),
-			0
-		);
+		// The top band is open-ended. Adding another row beneath it would leave
+		// two open-ended rows, and the server keeps only the first, so close the
+		// current top band (default width 50) and start the new one where it ends.
+		const step = 50;
+		let start = 0;
+		let next = rows.map( ( band ) => ( { ...band } ) );
 
-		onChange( [
-			...rows,
-			{
-				id: `band_${ Date.now() }`,
-				min: highest,
-				max: null,
-				points: 0,
-			},
-		] );
+		next.forEach( ( band ) => {
+			if ( band.max === null || band.max === undefined ) {
+				band.max = Number( band.min ?? 0 ) + step;
+			}
+			start = Math.max( start, Number( band.max ) );
+		} );
+
+		// Unique even when clicked several times within one millisecond.
+		let id = `band_${ Date.now() }`;
+		let n = 0;
+		while ( next.some( ( band ) => band.id === id ) ) {
+			id = `band_${ Date.now() }_${ ++n }`;
+		}
+
+		next = [ ...next, { id, min: start, max: null, points: 0 } ];
+		onChange( next );
 	};
 
 	const remove = ( id: string ) => {
