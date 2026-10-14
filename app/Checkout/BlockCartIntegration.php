@@ -99,20 +99,27 @@ class BlockCartIntegration implements IntegrationInterface {
 		$manager  = \PointBay\Checkout\RedemptionManager::get_instance();
 		$settings = \PointBay\Core\Settings::get_instance();
 
-		$earning_multiplier = $user_id ? apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id ) : 1.0;
+		// Clamp before publishing: the figures the UI renders must be the same
+		// ones the order-time debit will accept.
+		$manager->reconcile_applied_points( $user_id );
 
+		// points_per_dollar and earning_multiplier are deliberately no longer
+		// sent. The earn preview is computed server-side and published on the
+		// cart by StoreApiData; shipping the raw inputs as well would invite a
+		// second, drifting implementation in the browser.
 		return array(
-			'rest_url'           => esc_url_raw( rest_url( 'pointbay/v1/redeem' ) ),
-			'nonce'              => wp_create_nonce( 'wp_rest' ),
-			'max_points'         => $manager->get_max_redeemable_points( $user_id ),
-			'applied_points'     => $manager->get_applied_points(),
-			'balance'            => \PointBay\Services\LedgerService::get_instance()->get_balance( $user_id ),
-			'is_logged_in'       => is_user_logged_in(),
-			'points_value'       => (float) $settings->get_settings( 'redemption_pointsValue' ),
-			'points_per_dollar'  => (int) $settings->get_settings( 'earning_pointsPerDollar' ),
-			'earning_multiplier' => (float) $earning_multiplier,
-			'currency_sym'       => get_woocommerce_currency_symbol(),
-			'currency_pos'       => get_option( 'woocommerce_currency_pos' ),
+			'rest_url'         => esc_url_raw( rest_url( 'pointbay/v1/redeem' ) ),
+			'nonce'            => wp_create_nonce( 'wp_rest' ),
+			'max_points'       => $manager->get_max_redeemable_points( $user_id ),
+			'applied_points'   => $manager->get_applied_points(),
+			'balance'          => \PointBay\Services\LedgerService::get_instance()->get_balance( $user_id ),
+			'is_logged_in'     => is_user_logged_in(),
+			'can_redeem'       => $manager->can_redeem( $user_id, array( 'source' => 'cart' ) ),
+			'allow_partial'    => (bool) $settings->get_settings( 'redemption_allowPartial' ),
+			'hide_coupon_form' => (bool) $settings->get_settings( 'redemption_hideCouponForm' ),
+			'points_value'     => (float) $settings->get_settings( 'redemption_pointsValue' ),
+			'currency_sym'     => get_woocommerce_currency_symbol(),
+			'currency_pos'     => get_option( 'woocommerce_currency_pos' ),
 		);
 	}
 }

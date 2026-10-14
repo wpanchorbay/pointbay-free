@@ -7,10 +7,15 @@
 
 namespace PointBay\Checkout;
 
-use PointBay\Core\Settings;
+use PointBay\Services\EarningCalculator;
+use PointBay\Services\LedgerService;
+use PointBay\Hooks\OrderHooks;
 
 /**
  * Displays a notice informing logged-in customers how many points they will earn.
+ *
+ * The figure comes from EarningCalculator, the same class the award itself uses,
+ * so the promise made here and the credit written later cannot drift apart.
  *
  * @since 1.0.0
  */
@@ -30,58 +35,79 @@ class EarnNotice {
 	}
 
 	/**
-	 * Output the earn-points notice on the cart and checkout pages.
+	 * Calculates the points the current cart would earn the current customer.
 	 *
-	 * @since 1.0.0
-	 * @return void
+	 * @since 1.1.0
+	 * @return int The points, or 0 when there is nothing to promise.
 	 */
-	public function display_notice() {
-		if ( ! is_user_logged_in() ) {
-			return;
-		}
-
-		$settings          = Settings::get_instance();
-		$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
-		if ( $points_per_dollar <= 0 ) {
-			return;
-		}
-
-		$total = (float) WC()->cart->subtotal;
-
-		$manager        = \PointBay\Checkout\RedemptionManager::get_instance();
-		$applied_points = $manager->get_applied_points();
-		if ( $applied_points > 0 ) {
-			$discount_value = $manager->calculate_discount_value( $applied_points );
-			$total         -= $discount_value; // subtract discount
-			$total          = max( 0, $total );
-		}
-
-		pointbay_log( 'PointBay EarnNotice: Subtotal after discount is ' . $total );
-
-		if ( $total <= 0 ) {
-			pointbay_log( 'PointBay EarnNotice: Returning because total <= 0' );
-			return;
+	public function get_notice_points() {
+		if ( ! is_user_logged_in() || ! isset( WC()->cart ) ) {
+			return 0;
 		}
 
 		$user_id    = get_current_user_id();
-		$multiplier = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
+		$calculator = EarningCalculator::get_instance();
+		$basis      = $calculator->resolve_cart_basis();
 
-		$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
+		if ( $basis <= 0 ) {
+			return 0;
+		}
 
-		if ( $points_to_award <= 0 ) {
+		$is_first_order = 0 === LedgerService::get_instance()->count_by_reference_type( $user_id, OrderHooks::REF_FIRST_ORDER );
+
+		return $calculator->total(
+			array(
+				'amount'              => $basis,
+				'user_id'             => $user_id,
+				'include_first_order' => $is_first_order,
+				'context'             => 'cart',
+			)
+		);
+	}
+
+	/**
+	 * Renders the notice markup for a points figure.
+	 *
+	 * Kept separate from the calculation so other surfaces can reuse the exact
+	 * notice styling without duplicating the wording.
+	 *
+	 * @since 1.1.0
+	 * @param int $points The points to announce.
+	 * @return void
+	 */
+	public function render( $points ) {
+		$points = (int) $points;
+
+		if ( $points <= 0 ) {
 			return;
 		}
 
 		$message = sprintf(
 			// translators: %d: number of points the customer will earn on this order.
 			__( 'Complete this order to earn <strong>%d</strong> points!', 'pointbay-loyalty-points-referral-rewards-woo' ),
-			$points_to_award
+			$points
 		);
-
-		pointbay_log( 'PointBay EarnNotice: Printing notice HTML. Points: ' . $points_to_award );
 
 		echo '<div class="pointbay-earn-notice woocommerce-info" style="margin-bottom: 2em;">';
 		echo wp_kses_post( $message );
 		echo '</div>';
+	}
+
+	/**
+	 * Output the earn-points notice on the cart and checkout pages.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function display_notice() {
+		$points = $this->get_notice_points();
+
+		if ( $points <= 0 ) {
+			return;
+		}
+
+		pointbay_log( 'PointBay EarnNotice: Printing notice HTML. Points: ' . $points );
+
+		$this->render( $points );
 	}
 }

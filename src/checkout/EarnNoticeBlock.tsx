@@ -13,14 +13,25 @@ const EarnNoticeBlock = () => {
         return store ? store.getCartData() : null;
     }, []);
 
-    if (!cart || !cart.totals) return null;
+    if (!cart) return null;
 
-    // Cart totals are typically in minor units (e.g., cents).
-    const subtotalMinor = parseInt(cart.totals.total_items, 10) || 0; 
-    const minorUnit = cart.totals.currency_minor_unit !== undefined ? cart.totals.currency_minor_unit : 2;
-    const divisor = Math.pow(10, minorUnit);
-    
-    const cartSubtotal = subtotalMinor / divisor;
+    // The figure is computed on the server by EarningCalculator — the same
+    // class that writes the award — and published on the cart through the Store
+    // API, so WooCommerce refreshes it on every cart mutation.
+    //
+    // This block deliberately does no arithmetic of its own. It used to
+    // multiply a rate by a tier multiplier here, which silently stopped being
+    // the whole story once earning could also come from a band table, a flat
+    // per-order bonus or a first-order bonus. Rendering nothing when the
+    // extension data is absent is the right failure: a missing notice is
+    // recoverable, a confidently wrong number is not.
+    const pointbay = cart.extensions && cart.extensions.pointbay;
+
+    if (!pointbay) return null;
+
+    const points_to_award = parseInt(pointbay.earn_points, 10) || 0;
+
+    if (points_to_award <= 0) return null;
 
     const data = {
         ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'pointbay_checkout_data' ) : null) || {}),
@@ -28,26 +39,6 @@ const EarnNoticeBlock = () => {
         ...(window.pointbay_checkout_data || {}),
         ...(window.pointbay_cart_data || {})
     };
-
-    // Mirrors the server-side calculation in app/Checkout/EarnNotice.php and
-    // app/Hooks/OrderHooks.php, using the admin-configured rate and the
-    // customer's tier multiplier instead of a hardcoded ratio, so the estimate
-    // shown here matches what will actually be awarded.
-    const points_per_dollar = parseInt(data.points_per_dollar, 10) || 1;
-    const earning_multiplier = parseFloat(data.earning_multiplier) || 1;
-
-    const appliedPoints = parseInt(data.applied_points, 10) || 0;
-    const pointsValue = parseFloat(data.points_value) || 0;
-    let finalSubtotal = cartSubtotal;
-
-    if (appliedPoints > 0) {
-        finalSubtotal -= (appliedPoints * pointsValue);
-        if (finalSubtotal < 0) finalSubtotal = 0;
-    }
-
-    const points_to_award = Math.floor(finalSubtotal * points_per_dollar * earning_multiplier);
-
-    if (points_to_award <= 0) return null;
 
     const isLoggedIn = data.is_logged_in;
 
