@@ -57,45 +57,6 @@ setting unset, the screen reads literally:
 applied to this read path, so a site that never opened the settings screen shows
 the broken sentence. Defaulting at the point of display would be enough.
 
-### `pointbay_cron_log` mixes the MySQL clock with the WordPress clock
-
-`started_at` is never written by PHP. `CronJobRunner::run()`'s insert
-(`app/Core/CronJobRunner.php:64-70`) supplies only `job_name`, `status` and
-`payload`, so the column falls back to its schema default —
-`DEFAULT CURRENT_TIMESTAMP` (`app/Database/Migrations/CreateCronLogTable.php`),
-evaluated by **MySQL** in the database session's timezone.
-
-`completed_at` is written by PHP with `current_time( 'mysql' )` at :84 and :100 —
-the **WordPress** timezone.
-
-Those are two different clocks. Whenever they disagree, every row is wrong.
-Observed on a Local by Flywheel stack where MySQL's session `time_zone` is
-`SYSTEM` (UTC+6) and WordPress is UTC:
-
-```
-job_name            started_at            completed_at
-recalculate_tiers   2026-08-22 19:10:43   2026-08-22 13:10:43
-```
-
-The job completed six hours before it started. The same skew makes rows appear
-future-dated relative to `UTC_TIMESTAMP()`, so any "recent runs" query or ordering
-by `started_at` is unreliable, and a computed duration is negative.
-
-This is not exotic: a MySQL server left on `SYSTEM` time while WordPress runs UTC
-is the common shipping configuration on shared hosting, so most installs will be
-skewed by their local UTC offset.
-
-Fix, if touched: write `started_at` explicitly from PHP alongside the other
-insert columns, using the same call the completion path uses, rather than relying
-on the column default. Both timestamps then come from one clock. (Whether that
-clock should be `current_time('mysql')` or `current_time('mysql', true)`/`gmdate()`
-is a separate question — but they must at least match each other.)
-
-Note for demo seeding: bay-demo-kit's `PointBaySeeder::seed_cron_log()` writes
-`started_at` explicitly, so its own rows are self-consistent. Only rows created by
-the plugin at runtime show the skew — which is how this was found, sitting next to
-the seeded ones.
-
 ### `recalculate_tiers` cron flattens a configured tier ladder within a day
 
 Observed on a demo site, 2026-08-23. A seeded ladder with thresholds derived from
