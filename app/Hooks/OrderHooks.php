@@ -79,6 +79,23 @@ class OrderHooks {
 	const REF_REDEMPTION_CANCEL = 'redemption_cancel';
 
 	/**
+	 * Ledger reference type for the debit that takes returned points back when a
+	 * cancelled order is reopened. Keyed like the cancellation it undoes.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_REDEMPTION_REOPEN = 'redemption_reopen';
+
+	/**
+	 * Order meta counting how many times a cancelled order has been reopened.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const META_REOPEN_CYCLE = '_pointbay_redemption_reopen_cycle';
+
+	/**
 	 * Order meta key holding the award breakdown as JSON.
 	 *
 	 * @since 1.1.0
@@ -130,6 +147,7 @@ class OrderHooks {
 		$loader->add_action( 'woocommerce_order_status_changed', $this, 'maybe_reverse_order_points', 20, 4 );
 		$loader->add_action( 'woocommerce_order_refunded', $this, 'process_order_refunded', 20, 2 );
 		$loader->add_action( 'woocommerce_order_status_changed', $this, 'return_redeemed_points_on_cancel', 25, 4 );
+		$loader->add_action( 'woocommerce_order_status_changed', $this, 'retake_redeemed_points_on_reopen', 24, 4 );
 		$loader->add_action( 'woocommerce_order_refunded', $this, 'return_redeemed_points_on_refund', 25, 2 );
 		$loader->add_filter( 'woocommerce_get_order_item_totals', $this, 'add_points_to_order_totals', 10, 3 );
 	}
@@ -397,7 +415,25 @@ class OrderHooks {
 	}
 
 	/**
+	 * Ledger reference ID for the cancellation in a given reopen cycle.
+	 *
+	 * The ledger allows one row per (user, type, reference), so an order that is
+	 * cancelled, reopened and cancelled again needs a fresh reference each time.
+	 * The first cycle uses the plain order ID.
+	 *
+	 * @since 1.1.0
+	 * @param int $order_id The order.
+	 * @param int $cycle    Reopen cycle, 0 for the first cancellation.
+	 * @return int Reference ID.
+	 */
+	private function cancel_ref_id( $order_id, $cycle ) {
+		return (int) $order_id + ( (int) $cycle * 10000000000 );
+	}
+
+	/**
 	 * Points already handed back for an order, by refunds and by cancellation.
+	 *
+	 * Cancellations that were undone by reopening the order count for nothing.
 	 *
 	 * @since 1.1.0
 	 * @param int       $user_id The customer.
@@ -411,17 +447,78 @@ class OrderHooks {
 			$refund_ids[] = $refund->get_id();
 		}
 
+		$cycles     = (int) $order->get_meta( self::META_REOPEN_CYCLE );
+		$cancel_ids = array();
+		for ( $i = 0; $i <= $cycles; $i++ ) {
+			$cancel_ids[] = $this->cancel_ref_id( $order->get_id(), $i );
+		}
+
 		return (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_REFUND, $refund_ids, 'credit' )
-			+ (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_CANCEL, array( $order->get_id() ), 'credit' );
+			+ (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_CANCEL, $cancel_ids, 'credit' )
+			- (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_REOPEN, $cancel_ids, 'debit' );
 	}
 
 	/**
-	 * Hands redeemed points back when an order is cancelled or fails.
+	 * Takes returned points back when a cancelled order becomes payable again.
 	 *
-	 * Covers an order cancelled before it was ever completed (points redeemed,
-	 * nothing earned) as well as one cancelled afterwards. Returns only what has
-	 * not already come back through refunds, so cancel-after-refund and
-	 * refund-after-cancel never credit twice.
+	 * A cancelled order can be moved back to pending, on-hold, processing or
+	 * completed, and then still gets paid at the points-discounted price. The
+	 * points handed back on cancellation are debited again (allowed to take the
+	 * balance negative, as the customer may have spent them meanwhile) so the
+	 * order costs the points exactly once.
+	 *
+	 * @since 1.1.0
+	 * @param int       $order_id   The order ID.
+	 * @param string    $old_status The previous status.
+	 * @param string    $new_status The new status.
+	 * @param \WC_Order $order      The order.
+	 * @return void
+	 */
+	public function retake_redeemed_points_on_reopen( $order_id, $old_status, $new_status, $order ) {
+		if ( ! $order || 'cancelled' !== $old_status || ! in_array( $new_status, array( 'pending', 'on-hold', 'processing', 'completed' ), true ) ) {
+			return;
+		}
+
+		$user_id = $order->get_customer_id();
+		if ( ! $user_id ) {
+			return;
+		}
+
+		$cycle  = (int) $order->get_meta( self::META_REOPEN_CYCLE );
+		$ref_id = $this->cancel_ref_id( $order_id, $cycle );
+		$entry  = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, self::REF_REDEMPTION_CANCEL, $ref_id, 'credit' );
+		if ( ! $entry || (int) $entry->amount <= 0 ) {
+			return;
+		}
+
+		$ledger = LedgerService::get_instance();
+		if ( ! $ledger->has_existing_transaction( $user_id, self::REF_REDEMPTION_REOPEN, $ref_id, 'debit' ) ) {
+			$result = $ledger->clawback(
+				$user_id,
+				(int) $entry->amount,
+				self::REF_REDEMPTION_REOPEN,
+				$ref_id,
+				// translators: %d: order ID.
+				sprintf( __( 'Redeemed points taken back: order #%d was reopened.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id ),
+				false,
+				'system'
+			);
+			if ( is_wp_error( $result ) ) {
+				return;
+			}
+		}
+
+		$order->update_meta_data( self::META_REOPEN_CYCLE, $cycle + 1 );
+		$order->save_meta_data();
+	}
+
+	/**
+	 * Hands redeemed points back when an order is cancelled.
+	 *
+	 * 'failed' is deliberately not handled: WooCommerce lets the customer retry
+	 * payment on a failed order, so the discount can still be paid for. Returns
+	 * only what has not already come back through refunds, so cancel-after-refund
+	 * and refund-after-cancel never credit twice.
 	 *
 	 * @since 1.1.0
 	 * @param int       $order_id   The order ID.
@@ -431,7 +528,7 @@ class OrderHooks {
 	 * @return void
 	 */
 	public function return_redeemed_points_on_cancel( $order_id, $old_status, $new_status, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Required by the WooCommerce action signature.
-		if ( ! $order || ! in_array( $new_status, array( 'cancelled', 'failed' ), true ) ) {
+		if ( ! $order || 'cancelled' !== $new_status ) {
 			return;
 		}
 
@@ -450,7 +547,7 @@ class OrderHooks {
 			$user_id,
 			$owed,
 			self::REF_REDEMPTION_CANCEL,
-			$order_id,
+			$this->cancel_ref_id( $order_id, (int) $order->get_meta( self::META_REOPEN_CYCLE ) ),
 			// translators: %d: order ID.
 			sprintf( __( 'Redeemed points returned: order #%d was cancelled.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id ),
 			'system'

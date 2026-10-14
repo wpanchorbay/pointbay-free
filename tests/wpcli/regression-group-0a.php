@@ -437,8 +437,49 @@ zz_check( '13d second half refund completes the return', $ledger->get_balance( $
 $o = wc_get_order( $o->get_id() );
 $o->update_status( 'cancelled' );
 zz_check( '13d cancel afterwards adds nothing', $ledger->get_balance( $uid ) === $b0 );
+// 13e: cancel then reopen: points are spent exactly once (net = start - 3000), repeated cycles stay correct.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'cancelled' );
+zz_check( '13e cancel returns points', $ledger->get_balance( $uid ) === $b0 );
+$o->update_status( 'processing' );
+zz_check( '13e reopen to processing takes the points back (net one redemption)', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'completed' );
+zz_check( '13e completing the reopened order does not debit again', $ledger->get_balance( $uid ) === $b0 - 3000 + 1500, 'now=' . $ledger->get_balance( $uid ) );
+// 13f: failed is retryable: no return; paying it afterwards leaves net = one redemption.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'failed' );
+zz_check( '13f failed order does not get points back', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'processing' );
+zz_check( '13f failed then paid: still exactly one redemption', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
+// 13g: cancel, reopen, cancel, reopen, cancel: ends returned once, mid-states correct.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'cancelled' );
+$o->update_status( 'on-hold' );
+$o->update_status( 'cancelled' );
+zz_check( '13g second cancel returns again', $ledger->get_balance( $uid ) === $b0, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'pending' );
+zz_check( '13g second reopen takes back again', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
+// 13h: reopen, then full refund returns once; then cancel adds nothing.
+$o = wc_get_order( $o->get_id() );
+$o->update_status( 'processing' );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => (float) $o->get_total() ) );
+zz_check( '13h reopen then full refund returns once', $ledger->get_balance( $uid ) === $b0, 'now=' . $ledger->get_balance( $uid ) );
+$o = wc_get_order( $o->get_id() );
+$o->update_status( 'cancelled' );
+zz_check( '13h then cancel adds nothing', $ledger->get_balance( $uid ) === $b0, 'now=' . $ledger->get_balance( $uid ) );
+// 13i: COD completed (earned 1500) -> cancel -> reopen -> complete: earned-points clawback state.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( true, 'completed' );
+$o->update_status( 'cancelled' );
+zz_check( '13i COD cancel nets to start', $ledger->get_balance( $uid ) === $b0, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'completed' );
+fwrite( STDOUT, 'INFO 13i after COD cancel+reopen+complete: net vs start = ' . ( $ledger->get_balance( $uid ) - $b0 ) . " (redeemed -3000, earned +1500 expected -1500)\n" );
 
 // 14. (B1) Removing the points coupon through WooCommerce clears the redemption; our swap does not.
+$ledger->credit( $uid, 20000, 'manual', 0, 'ZZ-QA top-up for check 14' );
 zz_settings( array( 'redemption_mode' => 'coupon' ) );
 zz_cart( $product );
 $mgr->apply_points_discount( $uid, 3000 );
