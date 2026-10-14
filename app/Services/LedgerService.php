@@ -233,6 +233,14 @@ class LedgerService {
 				$wpdb->query( 'ROLLBACK' );
 			}
 			return new \WP_Error( 'transaction_failed', $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			// An Error (type error, undefined function) is not an Exception; without
+			// this the BEGIN above would stay open on the shared connection.
+			if ( ! $in_transaction ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+				$wpdb->query( 'ROLLBACK' );
+			}
+			throw $e;
 		}
 	}
 
@@ -392,12 +400,12 @@ class LedgerService {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
 		$wpdb->query( 'BEGIN' );
 
-		LedgerCache::lock_for_update( $user_id );
-
 		$entries                = array();
 		$this->deferred_actions = array();
 
 		try {
+			LedgerCache::lock_for_update( $user_id );
+
 			foreach ( $credits as $credit ) {
 				$entry = $this->process_transaction(
 					$user_id,

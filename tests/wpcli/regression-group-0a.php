@@ -616,6 +616,26 @@ $o = wc_get_order( $o->get_id() );
 $o->update_status( 'processing' );
 zz_check( '18 refund while cancelled: reopen leaves the customer 900 (30% of 3000) returned', $ledger->get_balance( $uid ) == $b0 - 3000 + 900, 'now=' . $ledger->get_balance( $uid ) . ' expected=' . ( $b0 - 2100 ) );
 
+// 19. A thrown Error inside the ledger leaves no transaction open.
+global $wpdb;
+$open = function () use ( $wpdb ) { return (int) $wpdb->get_var( 'SELECT COUNT(*) FROM information_schema.innodb_trx WHERE trx_mysql_thread_id = CONNECTION_ID()' ); };
+$thrower = function ( $q ) { if ( false !== stripos( $q, 'FOR UPDATE' ) ) { throw new \Error( 'ZZ-QA forced error' ); } return $q; };
+foreach ( array( 'batch', 'single' ) as $kind ) {
+	add_filter( 'query', $thrower );
+	try {
+		if ( 'batch' === $kind ) {
+			$ledger->credit_batch( $uid, array( array( 'amount' => 5, 'ref_type' => 'admin', 'ref_id' => 990001, 'description' => 'ZZ-QA t' ) ) );
+		} else {
+			$ledger->credit( $uid, 5, 'admin', 990002, 'ZZ-QA t' );
+		}
+	} catch ( \Throwable $e ) {
+		// expected
+	}
+	remove_filter( 'query', $thrower );
+	zz_check( '19 ' . $kind . ' path: no transaction left open after a thrown Error', 0 === $open(), 'open=' . $open() );
+	$wpdb->query( 'ROLLBACK' );
+}
+
 // 14. (B1) Removing the points coupon through WooCommerce clears the redemption; our swap does not.
 $ledger->credit( $uid, 20000, 'manual', 0, 'ZZ-QA top-up for check 14' );
 zz_settings( array( 'redemption_mode' => 'coupon' ) );
