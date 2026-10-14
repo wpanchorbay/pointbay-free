@@ -389,6 +389,55 @@ zz_check( '11 C: legacy award fully refunded claws back all 550 in subtotal mode
 // 12. (D)/(E) Failure paths clean up after themselves.
 CouponRedemptionProbe::run( $mgr, $ledger, $uid );
 
+// 13. (B3) Redeemed points come back on full refund / cancel, exactly once.
+zz_settings( array( 'earning_basis' => 'subtotal', 'redemption_mode' => 'coupon', 'earning_flatPointsPerOrder' => 0, 'earning_firstOrderBonus' => 0 ) );
+$mk = function ( $cod = false, $status = 'processing' ) use ( $uid, $product, $ledger, &$orders ) {
+	$o = wc_create_order( array( 'customer_id' => $uid ) );
+	$o->add_product( $product, 3 );
+	if ( $cod ) {
+		$o->set_payment_method( 'cod' );
+	}
+	$o->calculate_totals( false );
+	$o->save();
+	$orders[] = $o->get_id();
+	$ledger->debit( $uid, 3000, 'order', $o->get_id(), 'ZZ-QA redeemed', false, 'system' );
+	if ( 'completed' === $status ) {
+		$o->update_status( 'completed' );
+	}
+	return $o;
+};
+// 13a: redeem 3000, earn 1500, full refund then cancel: net equals start.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'completed' );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => (float) $o->get_total() ) );
+$o = wc_get_order( $o->get_id() );
+$o->update_status( 'cancelled' );
+zz_check( '13a full refund then cancel: net balance equals start, no double credit', $ledger->get_balance( $uid ) === $b0, 'start=' . $b0 . ' now=' . $ledger->get_balance( $uid ) );
+// 13b: cancel (COD) then refund.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( true, 'completed' );
+$o->update_status( 'cancelled' );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => (float) $o->get_total() ) );
+zz_check( '13b COD cancel then refund: net balance equals start', $ledger->get_balance( $uid ) === $b0, 'start=' . $b0 . ' now=' . $ledger->get_balance( $uid ) );
+// 13c: cancelled before completion.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'cancelled' );
+zz_check( '13c cancel before completion returns the redeemed points', $ledger->get_balance( $uid ) === $b0, 'start=' . $b0 . ' now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'processing' );
+$o->update_status( 'cancelled' );
+zz_check( '13c re-cancel does not credit twice', $ledger->get_balance( $uid ) === $b0 );
+// 13d: partial refund returns proportionally; the rest comes back on cancel; no more.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => 150 ) );
+zz_check( '13d half refund returns half the redeemed points (1500 of 3000)', $ledger->get_balance( $uid ) === $b0 - 3000 + 1500, 'now=' . $ledger->get_balance( $uid ) );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => 150 ) );
+zz_check( '13d second half refund completes the return', $ledger->get_balance( $uid ) === $b0 );
+$o = wc_get_order( $o->get_id() );
+$o->update_status( 'cancelled' );
+zz_check( '13d cancel afterwards adds nothing', $ledger->get_balance( $uid ) === $b0 );
+
 // Cleanup.
 global $wpdb;
 foreach ( $orders as $oid ) {

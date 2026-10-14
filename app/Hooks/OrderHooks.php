@@ -59,6 +59,26 @@ class OrderHooks {
 	const REF_REFUND = 'refund';
 
 	/**
+	 * Ledger reference type for redeemed points handed back on a refund.
+	 *
+	 * Keyed by refund ID, so each refund is returned at most once.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_REDEMPTION_REFUND = 'redemption_refund';
+
+	/**
+	 * Ledger reference type for redeemed points handed back on cancellation.
+	 *
+	 * Keyed by order ID, so a cancellation is returned at most once.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_REDEMPTION_CANCEL = 'redemption_cancel';
+
+	/**
 	 * Order meta key holding the award breakdown as JSON.
 	 *
 	 * @since 1.1.0
@@ -109,6 +129,8 @@ class OrderHooks {
 		$loader->add_action( 'woocommerce_order_status_changed', $this, 'process_order_status_changed', 20, 4 );
 		$loader->add_action( 'woocommerce_order_status_changed', $this, 'maybe_reverse_order_points', 20, 4 );
 		$loader->add_action( 'woocommerce_order_refunded', $this, 'process_order_refunded', 20, 2 );
+		$loader->add_action( 'woocommerce_order_status_changed', $this, 'return_redeemed_points_on_cancel', 25, 4 );
+		$loader->add_action( 'woocommerce_order_refunded', $this, 'return_redeemed_points_on_refund', 25, 2 );
 		$loader->add_filter( 'woocommerce_get_order_item_totals', $this, 'add_points_to_order_totals', 10, 3 );
 	}
 
@@ -359,6 +381,142 @@ class OrderHooks {
 		);
 
 		do_action( 'pointbay_order_points_reversed', $user_id, $order_id );
+	}
+
+	/**
+	 * Points the customer spent redeeming on an order.
+	 *
+	 * @since 1.1.0
+	 * @param int $user_id  The customer.
+	 * @param int $order_id The order.
+	 * @return int Points redeemed; 0 when none.
+	 */
+	private function get_redeemed_points( $user_id, $order_id ) {
+		$debit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, self::REF_ORDER, $order_id, 'debit' );
+		return $debit ? max( 0, (int) $debit->amount ) : 0;
+	}
+
+	/**
+	 * Points already handed back for an order, by refunds and by cancellation.
+	 *
+	 * @since 1.1.0
+	 * @param int       $user_id The customer.
+	 * @param \WC_Order $order   The order.
+	 * @return int Points returned so far.
+	 */
+	private function get_returned_points( $user_id, $order ) {
+		$ledger     = LedgerService::get_instance();
+		$refund_ids = array();
+		foreach ( $order->get_refunds() as $refund ) {
+			$refund_ids[] = $refund->get_id();
+		}
+
+		return (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_REFUND, $refund_ids, 'credit' )
+			+ (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_CANCEL, array( $order->get_id() ), 'credit' );
+	}
+
+	/**
+	 * Hands redeemed points back when an order is cancelled or fails.
+	 *
+	 * Covers an order cancelled before it was ever completed (points redeemed,
+	 * nothing earned) as well as one cancelled afterwards. Returns only what has
+	 * not already come back through refunds, so cancel-after-refund and
+	 * refund-after-cancel never credit twice.
+	 *
+	 * @since 1.1.0
+	 * @param int       $order_id   The order ID.
+	 * @param string    $old_status The previous status.
+	 * @param string    $new_status The new status.
+	 * @param \WC_Order $order      The order.
+	 * @return void
+	 */
+	public function return_redeemed_points_on_cancel( $order_id, $old_status, $new_status, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Required by the WooCommerce action signature.
+		if ( ! $order || ! in_array( $new_status, array( 'cancelled', 'failed' ), true ) ) {
+			return;
+		}
+
+		$user_id = $order->get_customer_id();
+		if ( ! $user_id ) {
+			return;
+		}
+
+		$redeemed = $this->get_redeemed_points( $user_id, $order_id );
+		$owed     = $redeemed - $this->get_returned_points( $user_id, $order );
+		if ( $owed <= 0 ) {
+			return;
+		}
+
+		LedgerService::get_instance()->credit(
+			$user_id,
+			$owed,
+			self::REF_REDEMPTION_CANCEL,
+			$order_id,
+			// translators: %d: order ID.
+			sprintf( __( 'Redeemed points returned: order #%d was cancelled.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id ),
+			'system'
+		);
+	}
+
+	/**
+	 * Hands redeemed points back in proportion to a refund.
+	 *
+	 * The target is the redeemed total scaled by the refunded share of the order
+	 * total, with prior returns subtracted, so repeated partial refunds sum to the
+	 * redeemed points exactly once and a full refund returns all of them. Nothing
+	 * is returned if the order was already cancelled and returned in full.
+	 *
+	 * @since 1.1.0
+	 * @param int $order_id  The order ID.
+	 * @param int $refund_id The refund ID.
+	 * @return void
+	 */
+	public function return_redeemed_points_on_refund( $order_id, $refund_id ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return;
+		}
+
+		$user_id = $order->get_customer_id();
+		if ( ! $user_id ) {
+			return;
+		}
+
+		$redeemed = $this->get_redeemed_points( $user_id, $order_id );
+		if ( $redeemed <= 0 ) {
+			return;
+		}
+
+		$decimals       = wc_get_price_decimals();
+		$total          = round( (float) $order->get_total(), $decimals );
+		$refunded_total = 0.0;
+		foreach ( $order->get_refunds() as $refund ) {
+			$refunded_total += abs( (float) $refund->get_amount() );
+		}
+		$refunded_total = round( $refunded_total, $decimals );
+
+		// An order paid entirely with points has nothing to prorate against; a
+		// refund of it is full by definition once the status says so.
+		if ( $total > 0 ) {
+			$ratio = min( 1.0, $refunded_total / $total );
+		} else {
+			$ratio = ( 'refunded' === $order->get_status() ) ? 1.0 : 0.0;
+		}
+
+		$target = (int) round( $redeemed * $ratio );
+		$delta  = min( $target, $redeemed ) - $this->get_returned_points( $user_id, $order );
+		if ( $delta <= 0 ) {
+			return;
+		}
+
+		LedgerService::get_instance()->credit(
+			$user_id,
+			$delta,
+			self::REF_REDEMPTION_REFUND,
+			$refund_id,
+			// translators: %d: refund ID.
+			sprintf( __( 'Redeemed points returned for refund #%d.', 'pointbay-loyalty-points-referral-rewards-woo' ), $refund_id ),
+			'system'
+		);
 	}
 
 	/**

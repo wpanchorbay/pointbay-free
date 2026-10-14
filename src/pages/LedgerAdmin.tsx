@@ -38,6 +38,8 @@ const REFERENCE_TYPE_LABELS: Record< string, string > = applyFilters(
 		order: 'Order',
 		order_reversal: 'Order Reversal',
 		refund: 'Refund',
+		redemption_refund: 'Redeemed Points Returned (Refund)',
+		redemption_cancel: 'Redeemed Points Returned (Cancel)',
 		review: 'Review',
 		referral: 'Referral Bonus',
 		referral_reversal: 'Referral Reversal',
