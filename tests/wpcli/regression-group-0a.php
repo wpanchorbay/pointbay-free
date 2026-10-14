@@ -607,6 +607,15 @@ $r1->delete( true );
 wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => $thirty ) );
 zz_check( '17 deleting and re-recording the same refund does not return the points twice', $ledger->get_balance( $uid ) == $mid, 'now=' . $ledger->get_balance( $uid ) . ' expected=' . $mid );
 
+// 18. A refund recorded while the order is cancelled keeps its share of the returned points.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'cancelled' );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => round( (float) $o->get_total() * 0.3, 2 ) ) );
+$o = wc_get_order( $o->get_id() );
+$o->update_status( 'processing' );
+zz_check( '18 refund while cancelled: reopen leaves the customer 900 (30% of 3000) returned', $ledger->get_balance( $uid ) == $b0 - 3000 + 900, 'now=' . $ledger->get_balance( $uid ) . ' expected=' . ( $b0 - 2100 ) );
+
 // 14. (B1) Removing the points coupon through WooCommerce clears the redemption; our swap does not.
 $ledger->credit( $uid, 20000, 'manual', 0, 'ZZ-QA top-up for check 14' );
 zz_settings( array( 'redemption_mode' => 'coupon' ) );

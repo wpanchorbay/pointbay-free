@@ -643,11 +643,27 @@ class OrderHooks {
 			return;
 		}
 
+		// A refund recorded while the order was cancelled returned nothing (the
+		// cancellation had already handed everything back). Its share is kept by
+		// the customer, so only the rest of the cancel return is taken back.
+		$retake = (int) $entry->amount;
+		$redeemed = $this->get_redeemed_points( $user_id, $order_id );
+		if ( $redeemed > 0 ) {
+			$earlier_ids = array();
+			for ( $i = 0; $i < $cycle; $i++ ) {
+				$earlier_ids[] = $this->cancel_ref_id( $order_id, $i );
+			}
+			$earlier_net = (int) LedgerService::get_instance()->sum_by_reference( $user_id, self::REF_REDEMPTION_CANCEL, $earlier_ids, 'credit' )
+				- (int) LedgerService::get_instance()->sum_by_reference( $user_id, self::REF_REDEMPTION_REOPEN, $earlier_ids, 'debit' );
+			$missed      = max( 0, $this->get_refund_return_target( $user_id, $order, $redeemed ) - $this->get_refund_returned_points( $user_id, $order ) - $earlier_net );
+			$retake      = max( 0, $retake - $missed );
+		}
+
 		$ledger = LedgerService::get_instance();
-		if ( ! $ledger->has_existing_transaction( $user_id, self::REF_REDEMPTION_REOPEN, $ref_id, 'debit' ) ) {
+		if ( $retake > 0 && ! $ledger->has_existing_transaction( $user_id, self::REF_REDEMPTION_REOPEN, $ref_id, 'debit' ) ) {
 			$result = $ledger->clawback(
 				$user_id,
-				(int) $entry->amount,
+				$retake,
 				self::REF_REDEMPTION_REOPEN,
 				$ref_id,
 				// translators: %d: order ID.
