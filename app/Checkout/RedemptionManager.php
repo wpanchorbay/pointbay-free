@@ -262,7 +262,18 @@ class RedemptionManager {
 			}
 		}
 
-		return max( 0.0, $subtotal - (float) $cart->get_discount_total() + $this->get_points_coupon_discount_in_cart() );
+		// Sum the OTHER coupons' recorded discounts rather than reading
+		// get_discount_total() and adding the points coupon back: mid-calculation
+		// the two figures can be out of step, and this way the points coupon never
+		// enters the sum at all.
+		$other = 0.0;
+		foreach ( (array) $cart->get_coupon_discount_totals() as $code => $discount ) {
+			if ( 0 !== strpos( strtolower( (string) $code ), CouponRedemption::COUPON_CODE_PREFIX ) ) {
+				$other += (float) $discount;
+			}
+		}
+
+		return max( 0.0, $subtotal - $other );
 	}
 
 	/**
