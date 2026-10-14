@@ -7,9 +7,6 @@
 
 namespace PointBay\Dashboard;
 
-use PointBay\Core\Settings;
-use PointBay\Services\LedgerService;
-
 /**
  * Registers and renders the "My Rewards" WooCommerce account endpoint.
  *
@@ -104,80 +101,9 @@ class MyRewardsEndpoint {
 	 * @return void
 	 */
 	public function endpoint_content() {
-		$user_id = get_current_user_id();
-		$ledger  = LedgerService::get_instance();
-		$balance = $ledger->get_balance( $user_id );
-
-		$settings = Settings::get_instance();
-
-		echo '<div class="pointbay-dashboard">';
-		echo '<h2>' . esc_html__( 'My Loyalty Rewards', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h2>';
-		echo '<div style="background:#f7f7f7; padding:20px; border-radius:8px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">';
-		echo '<div>';
-		echo '<h3 style="margin-top:0;">' . esc_html__( 'Current Balance', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h3>';
-		echo '<p style="font-size:32px; font-weight:bold; margin:0; color:#5c35b6;"><span class="pointbay-balance-value">' . esc_html( $balance ) . '</span> <span style="font-size:16px; font-weight:normal;">' . esc_html__( 'Points', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</span></p>';
-		echo '</div>';
-
-		/**
-		 * Fires inside the balance card, for a tier-progress badge or summary.
-		 *
-		 * An action rather than an HTML filter: each callback echoes and escapes
-		 * its own markup, so nothing here has to trust — or sanitise — a string
-		 * built somewhere else. Callbacks print in priority order.
-		 *
-		 * @since 1.0.0
-		 * @hook pointbay_tier_progress
-		 * @param int $user_id The current user's ID.
-		 */
-		do_action( 'pointbay_tier_progress', $user_id );
-
-		echo '</div>';
-
-		/**
-		 * Fires directly beneath the balance card, before the history table.
-		 *
-		 * Used by this plugin to render the referral block, and available to
-		 * others on the same terms: echo your own escaped markup.
-		 *
-		 * @since 1.0.0
-		 * @hook pointbay_my_rewards_after_balance
-		 * @param int $user_id The current user's ID.
-		 */
-		do_action( 'pointbay_my_rewards_after_balance', $user_id );
-
-		echo '<h3>' . esc_html__( 'Recent History', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</h3>';
-
-		global $wpdb;
-		$table = $wpdb->prefix . 'pointbay_ledger';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the customer's history must reflect the latest ledger write.
-		$history = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC LIMIT 10',
-				$table,
-				$user_id
-			)
-		);
-
-		if ( ! empty( $history ) ) {
-			echo '<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">';
-			echo '<thead><tr><th>' . esc_html__( 'Date', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</th><th>' . esc_html__( 'Description', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</th><th>' . esc_html__( 'Points', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</th></tr></thead><tbody>';
-
-			foreach ( $history as $row ) {
-				$sign  = $row->transaction_type === 'credit' ? '+' : '-';
-				$color = $row->transaction_type === 'credit' ? 'green' : 'red';
-
-				echo '<tr>';
-				echo '<td><time datetime="' . esc_attr( $row->created_at ) . '">' . esc_html( wp_date( get_option( 'date_format' ), strtotime( $row->created_at ) ) ) . '</time></td>';
-				echo '<td>' . esc_html( $row->description ) . '</td>';
-				echo '<td style="color:' . esc_attr( $color ) . '; font-weight:bold;">' . esc_html( $sign . $row->amount ) . '</td>';
-				echo '</tr>';
-			}
-
-			echo '</tbody></table>';
-		} else {
-			echo '<p>' . esc_html__( 'No activity yet.', 'pointbay-loyalty-points-referral-rewards-woo' ) . '</p>';
-		}
-
-		echo '</div>';
+		// The markup lives in RewardsRenderer so the shortcodes and widgets can
+		// render the identical dashboard rather than keeping a second copy of it.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- RewardsRenderer escapes every value it interpolates and returns ready-to-print markup.
+		echo RewardsRenderer::dashboard( get_current_user_id() );
 	}
 }
