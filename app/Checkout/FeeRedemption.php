@@ -47,6 +47,34 @@ class FeeRedemption {
 	public function run( $plugin ) {
 		$loader = $plugin->get_loader();
 		$loader->add_action( 'woocommerce_cart_calculate_fees', $this, 'apply_fee' );
+		$loader->add_action( 'woocommerce_checkout_create_order_fee_item', $this, 'mark_points_fee_item', 10, 3 );
+	}
+
+	/**
+	 * Meta key flagging an order fee item as the points discount.
+	 *
+	 * The fee name is translated into the shopper's locale when the order is
+	 * created, so it cannot be matched later from another locale (an admin
+	 * completing the order, WPML, Polylang). The flag can.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const FEE_META_KEY = '_pointbay_points_fee';
+
+	/**
+	 * Flags the points fee when the order's fee lines are created.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order_Item_Fee $item     The order fee item.
+	 * @param string             $fee_key  The cart fee key.
+	 * @param object             $fee      The cart fee.
+	 * @return void
+	 */
+	public function mark_points_fee_item( $item, $fee_key, $fee ) {
+		if ( is_object( $fee ) && isset( $fee->name ) && self::fee_name() === $fee->name ) {
+			$item->add_meta_data( self::FEE_META_KEY, '1', true );
+		}
 	}
 
 	/**

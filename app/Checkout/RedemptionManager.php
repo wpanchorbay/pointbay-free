@@ -320,7 +320,10 @@ class RedemptionManager {
 	public function get_points_fee_on_order( $order ) {
 		$sum = 0.0;
 		foreach ( $order->get_items( 'fee' ) as $item ) {
-			if ( FeeRedemption::fee_name() === $item->get_name() && (float) $item->get_total() < 0 ) {
+			// The meta flag survives a locale change; the name comparison is the
+			// fallback for orders created before the flag existed.
+			$is_points_fee = '1' === (string) $item->get_meta( FeeRedemption::FEE_META_KEY ) || FeeRedemption::fee_name() === $item->get_name();
+			if ( $is_points_fee && (float) $item->get_total() < 0 ) {
 				$sum += abs( (float) $item->get_total() );
 			}
 		}
