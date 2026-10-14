@@ -278,6 +278,16 @@ foreach ( array( 'coupon', 'fee' ) as $mode ) {
 	$bad = array_filter( $seen_amounts, function ( $a ) { return null === $a || abs( $a - 80 ) > 0.01; } );
 	zz_check( "8 G ($mode): every discount-value call carries amount=80 (100 less the \$20 coupon)", $seen_amounts && ! $bad, wp_json_encode( $seen_amounts ) );
 }
+// Basis measured with no totals computed yet (mid-rebuild situation).
+zz_settings( array( 'redemption_mode' => 'coupon' ) );
+WC()->cart->empty_cart();
+WC()->session->set( 'pointbay_points_redemption', null );
+WC()->cart->add_to_cart( $product->get_id(), 1 );
+WC()->cart->apply_coupon( 'zzqafixed20' );
+WC()->cart->set_total( 0 );
+WC()->cart->set_subtotal( 0 );
+WC()->cart->set_discount_total( 0 );
+zz_check( '8 G: basis with zeroed stored totals is still 80', abs( $mgr->get_cart_basis_before_points() - 80 ) < 0.01, 'basis=' . $mgr->get_cart_basis_before_points() );
 WC()->cart->empty_cart();
 WC()->session->set( 'pointbay_points_redemption', null );
 $fixed20->delete( true );
@@ -289,7 +299,7 @@ $fee_order->add_product( $product, 1 );
 $fee = new WC_Order_Item_Fee();
 $fee->set_name( 'Rabatt auf Punkte' );
 $fee->set_total( -30 );
-$fee->add_meta_data( PointBay\Checkout\FeeRedemption::FEE_META_KEY, '1', true );
+$fee->add_meta_data( '_pointbay_points_fee', '1', true );
 $fee_order->add_item( $fee );
 $fee_order->calculate_totals( false );
 $fee_order->save();
@@ -308,10 +318,10 @@ $orders[] = $legacy_order->get_id();
 zz_check( '9 A: unflagged older order still found by name', abs( $mgr->get_points_fee_on_order( $legacy_order ) - 30 ) < 0.01 );
 $probe = new WC_Order_Item_Fee();
 PointBay\Checkout\FeeRedemption::get_instance()->mark_points_fee_item( $probe, 'k', (object) array( 'name' => PointBay\Checkout\FeeRedemption::fee_name() ) );
-zz_check( '9 A: order creation flags the points fee item', '1' === (string) $probe->get_meta( PointBay\Checkout\FeeRedemption::FEE_META_KEY ) );
+zz_check( '9 A: order creation flags the points fee item', '1' === (string) $probe->get_meta( '_pointbay_points_fee' ) );
 $probe2 = new WC_Order_Item_Fee();
 PointBay\Checkout\FeeRedemption::get_instance()->mark_points_fee_item( $probe2, 'k', (object) array( 'name' => 'Handling' ) );
-zz_check( '9 A: other fees are not flagged', '' === (string) $probe2->get_meta( PointBay\Checkout\FeeRedemption::FEE_META_KEY ) );
+zz_check( '9 A: other fees are not flagged', '' === (string) $probe2->get_meta( '_pointbay_points_fee' ) );
 
 // 10. (B) Full refund with shipping and tax claws back the flat bonus despite float error.
 zz_settings( array( 'earning_basis' => 'subtotal', 'redemption_mode' => 'coupon', 'earning_flatPointsPerOrder' => 50 ) );

@@ -248,32 +248,36 @@ class RedemptionManager {
 			return 0.0;
 		}
 
-		$cart     = WC()->cart;
-		$subtotal = (float) $cart->get_subtotal();
+		$cart  = WC()->cart;
+		$goods = 0.0;
 
-		// On woocommerce_before_calculate_totals (where the points coupon is
-		// attached) the subtotal has not been computed for this pass; derive it
-		// from the line items so the basis is never a spurious zero.
-		if ( $subtotal <= 0 && ! $cart->is_empty() ) {
-			foreach ( $cart->get_cart() as $line ) {
-				if ( ! empty( $line['data'] ) && $line['data'] instanceof \WC_Product ) {
-					$subtotal += (float) wc_get_price_excluding_tax( $line['data'], array( 'qty' => (int) $line['quantity'] ) );
-				}
+		// From the line items, not the stored totals: this runs while the totals
+		// are being rebuilt (the points coupon is built then), when the stored
+		// subtotal and discount totals are zero or stale.
+		foreach ( $cart->get_cart() as $line ) {
+			if ( ! empty( $line['data'] ) && $line['data'] instanceof \WC_Product ) {
+				$goods += (float) wc_get_price_excluding_tax( $line['data'], array( 'qty' => (float) $line['quantity'] ) );
 			}
 		}
 
-		// Sum the OTHER coupons' recorded discounts rather than reading
-		// get_discount_total() and adding the points coupon back: mid-calculation
-		// the two figures can be out of step, and this way the points coupon never
-		// enters the sum at all.
+		// The other coupons' discount is measured with WC_Discounts for the same
+		// reason. The points coupon is skipped (its amount is derived from this
+		// very basis) and coupons are applied unvalidated: this only measures what
+		// they would take off.
+		$discounts = new \WC_Discounts( $cart );
+		foreach ( (array) $cart->get_applied_coupons() as $code ) {
+			if ( 0 === strpos( strtolower( (string) $code ), CouponRedemption::COUPON_CODE_PREFIX ) ) {
+				continue;
+			}
+			$discounts->apply_coupon( new \WC_Coupon( $code ), false );
+		}
+
 		$other = 0.0;
-		foreach ( (array) $cart->get_coupon_discount_totals() as $code => $discount ) {
-			if ( 0 !== strpos( strtolower( (string) $code ), CouponRedemption::COUPON_CODE_PREFIX ) ) {
-				$other += (float) $discount;
-			}
+		foreach ( $discounts->get_discounts() as $by_item ) {
+			$other += (float) array_sum( $by_item );
 		}
 
-		return max( 0.0, $subtotal - $other );
+		return max( 0.0, $goods - $other );
 	}
 
 	/**
