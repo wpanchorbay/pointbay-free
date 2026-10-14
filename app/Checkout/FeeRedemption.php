@@ -50,6 +50,16 @@ class FeeRedemption {
 	}
 
 	/**
+	 * The label of the negative fee, which is also how an order's points fee is recognised.
+	 *
+	 * @since 1.1.0
+	 * @return string The fee name.
+	 */
+	public static function fee_name() {
+		return __( 'PointBay Points Discount', 'pointbay-loyalty-points-referral-rewards-woo' );
+	}
+
+	/**
 	 * Apply the redeemed points as a negative fee on the cart.
 	 *
 	 * @since 1.0.0
@@ -93,7 +103,7 @@ class FeeRedemption {
 		$discount_value = $redemption_manager->calculate_discount_value( $points, get_current_user_id(), array( 'source' => 'cart' ) );
 
 		if ( $discount_value > 0 ) {
-			$cart->add_fee( __( 'PointBay Points Discount', 'pointbay-loyalty-points-referral-rewards-woo' ), -$discount_value, true );
+			$cart->add_fee( self::fee_name(), -$discount_value, true );
 		}
 	}
 }

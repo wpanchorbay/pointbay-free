@@ -93,7 +93,7 @@ class CouponFormVisibility {
 	 * @return bool The filtered value.
 	 */
 	public function maybe_disable_coupons( $enabled ) {
-		if ( ! $enabled ) {
+		if ( ! $enabled || CouponRedemption::$adding ) {
 			return $enabled;
 		}
 

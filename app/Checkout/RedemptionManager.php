@@ -68,6 +68,12 @@ class RedemptionManager {
 
 		$max_points = $this->get_max_redeemable_points( $user_id );
 
+		// The UI hides the slider when partial redemption is off, but a direct
+		// REST call must not be able to sidestep that: all or nothing.
+		if ( ! $settings->get_settings( 'redemption_allowPartial' ) && $points_to_redeem !== $max_points ) {
+			return new \WP_Error( 'partial_not_allowed', __( 'Partial redemption is turned off. You can only redeem the full available amount.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
+		}
+
 		if ( $points_to_redeem > $max_points ) {
 			return new \WP_Error( 'insufficient_points', __( 'You do not have enough points or the cart value is lower than the points value.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
 		}
@@ -187,7 +193,14 @@ class RedemptionManager {
 			// actually still payable when other coupons are stacked on the cart.
 			// (Our own points fee is applied later via woocommerce_cart_calculate_fees,
 			// so it's intentionally excluded here to avoid a circular dependency.)
-			$amount = (float) WC()->cart->get_subtotal() - (float) WC()->cart->get_discount_total();
+			//
+			// In coupon mode the points themselves are a coupon and are already
+			// inside get_discount_total(). Measuring the ceiling against a total that
+			// contains the discount being capped is circular (a $100 cart with $60 of
+			// points would be capped to $40 worth), so the points coupon is added back:
+			// the basis passed on, and to the filters, is the amount BEFORE the points
+			// discount.
+			$amount = (float) WC()->cart->get_subtotal() - (float) WC()->cart->get_discount_total() + $this->get_points_coupon_discount_in_cart();
 		}
 
 		if ( null !== $amount ) {
@@ -216,6 +229,69 @@ class RedemptionManager {
 		$max = (float) apply_filters( 'pointbay_max_redeemable', $max, (int) $user_id, $context );
 
 		return (int) max( 0, floor( $max ) );
+	}
+
+	/**
+	 * The discount currently carried by the virtual points coupon in the cart.
+	 *
+	 * @since 1.1.0
+	 * @return float The coupon discount, ex-tax; 0 when there is none.
+	 */
+	public function get_points_coupon_discount_in_cart() {
+		if ( ! isset( WC()->cart ) || ! WC()->cart ) {
+			return 0.0;
+		}
+
+		$sum = 0.0;
+		foreach ( (array) WC()->cart->get_coupon_discount_totals() as $code => $discount ) {
+			if ( 0 === strpos( strtolower( (string) $code ), CouponRedemption::COUPON_CODE_PREFIX ) ) {
+				$sum += (float) $discount;
+			}
+		}
+
+		return $sum;
+	}
+
+	/**
+	 * An order's money basis BEFORE the points discount, ex-tax.
+	 *
+	 * Subtotal minus every coupon except the virtual points coupon. A fee-mode
+	 * points discount is a fee, not a discount, so it is not in
+	 * get_total_discount() and needs no handling here.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order The order.
+	 * @return float The basis; never negative.
+	 */
+	public function get_order_basis_before_points( $order ) {
+		$basis = (float) $order->get_subtotal();
+
+		foreach ( $order->get_items( 'coupon' ) as $item ) {
+			if ( 0 === strpos( strtolower( (string) $item->get_code() ), CouponRedemption::COUPON_CODE_PREFIX ) ) {
+				continue;
+			}
+			$basis -= (float) $item->get_discount();
+		}
+
+		return max( 0.0, $basis );
+	}
+
+	/**
+	 * The points discount carried by an order as a negative fee (fee mode).
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order The order.
+	 * @return float The positive discount amount, ex-tax; 0 when there is none.
+	 */
+	public function get_points_fee_on_order( $order ) {
+		$sum = 0.0;
+		foreach ( $order->get_items( 'fee' ) as $item ) {
+			if ( FeeRedemption::fee_name() === $item->get_name() && (float) $item->get_total() < 0 ) {
+				$sum += abs( (float) $item->get_total() );
+			}
+		}
+
+		return $sum;
 	}
 
 	/**

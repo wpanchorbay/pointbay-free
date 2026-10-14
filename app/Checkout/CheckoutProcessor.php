@@ -152,7 +152,7 @@ class CheckoutProcessor {
 			// in the former, so calling the latter here would apply an add-on's
 			// redemption cap on screen and then quietly ignore it at the moment
 			// the points are actually taken.
-			$order_total_basis    = max( 0.0, (float) $order->get_subtotal() - (float) $order->get_total_discount() );
+			$order_total_basis    = $redemption_manager->get_order_basis_before_points( $order );
 			$max_points_for_order = $redemption_manager->get_max_redeemable_points(
 				$user_id,
 				$order_total_basis,

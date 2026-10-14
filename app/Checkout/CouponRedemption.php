@@ -26,6 +26,14 @@ class CouponRedemption {
 	const COUPON_CODE_PREFIX = 'pointbay_points_';
 
 	/**
+	 * True only while this class is attaching its own coupon to the cart.
+	 *
+	 * @since 1.1.0
+	 * @var bool
+	 */
+	public static $adding = false;
+
+	/**
 	 * Gets an instance of this object.
 	 *
 	 * @since 1.0.0
@@ -84,19 +92,28 @@ class CouponRedemption {
 			$points = 0;
 		}
 
-		$applied_coupons = $cart->get_applied_coupons();
-		foreach ( $applied_coupons as $coupon_code ) {
-			if ( strpos( $coupon_code, self::COUPON_CODE_PREFIX ) === 0 ) {
-				if ( $points <= 0 ) {
-					$cart->remove_coupon( $coupon_code );
-				}
+		// The code encodes the points amount, and provide_virtual_coupon() serves
+		// any prefixed code at the CURRENT amount. A leftover code from an earlier
+		// amount would therefore stack a second full discount, so only the code
+		// for the current points may remain.
+		$wanted = $points > 0 ? self::COUPON_CODE_PREFIX . md5( WC()->session->get_customer_id() . $points ) : '';
+
+		foreach ( $cart->get_applied_coupons() as $coupon_code ) {
+			if ( strpos( $coupon_code, self::COUPON_CODE_PREFIX ) === 0 && $coupon_code !== $wanted ) {
+				$cart->remove_coupon( $coupon_code );
 			}
 		}
 
 		if ( $points > 0 ) {
-			$coupon_code = self::COUPON_CODE_PREFIX . md5( WC()->session->get_customer_id() . $points );
+			$coupon_code = $wanted;
 			if ( ! $cart->has_discount( $coupon_code ) ) {
+				// WC_Cart::add_discount() refuses outright while coupons are
+				// disabled, and CouponFormVisibility disables them to hide the
+				// form once points are applied. Our own coupon must still be
+				// attachable, so the flag lets it through for this one call.
+				self::$adding = true;
 				$cart->add_discount( $coupon_code );
+				self::$adding = false;
 			}
 		}
 	}
