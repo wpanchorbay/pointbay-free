@@ -345,10 +345,20 @@ class OrderHooks {
 			return;
 		}
 
-		if ( ! $ledger->has_existing_transaction( $user_id, self::REF_ORDER_REAWARD, $ref_id, 'credit' ) ) {
+		// Refunds recorded while the order was cancelled were not clawed back (the
+		// reversal had already taken everything); what they would have taken is
+		// withheld from the re-award, so a refunded order is never re-credited.
+		$amount   = (int) $reversal->amount;
+		$progress = $this->refund_progress( $order, $user_id );
+		if ( $progress ) {
+			$missed = max( 0, $progress['target'] - $progress['already_clawed'] - $this->net_reversed_points( $order, $user_id, false ) );
+			$amount = max( 0, $amount - $missed );
+		}
+
+		if ( $amount > 0 && ! $ledger->has_existing_transaction( $user_id, self::REF_ORDER_REAWARD, $ref_id, 'credit' ) ) {
 			$result = $ledger->credit(
 				$user_id,
-				(int) $reversal->amount,
+				$amount,
 				self::REF_ORDER_REAWARD,
 				$ref_id,
 				// translators: %d: order ID.
@@ -459,14 +469,10 @@ class OrderHooks {
 		}
 		$awarded -= (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
 
-		// Earlier cancel/reopen cycles reversed some of the award and gave it back;
-		// those cancel out, so only the current award needs reversing.
-		$prior_cycles = array();
-		for ( $c = 0; $c < $award_cycle; $c++ ) {
-			$prior_cycles[] = $this->award_cycle_ref_id( $order_id, $c );
-		}
-		$awarded += (int) $ledger_service->sum_by_reference( $user_id, self::REF_ORDER_REAWARD, $prior_cycles, 'credit' )
-			- (int) $ledger_service->sum_by_reference( $user_id, self::REF_ORDER_REVERSAL, $prior_cycles, 'debit' );
+		// Earlier cancel/reopen cycles reversed some of the award and gave part of
+		// it back; whatever is still reversed from them is not there to reverse
+		// again.
+		$awarded -= $this->net_reversed_points( $order, $user_id, false );
 
 		if ( $awarded <= 0 ) {
 			return;
@@ -742,15 +748,46 @@ class OrderHooks {
 			return;
 		}
 
-		// A cancelled COD order has already had its whole award reversed.
-		// Without this guard a refund recorded afterwards claws it back twice.
-		if ( $ledger_service->has_existing_transaction( $user_id, self::REF_ORDER_REVERSAL, $order_id, 'debit' ) ) {
+		$progress = $this->refund_progress( $order, $user_id );
+		if ( ! $progress ) {
 			return;
 		}
 
+		// Points a cancellation already took stand in for the refunds that came
+		// before the order was reopened, and the award still outstanding is the
+		// ceiling: awards minus refund clawbacks minus net reversals.
+		$net_reversed = $this->net_reversed_points( $order, $user_id, true );
+		$outstanding  = $progress['total_awarded'] - $progress['already_clawed'] - $net_reversed;
+		$delta        = min( $progress['target'] - $progress['already_clawed'] - $net_reversed, $outstanding );
+
+		if ( $delta > 0 ) {
+			$ledger_service->clawback(
+				$user_id,
+				$delta,
+				self::REF_REFUND,
+				$refund_id,
+				// translators: %d: refund number.
+				sprintf( __( 'Points clawback for refund #%d', 'pointbay-loyalty-points-referral-rewards-woo' ), $refund_id ),
+				false,
+				'system'
+			);
+		}
+	}
+
+	/**
+	 * Where the refunds on an order say the award should stand.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order   The order.
+	 * @param int       $user_id The customer.
+	 * @return array|null target (points that should be clawed back in total), total_awarded and already_clawed; null when the order was never awarded.
+	 */
+	private function refund_progress( $order, $user_id ) {
+		$ledger_service = LedgerService::get_instance();
+
 		$breakdown = $this->get_award_breakdown( $order, $user_id );
 		if ( ! $breakdown ) {
-			return;
+			return null;
 		}
 
 		$base          = (int) $breakdown['base'];
@@ -758,7 +795,7 @@ class OrderHooks {
 		$total_awarded = $base + $fixed;
 
 		if ( $total_awarded <= 0 ) {
-			return;
+			return null;
 		}
 
 		$refunds        = $order->get_refunds();
@@ -797,20 +834,33 @@ class OrderHooks {
 
 		$already_clawed = (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
 
-		$delta = min( $target, $total_awarded ) - $already_clawed;
+		return array(
+			'target'         => min( $target, $total_awarded ),
+			'total_awarded'  => $total_awarded,
+			'already_clawed' => $already_clawed,
+		);
+	}
 
-		if ( $delta > 0 ) {
-			$ledger_service->clawback(
-				$user_id,
-				$delta,
-				self::REF_REFUND,
-				$refund_id,
-				// translators: %d: refund number.
-				sprintf( __( 'Points clawback for refund #%d', 'pointbay-loyalty-points-referral-rewards-woo' ), $refund_id ),
-				false,
-				'system'
-			);
+	/**
+	 * Points currently reversed by cancellations: reversals minus re-awards.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order           The order.
+	 * @param int       $user_id         The customer.
+	 * @param bool      $include_current Whether to include the current cycle (false for earlier cycles only).
+	 * @return int Net points reversed.
+	 */
+	private function net_reversed_points( $order, $user_id, $include_current ) {
+		$ledger = LedgerService::get_instance();
+		$cycle  = (int) $order->get_meta( self::META_AWARD_CYCLE );
+		$last   = $include_current ? $cycle : $cycle - 1;
+		$ids    = array();
+		for ( $c = 0; $c <= $last; $c++ ) {
+			$ids[] = $this->award_cycle_ref_id( $order->get_id(), $c );
 		}
+
+		return (int) $ledger->sum_by_reference( $user_id, self::REF_ORDER_REVERSAL, $ids, 'debit' )
+			- (int) $ledger->sum_by_reference( $user_id, self::REF_ORDER_REAWARD, $ids, 'credit' );
 	}
 
 	/**
