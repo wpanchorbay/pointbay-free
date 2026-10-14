@@ -371,6 +371,7 @@ class LedgerService {
 	 * @param array  $credits List of arrays with 'amount', 'ref_type', 'ref_id' and optional 'description'.
 	 * @param string $origin Optional. Origin of the transactions. Default 'system'.
 	 * @return array|\WP_Error The created entries, or a WP_Error if any one failed.
+	 * @throws \Throwable Anything thrown while crediting, after the transaction is rolled back.
 	 */
 	public function credit_batch( $user_id, $credits, $origin = 'system' ) {
 		global $wpdb;
@@ -396,26 +397,35 @@ class LedgerService {
 		$entries                = array();
 		$this->deferred_actions = array();
 
-		foreach ( $credits as $credit ) {
-			$entry = $this->process_transaction(
-				$user_id,
-				'credit',
-				(float) $credit['amount'],
-				$credit['ref_type'],
-				(int) $credit['ref_id'],
-				isset( $credit['description'] ) ? $credit['description'] : null,
-				true,
-				$origin
-			);
+		try {
+			foreach ( $credits as $credit ) {
+				$entry = $this->process_transaction(
+					$user_id,
+					'credit',
+					(float) $credit['amount'],
+					$credit['ref_type'],
+					(int) $credit['ref_id'],
+					isset( $credit['description'] ) ? $credit['description'] : null,
+					true,
+					$origin
+				);
 
-			if ( is_wp_error( $entry ) ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
-				$wpdb->query( 'ROLLBACK' );
-				$this->deferred_actions = null;
-				return $entry;
+				if ( is_wp_error( $entry ) ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+					$wpdb->query( 'ROLLBACK' );
+					$this->deferred_actions = null;
+					return $entry;
+				}
+
+				$entries[] = $entry;
 			}
-
-			$entries[] = $entry;
+		} catch ( \Throwable $e ) {
+			// A thrown error (not just a WP_Error) must not leave the transaction
+			// open or the deferred hooks queued for the next call.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+			$wpdb->query( 'ROLLBACK' );
+			$this->deferred_actions = null;
+			throw $e;
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
