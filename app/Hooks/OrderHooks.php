@@ -459,7 +459,13 @@ class OrderHooks {
 	}
 
 	/**
-	 * Takes returned points back when a cancelled order becomes payable again.
+	 * Takes returned points back when an order that had them returned becomes
+	 * payable or paid again.
+	 *
+	 * State based, not transition based: whenever an order lands on any status
+	 * other than cancelled or refunded (including 'failed', and including legacy
+	 * returns recorded on orders that were failed) while the current cycle still
+	 * has a return that has not been undone, the return is debited again.
 	 *
 	 * A cancelled order can be moved back to pending, on-hold, processing or
 	 * completed, and then still gets paid at the points-discounted price. The
@@ -475,7 +481,7 @@ class OrderHooks {
 	 * @return void
 	 */
 	public function retake_redeemed_points_on_reopen( $order_id, $old_status, $new_status, $order ) {
-		if ( ! $order || 'cancelled' !== $old_status || ! in_array( $new_status, array( 'pending', 'on-hold', 'processing', 'completed' ), true ) ) {
+		if ( ! $order || in_array( $new_status, array( 'cancelled', 'refunded' ), true ) ) {
 			return;
 		}
 

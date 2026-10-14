@@ -470,6 +470,29 @@ zz_check( '13h reopen then full refund returns once', $ledger->get_balance( $uid
 $o = wc_get_order( $o->get_id() );
 $o->update_status( 'cancelled' );
 zz_check( '13h then cancel adds nothing', $ledger->get_balance( $uid ) === $b0, 'now=' . $ledger->get_balance( $uid ) );
+// 13j: cancelled -> failed takes the points back; failed -> processing adds nothing more; cycles stay balanced.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'cancelled' );
+zz_check( '13j cancel returns', $ledger->get_balance( $uid ) === $b0 );
+$o->update_status( 'failed' );
+zz_check( '13j cancelled -> failed takes the points back', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'processing' );
+zz_check( '13j failed -> processing adds no second debit', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'cancelled' );
+$o->update_status( 'failed' );
+$o->update_status( 'cancelled' );
+zz_check( '13j repeated cycles: cancelled again returns once', $ledger->get_balance( $uid ) === $b0, 'now=' . $ledger->get_balance( $uid ) );
+$o->update_status( 'completed' );
+zz_check( '13j and reopening once more takes back once (earn +1500 on completion)', $ledger->get_balance( $uid ) === $b0 - 3000 + 1500, 'now=' . $ledger->get_balance( $uid ) );
+// 13k: legacy return recorded on an order that is now failed, then paid.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$o->update_status( 'failed' );
+$ledger->credit( $uid, 3000, \PointBay\Hooks\OrderHooks::REF_REDEMPTION_CANCEL, $o->get_id(), 'ZZ-QA legacy return', 'system' );
+zz_check( '13k legacy credit present', $ledger->get_balance( $uid ) === $b0 );
+$o->update_status( 'processing' );
+zz_check( '13k legacy failed -> processing takes the points back', $ledger->get_balance( $uid ) === $b0 - 3000, 'now=' . $ledger->get_balance( $uid ) );
 // 13i: COD completed (earned 1500) -> cancel -> reopen -> complete: earned-points clawback state.
 $b0 = $ledger->get_balance( $uid );
 $o  = $mk( true, 'completed' );
@@ -509,6 +532,23 @@ WC()->cart->calculate_totals();
 zz_check( '15 B4: no stale coupon-applied notice', 0 === wc_notice_count( 'success' ), 'notices=' . wp_json_encode( wc_get_notices() ) );
 $mgr->apply_points_discount( $uid, 0 );
 WC()->cart->empty_cart();
+
+// 16. (item 5) CampaignBay with stacking off must not invalidate the points coupon.
+if ( class_exists( '\\WpabCampaignBay\\Engine\\PricingEngine' ) || is_plugin_active( 'campaignbay/campaignbay.php' ) ) {
+	zz_settings( array( 'redemption_mode' => 'coupon' ) );
+	zz_cart( $product );
+	$cart_before = (float) WC()->cart->get_subtotal();
+	$mgr->apply_points_discount( $uid, 3000 );
+	WC()->cart->calculate_totals();
+	$has = (bool) array_filter( WC()->cart->get_applied_coupons(), function ( $c ) { return 0 === strpos( $c, 'pointbay_points_' ); } );
+	zz_check( '16 coupon stays attached with CampaignBay active', $has );
+	zz_check( '16 and carries a discount', (float) WC()->cart->get_discount_total() > 0, 'discount=' . WC()->cart->get_discount_total() );
+	$mgr->apply_points_discount( $uid, 0 );
+	WC()->cart->calculate_totals();
+	WC()->cart->empty_cart();
+} else {
+	fwrite( STDOUT, "INFO 16 skipped: CampaignBay not active\n" );
+}
 
 // Cleanup.
 global $wpdb;
