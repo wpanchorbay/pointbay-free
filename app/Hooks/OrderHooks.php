@@ -291,6 +291,8 @@ class OrderHooks {
 			'flat'         => 0,
 			'first_order'  => 0,
 			'total'        => (int) $credit->amount,
+			// The legacy award was measured on the order total.
+			'basis_mode'   => 'total',
 		);
 	}
 
