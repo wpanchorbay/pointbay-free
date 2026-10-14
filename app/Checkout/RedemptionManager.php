@@ -238,7 +238,7 @@ class RedemptionManager {
 			return $applied;
 		}
 
-		$max = (int) $this->get_max_redeemable_points( $user_id );
+		$max = $this->can_redeem( $user_id, array( 'source' => 'cart' ) ) ? (int) $this->get_max_redeemable_points( $user_id ) : 0;
 
 		if ( $applied <= $max ) {
 			return $applied;

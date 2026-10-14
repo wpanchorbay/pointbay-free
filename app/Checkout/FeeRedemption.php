@@ -83,6 +83,13 @@ class FeeRedemption {
 			return;
 		}
 
+		// Eligibility can change after points were applied (a filter, an account
+		// change). Never price a discount for a customer who may not redeem; the
+		// order-time check in CheckoutProcessor aborts rather than charging full price.
+		if ( ! $redemption_manager->can_redeem( get_current_user_id(), array( 'source' => 'cart' ) ) ) {
+			return;
+		}
+
 		$discount_value = $redemption_manager->calculate_discount_value( $points, get_current_user_id(), array( 'source' => 'cart' ) );
 
 		if ( $discount_value > 0 ) {

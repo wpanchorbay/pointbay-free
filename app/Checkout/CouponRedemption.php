@@ -79,6 +79,11 @@ class CouponRedemption {
 		// circular, the same trap get_max_redeemable_points() documents for fees.
 		$points = $redemption_manager->get_applied_points();
 
+		// A customer who may no longer redeem must not keep the points coupon.
+		if ( $points > 0 && ! $redemption_manager->can_redeem( get_current_user_id(), array( 'source' => 'cart' ) ) ) {
+			$points = 0;
+		}
+
 		$applied_coupons = $cart->get_applied_coupons();
 		foreach ( $applied_coupons as $coupon_code ) {
 			if ( strpos( $coupon_code, self::COUPON_CODE_PREFIX ) === 0 ) {

@@ -121,6 +121,16 @@ class CheckoutProcessor {
 			return;
 		}
 
+		// Re-check eligibility at the moment points are taken, not only when they
+		// were applied. Abort rather than let the order keep a discount it may not have.
+		$can_context = array(
+			'source' => 'order',
+			'order'  => $order,
+		);
+		if ( ! $redemption_manager->can_redeem( $user_id, $can_context ) ) {
+			throw new \Exception( esc_html__( 'Points redemption is not available on this account.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
+		}
+
 		$order_id = $order->get_id();
 
 		global $wpdb;
