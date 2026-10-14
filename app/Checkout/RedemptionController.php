@@ -115,7 +115,21 @@ class RedemptionController {
 			return new \WP_REST_Response( array( 'message' => $result->get_error_message() ), 400 );
 		}
 
-		return new \WP_REST_Response( array( 'success' => true ), 200 );
+		return new \WP_REST_Response(
+			array(
+				'success'  => true,
+				// What the applied points are worth under the active valuation, for the UI to state.
+				'discount' => $manager->calculate_discount_value(
+					(int) $points,
+					$user_id,
+					array(
+						'source' => 'cart',
+						'amount' => $manager->get_cart_basis_before_points(),
+					)
+				),
+			),
+			200
+		);
 	}
 
 	/**

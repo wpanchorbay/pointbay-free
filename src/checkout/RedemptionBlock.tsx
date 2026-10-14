@@ -75,13 +75,14 @@ const RedemptionBlock = () => {
         setLoading(true);
         setError('');
         try {
-            await window.jQuery.ajax({
+            const res = await window.jQuery.ajax({
                 url: data.rest_url,
                 method: 'POST',
                 beforeSend: (xhr) => xhr.setRequestHeader('X-WP-Nonce', data.nonce),
                 data: { points: points },
             });
             window.pointbay_checkout_data.applied_points = points;
+            if (res && res.discount !== undefined) window.pointbay_checkout_data.applied_discount = res.discount;
             triggerCartUpdate();
         } catch (e) {
             setError(e.responseJSON?.message || 'An error occurred.');
@@ -99,6 +100,7 @@ const RedemptionBlock = () => {
                 beforeSend: (xhr) => xhr.setRequestHeader('X-WP-Nonce', data.nonce),
             });
             window.pointbay_checkout_data.applied_points = 0;
+            window.pointbay_checkout_data.applied_discount = 0;
             triggerCartUpdate();
         } catch (e) {
             setError('An error occurred.');
@@ -107,7 +109,7 @@ const RedemptionBlock = () => {
     };
 
     if (appliedPoints > 0) {
-        const discountStr = formatPrice(appliedPoints * pointsValue);
+        const discountStr = formatPrice(data.applied_discount !== undefined ? parseFloat(data.applied_discount) : appliedPoints * pointsValue);
         return (
             <div className="wc-block-components-totals-wrapper">
                 <div className="wc-block-components-totals-item">
@@ -127,7 +129,7 @@ const RedemptionBlock = () => {
         );
     }
 
-    const discount = formatPrice(points * pointsValue);
+    const discount = formatPrice(points === maxPoints && data.max_discount !== undefined ? parseFloat(data.max_discount) : points * pointsValue);
 
     return (
         <div className="wc-block-components-totals-wrapper">

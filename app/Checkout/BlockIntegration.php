@@ -107,7 +107,18 @@ class BlockIntegration implements IntegrationInterface {
 		// sent. The earn preview is computed server-side and published on the
 		// cart by StoreApiData; shipping the raw inputs as well would invite a
 		// second, drifting implementation in the browser.
+		// Server-side figures for the two amounts the UI can state exactly, so a
+		// non-linear (e.g. percent) valuation is shown as charged.
+		$discount_context = array(
+			'source' => 'cart',
+			'amount' => $manager->get_cart_basis_before_points(),
+		);
+		$max_points       = $manager->get_max_redeemable_points( $user_id );
+		$applied_points   = $manager->get_applied_points();
+
 		return array(
+			'max_discount'     => $manager->calculate_discount_value( $max_points, $user_id, $discount_context ),
+			'applied_discount' => $manager->calculate_discount_value( $applied_points, $user_id, $discount_context ),
 			'rest_url'         => esc_url_raw( rest_url( 'pointbay/v1/redeem' ) ),
 			'nonce'            => wp_create_nonce( 'wp_rest' ),
 			'max_points'       => $manager->get_max_redeemable_points( $user_id ),
