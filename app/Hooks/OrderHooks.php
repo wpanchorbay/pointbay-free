@@ -177,7 +177,7 @@ class OrderHooks {
 		// The ledger, not the order list, is what says whether this customer has
 		// had their first-order bonus: order history is not stable across a
 		// guest checkout later claimed by a registration.
-		$is_first_order = 0 === $ledger->count_by_reference_type( $user_id, self::REF_FIRST_ORDER );
+		$is_first_order = $calculator->is_first_order( $user_id, $order );
 
 		$breakdown = $calculator->calculate(
 			array(
@@ -235,6 +235,7 @@ class OrderHooks {
 		// Recorded so a later refund prorates against the figures this order was
 		// actually awarded on, rather than recomputing from settings that may
 		// have changed in between.
+		$breakdown['basis_mode'] = $calculator->get_basis_mode();
 		$order->update_meta_data( self::META_BREAKDOWN, wp_json_encode( $breakdown ) );
 		$order->save();
 
@@ -332,6 +333,14 @@ class OrderHooks {
 		// on a cancelled order.
 		$awarded = (int) $ledger_service->sum_by_reference_types( $user_id, self::award_reference_types(), $order_id, 'credit' );
 
+		// Earlier partial-refund clawbacks have already taken some of this back;
+		// reversing the full award on top would take it twice.
+		$refund_ids = array();
+		foreach ( $order->get_refunds() as $refund ) {
+			$refund_ids[] = $refund->get_id();
+		}
+		$awarded -= (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
+
 		if ( $awarded <= 0 ) {
 			return;
 		}
@@ -408,8 +417,17 @@ class OrderHooks {
 		$refunded_total = 0.0;
 		$refund_ids     = array();
 
+		// Subtotal-mode awards were measured excluding shipping and tax, so the
+		// refunded side must be too, or refunding shipping would claw back
+		// product points.
+		$basis_mode = isset( $breakdown['basis_mode'] ) ? $breakdown['basis_mode'] : EarningCalculator::get_instance()->get_basis_mode();
+
 		foreach ( $refunds as $refund ) {
-			$refunded_total += abs( (float) $refund->get_amount() );
+			$amount = abs( (float) $refund->get_amount() );
+			if ( 'subtotal' === $basis_mode ) {
+				$amount = max( 0.0, $amount - abs( (float) $refund->get_shipping_total() ) - abs( (float) $refund->get_total_tax() ) );
+			}
+			$refunded_total += $amount;
 			$refund_ids[]    = $refund->get_id();
 		}
 
@@ -481,7 +499,7 @@ class OrderHooks {
 					array(
 						'amount'              => $calculator->resolve_order_basis( $order ),
 						'user_id'             => $user_id,
-						'include_first_order' => 0 === $ledger->count_by_reference_type( $user_id, self::REF_FIRST_ORDER ),
+						'include_first_order' => $calculator->is_first_order( $user_id, $order ),
 						'context'             => 'order',
 						'order'               => $order,
 					)

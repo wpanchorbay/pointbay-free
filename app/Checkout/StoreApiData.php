@@ -113,7 +113,7 @@ class StoreApiData {
 		$basis = $calculator->resolve_cart_basis();
 
 		if ( $user_id > 0 ) {
-			$is_first_order = 0 === LedgerService::get_instance()->count_by_reference_type( $user_id, OrderHooks::REF_FIRST_ORDER );
+			$is_first_order = $calculator->is_first_order( $user_id );
 
 			$earn_points = $calculator->total(
 				array(

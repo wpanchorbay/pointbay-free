@@ -112,6 +112,17 @@ class EarningCalculator {
 	/**
 	 * Resolves the money basis for an order.
 	 *
+	 * One definition, shared with resolve_cart_basis(), so the figure previewed
+	 * is the figure awarded:
+	 *
+	 * - 'total': what the customer actually paid (order total, which already
+	 *   nets off coupons, a points coupon and a negative points fee).
+	 * - 'subtotal': item subtotal minus every coupon (the points coupon
+	 *   included) minus a fee-mode points discount. Shipping, tax and other
+	 *   fees are excluded.
+	 *
+	 * In both modes points spent on an order never earn points back.
+	 *
 	 * @since 1.1.0
 	 * @param \WC_Order $order The order to measure.
 	 * @return float The money amount points should be calculated against.
@@ -122,7 +133,8 @@ class EarningCalculator {
 		}
 
 		if ( 'subtotal' === $this->get_basis_mode() ) {
-			return max( 0.0, (float) $order->get_subtotal() - (float) $order->get_total_discount() );
+			$points_fee = \PointBay\Checkout\RedemptionManager::get_instance()->get_points_fee_on_order( $order );
+			return max( 0.0, (float) $order->get_subtotal() - (float) $order->get_total_discount() - $points_fee );
 		}
 
 		return max( 0.0, (float) $order->get_total() );
@@ -131,8 +143,10 @@ class EarningCalculator {
 	/**
 	 * Resolves the money basis for the current cart.
 	 *
-	 * The applied points discount is subtracted in both modes: points spent on
-	 * an order must not themselves earn points back, or the programme leaks.
+	 * Mirrors resolve_order_basis(): coupons are subtracted (a points coupon
+	 * included), and in fee mode the applied points discount is subtracted
+	 * explicitly because a fee is not a coupon. Total mode adds shipping, tax
+	 * and any fees other than the points fee.
 	 *
 	 * @since 1.1.0
 	 * @return float The money amount points should be calculated against.
@@ -142,21 +156,70 @@ class EarningCalculator {
 			return 0.0;
 		}
 
-		$cart  = WC()->cart;
-		$basis = (float) $cart->get_subtotal();
-
-		if ( 'total' === $this->get_basis_mode() ) {
-			$basis += (float) $cart->get_shipping_total() + (float) $cart->get_taxes_total();
-		}
-
+		$cart    = WC()->cart;
 		$manager = \PointBay\Checkout\RedemptionManager::get_instance();
-		$applied = (int) $manager->get_applied_points();
+		$basis   = (float) $cart->get_subtotal() - (float) $cart->get_discount_total();
 
-		if ( $applied > 0 ) {
+		$applied = (int) $manager->get_applied_points();
+		if ( $applied > 0 && 'fee' === (string) $this->setting( 'redemption_mode', 'coupon' ) ) {
 			$basis -= (float) $manager->calculate_discount_value( $applied );
 		}
 
+		if ( 'total' === $this->get_basis_mode() ) {
+			$basis += (float) $cart->get_shipping_total() + (float) $cart->get_taxes_total();
+
+			foreach ( $cart->get_fees() as $fee ) {
+				if ( \PointBay\Checkout\FeeRedemption::fee_name() !== $fee->name ) {
+					$basis += (float) $fee->total;
+				}
+			}
+		}
+
 		return max( 0.0, $basis );
+	}
+
+	/**
+	 * Whether a customer qualifies for the one-time first-order bonus.
+	 *
+	 * Requires BOTH that no first-order bonus has been credited to them AND that
+	 * they have no earlier qualifying order. The second condition matters when
+	 * the bonus is switched on (or was zero) after a customer already had order
+	 * history: without it a customer with forty past orders is treated as new.
+	 * Earlier means created before $order, or any qualifying order at all when
+	 * previewing a cart. Guests never qualify: points are only awarded to
+	 * registered customers, so there is no ledger to hold the bonus.
+	 *
+	 * @since 1.1.0
+	 * @param int            $user_id The customer.
+	 * @param \WC_Order|null $order   The order being awarded, or null for a cart preview.
+	 * @return bool True when the bonus applies.
+	 */
+	public function is_first_order( $user_id, $order = null ) {
+		$user_id = (int) $user_id;
+		if ( $user_id < 1 ) {
+			return false;
+		}
+
+		if ( LedgerService::get_instance()->count_by_reference_type( $user_id, 'first_order_bonus' ) > 0 ) {
+			return false;
+		}
+
+		$query = array(
+			'customer_id' => $user_id,
+			'status'      => array( 'wc-processing', 'wc-completed', 'wc-on-hold', 'wc-refunded' ),
+			'limit'       => 1,
+			'return'      => 'ids',
+		);
+
+		if ( $order ) {
+			$query['exclude'] = array( $order->get_id() );
+			$created          = $order->get_date_created();
+			if ( $created ) {
+				$query['date_created'] = '<' . $created->getTimestamp();
+			}
+		}
+
+		return 0 === count( wc_get_orders( $query ) );
 	}
 
 	/**
