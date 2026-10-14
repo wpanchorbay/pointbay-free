@@ -200,7 +200,7 @@ class RedemptionManager {
 			// points would be capped to $40 worth), so the points coupon is added back:
 			// the basis passed on, and to the filters, is the amount BEFORE the points
 			// discount.
-			$amount = (float) WC()->cart->get_subtotal() - (float) WC()->cart->get_discount_total() + $this->get_points_coupon_discount_in_cart();
+			$amount = $this->get_cart_basis_before_points();
 		}
 
 		if ( null !== $amount ) {
@@ -229,6 +229,40 @@ class RedemptionManager {
 		$max = (float) apply_filters( 'pointbay_max_redeemable', $max, (int) $user_id, $context );
 
 		return (int) max( 0, floor( $max ) );
+	}
+
+	/**
+	 * The cart's money basis BEFORE the points discount, ex-tax.
+	 *
+	 * Subtotal minus the other coupons' discounts. Reads already-computed
+	 * totals, so it is safe to call while the virtual points coupon is being
+	 * built (no recursion); in coupon mode the points coupon's own share is
+	 * added back. This is the value passed as 'amount' in the context of
+	 * `pointbay_max_redeemable` and `pointbay_redemption_discount_value`.
+	 *
+	 * @since 1.1.0
+	 * @return float The basis; never negative.
+	 */
+	public function get_cart_basis_before_points() {
+		if ( ! isset( WC()->cart ) || ! WC()->cart ) {
+			return 0.0;
+		}
+
+		$cart     = WC()->cart;
+		$subtotal = (float) $cart->get_subtotal();
+
+		// On woocommerce_before_calculate_totals (where the points coupon is
+		// attached) the subtotal has not been computed for this pass; derive it
+		// from the line items so the basis is never a spurious zero.
+		if ( $subtotal <= 0 && ! $cart->is_empty() ) {
+			foreach ( $cart->get_cart() as $line ) {
+				if ( ! empty( $line['data'] ) && $line['data'] instanceof \WC_Product ) {
+					$subtotal += (float) wc_get_price_excluding_tax( $line['data'], array( 'qty' => (int) $line['quantity'] ) );
+				}
+			}
+		}
+
+		return max( 0.0, $subtotal - (float) $cart->get_discount_total() + $this->get_points_coupon_discount_in_cart() );
 	}
 
 	/**

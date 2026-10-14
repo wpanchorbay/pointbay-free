@@ -163,7 +163,14 @@ class CouponRedemption {
 			return false;
 		}
 
-		$discount_value = $redemption_manager->calculate_discount_value( $points, get_current_user_id(), array( 'source' => 'cart' ) );
+		$discount_value = $redemption_manager->calculate_discount_value(
+			$points,
+			get_current_user_id(),
+			array(
+				'source' => 'cart',
+				'amount' => $redemption_manager->get_cart_basis_before_points(),
+			)
+		);
 
 		return array(
 			'id'                         => 0,

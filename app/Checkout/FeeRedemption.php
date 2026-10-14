@@ -100,7 +100,14 @@ class FeeRedemption {
 			return;
 		}
 
-		$discount_value = $redemption_manager->calculate_discount_value( $points, get_current_user_id(), array( 'source' => 'cart' ) );
+		$discount_value = $redemption_manager->calculate_discount_value(
+			$points,
+			get_current_user_id(),
+			array(
+				'source' => 'cart',
+				'amount' => $redemption_manager->get_cart_basis_before_points(),
+			)
+		);
 
 		if ( $discount_value > 0 ) {
 			$cart->add_fee( self::fee_name(), -$discount_value, true );

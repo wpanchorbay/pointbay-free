@@ -77,6 +77,12 @@ class ClassicCheckoutUI {
 
 		$manager = RedemptionManager::get_instance();
 
+		// Same context the cart applies the discount with, so what is shown matches what is charged.
+		$discount_context = array(
+			'source' => 'cart',
+			'amount' => $manager->get_cart_basis_before_points(),
+		);
+
 		// Hidden entirely rather than shown disabled: a control the customer
 		// cannot use is worse than no control at all.
 		if ( ! $manager->can_redeem( $user_id, array( 'source' => 'cart' ) ) ) {
@@ -94,7 +100,7 @@ class ClassicCheckoutUI {
 
 		$balance       = \PointBay\Services\LedgerService::get_instance()->get_balance( $user_id );
 		$points_value  = (float) \PointBay\Core\Settings::get_instance()->get_settings( 'redemption_pointsValue' );
-		$max_discount  = $manager->calculate_discount_value( $max_points, $user_id, array( 'source' => 'cart' ) );
+		$max_discount  = $manager->calculate_discount_value( $max_points, $user_id, $discount_context );
 		$allow_partial = (bool) \PointBay\Core\Settings::get_instance()->get_settings( 'redemption_allowPartial' );
 
 		?>
@@ -102,7 +108,7 @@ class ClassicCheckoutUI {
 			<h3 id="pointbay-redemption-heading"><?php esc_html_e( 'Redeem Loyalty Points', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></h3>
 			<?php if ( $applied_points > 0 ) : ?>
 				<?php // Through the manager, not a bare multiplication, so a non-linear conversion is reflected here too. ?>
-				<?php $applied_discount = wc_price( $manager->calculate_discount_value( $applied_points, $user_id, array( 'source' => 'cart' ) ) ); ?>
+				<?php $applied_discount = wc_price( $manager->calculate_discount_value( $applied_points, $user_id, $discount_context ) ); ?>
 				<div class="woocommerce-info">
 					<p>
 						<?php
