@@ -433,8 +433,13 @@ class OrderHooks {
 			$refund_ids[]    = $refund->get_id();
 		}
 
-		$basis = (float) $breakdown['basis_amount'];
-		$ratio = $basis > 0 ? min( 1.0, $refunded_total / $basis ) : 1.0;
+		// Round both sides to the currency's decimals: 109.99 - 10 - 9.99 is
+		// 89.99999999999999 in floating point, which would read as a 99.9999999%
+		// refund and skip the fixed-bonus clawback on a full refund.
+		$decimals       = wc_get_price_decimals();
+		$basis          = round( (float) $breakdown['basis_amount'], $decimals );
+		$refunded_total = round( $refunded_total, $decimals );
+		$ratio          = $basis > 0 ? min( 1.0, $refunded_total / $basis ) : 1.0;
 
 		// round(), not floor(): repeated partial refunds have to sum back to the
 		// full award rather than losing a point to truncation each time.
