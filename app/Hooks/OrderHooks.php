@@ -646,7 +646,7 @@ class OrderHooks {
 		// A refund recorded while the order was cancelled returned nothing (the
 		// cancellation had already handed everything back). Its share is kept by
 		$retake   = (int) $entry->amount;
-		$retake = (int) $entry->amount;
+		$retake   = (int) $entry->amount;
 		$redeemed = $this->get_redeemed_points( $user_id, $order_id );
 		if ( $redeemed > 0 ) {
 			$earlier_ids = array();
