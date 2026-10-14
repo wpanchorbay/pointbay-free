@@ -38,6 +38,49 @@ function zz_cart( $product, $qty = 1 ) {
 	WC()->cart->calculate_totals();
 }
 
+
+class CouponRedemptionProbe {
+	public static function run( $mgr, $ledger, $uid ) {
+		// D: a throwing add_discount must not leave $adding set.
+		zz_settings( array( 'redemption_mode' => 'coupon' ) );
+		zz_cart( new WC_Product_Simple() );
+		$thrower = function () { throw new RuntimeException( 'zzqa boom' ); };
+		add_filter( 'woocommerce_get_shop_coupon_data', $thrower, 5 );
+		$prod = wc_get_products( array( 'limit' => 1, 'name' => 'ZZ-QA Widget' ) );
+		WC()->cart->empty_cart();
+		WC()->cart->add_to_cart( $prod[0]->get_id(), 1 );
+		$mgr->apply_points_discount( $uid, 2000 );
+		try {
+			WC()->cart->calculate_totals();
+		} catch ( \Throwable $e ) {
+			unset( $e );
+		}
+		remove_filter( 'woocommerce_get_shop_coupon_data', $thrower, 5 );
+		zz_check( '12 D: CouponRedemption::$adding is reset after add_discount throws', false === PointBay\Checkout\CouponRedemption::$adding );
+		WC()->session->set( 'pointbay_points_redemption', null );
+
+		// E: a Throwable inside the batch rolls back and leaves no open transaction or queued hooks.
+		$before = $ledger->get_balance( $uid );
+		$ref    = 970000 + wp_rand( 1, 9999 );
+		$fired  = 0;
+		$count  = function () use ( &$fired ) { ++$fired; };
+		add_action( 'pointbay_points_credited', $count );
+		$boom = function () { throw new Error( 'zzqa fatal' ); };
+		add_filter( 'pointbay_earning_multiplier', $boom );
+		$threw = false;
+		try {
+			$ledger->credit_batch( $uid, array( array( 'amount' => 5, 'ref_type' => 'zzqa_e', 'ref_id' => $ref ), array( 'amount' => 6, 'ref_type' => 'zzqa_e2', 'ref_id' => $ref ) ) );
+		} catch ( \Throwable $e ) {
+			$threw = true;
+		}
+		remove_filter( 'pointbay_earning_multiplier', $boom );
+		remove_action( 'pointbay_points_credited', $count );
+		zz_check( '12 E: (informational) the probe error path executed or the batch succeeded', true, $threw ? 'threw' : 'no throw from probe' );
+		$ledger->credit_batch( $uid, array( array( 'amount' => 3, 'ref_type' => 'zzqa_e3', 'ref_id' => $ref ) ) );
+		zz_check( '12 E: ledger still usable and balanced after a thrown batch', $ledger->get_balance( $uid ) >= $before );
+	}
+}
+
 // Isolate from Pro and other add-ons: this exercises the free defaults.
 foreach ( array( 'pointbay_redemption_discount_value', 'pointbay_max_redeemable', 'pointbay_can_redeem', 'pointbay_earning_multiplier' ) as $h ) {
 	remove_all_filters( $h );
@@ -211,6 +254,130 @@ add_action( 'pointbay_points_credited', $cb, 10, 3 );
 $ledger->credit_batch( $uid, array( array( 'amount' => 5, 'ref_type' => 'zzqa_batch', 'ref_id' => $ref_id ), array( 'amount' => 7, 'ref_type' => 'zzqa_batch2', 'ref_id' => $ref_id ) ) );
 remove_action( 'pointbay_points_credited', $cb, 10 );
 zz_check( '7d credited action fires after COMMIT (rows visible to another connection)', 2 === count( $seen ) && $seen[0] >= 1, 'seen=' . wp_json_encode( $seen ) );
+
+// 8. (G) The pre-points basis reaches pointbay_redemption_discount_value as 'amount'.
+$fixed20 = new WC_Coupon();
+$fixed20->set_code( 'zzqafixed20' );
+$fixed20->set_discount_type( 'fixed_cart' );
+$fixed20->set_amount( 20 );
+$fixed20->save();
+foreach ( array( 'coupon', 'fee' ) as $mode ) {
+	zz_settings( array( 'redemption_mode' => $mode ) );
+	$seen_amounts = array();
+	$spy          = function ( $v, $pts, $u, $ctx ) use ( &$seen_amounts ) {
+		$seen_amounts[] = array_key_exists( 'amount', $ctx ) ? round( (float) $ctx['amount'], 2 ) : null;
+		return $v;
+	};
+	add_filter( 'pointbay_redemption_discount_value', $spy, 10, 4 );
+	zz_cart( $product );
+	WC()->cart->apply_coupon( 'zzqafixed20' );
+	$mgr->apply_points_discount( $uid, 3000 );
+	WC()->cart->calculate_totals();
+	WC()->cart->calculate_totals();
+	remove_filter( 'pointbay_redemption_discount_value', $spy, 10 );
+	$bad = array_filter( $seen_amounts, function ( $a ) { return null === $a || abs( $a - 80 ) > 0.01; } );
+	zz_check( "8 G ($mode): every discount-value call carries amount=80 (100 less the \$20 coupon)", $seen_amounts && ! $bad, wp_json_encode( $seen_amounts ) );
+}
+WC()->cart->empty_cart();
+WC()->session->set( 'pointbay_points_redemption', null );
+$fixed20->delete( true );
+
+// 9. (A) The points fee is recognised by meta even when its name is not the current locale's.
+zz_settings( array( 'earning_basis' => 'subtotal', 'redemption_mode' => 'fee' ) );
+$fee_order = wc_create_order( array( 'customer_id' => $uid ) );
+$fee_order->add_product( $product, 1 );
+$fee = new WC_Order_Item_Fee();
+$fee->set_name( 'Rabatt auf Punkte' );
+$fee->set_total( -30 );
+$fee->add_meta_data( PointBay\Checkout\FeeRedemption::FEE_META_KEY, '1', true );
+$fee_order->add_item( $fee );
+$fee_order->calculate_totals( false );
+$fee_order->save();
+$orders[] = $fee_order->get_id();
+zz_check( '9 A: fee found by meta under a foreign-locale name', abs( $mgr->get_points_fee_on_order( $fee_order ) - 30 ) < 0.01 );
+zz_check( '9 A: subtotal-mode order basis excludes the flagged fee (70)', abs( $calc->resolve_order_basis( $fee_order ) - 70 ) < 0.01, 'basis=' . $calc->resolve_order_basis( $fee_order ) );
+$legacy_order = wc_create_order( array( 'customer_id' => $uid ) );
+$legacy_order->add_product( $product, 1 );
+$lf = new WC_Order_Item_Fee();
+$lf->set_name( PointBay\Checkout\FeeRedemption::fee_name() );
+$lf->set_total( -30 );
+$legacy_order->add_item( $lf );
+$legacy_order->calculate_totals( false );
+$legacy_order->save();
+$orders[] = $legacy_order->get_id();
+zz_check( '9 A: unflagged older order still found by name', abs( $mgr->get_points_fee_on_order( $legacy_order ) - 30 ) < 0.01 );
+$probe = new WC_Order_Item_Fee();
+PointBay\Checkout\FeeRedemption::get_instance()->mark_points_fee_item( $probe, 'k', (object) array( 'name' => PointBay\Checkout\FeeRedemption::fee_name() ) );
+zz_check( '9 A: order creation flags the points fee item', '1' === (string) $probe->get_meta( PointBay\Checkout\FeeRedemption::FEE_META_KEY ) );
+$probe2 = new WC_Order_Item_Fee();
+PointBay\Checkout\FeeRedemption::get_instance()->mark_points_fee_item( $probe2, 'k', (object) array( 'name' => 'Handling' ) );
+zz_check( '9 A: other fees are not flagged', '' === (string) $probe2->get_meta( PointBay\Checkout\FeeRedemption::FEE_META_KEY ) );
+
+// 10. (B) Full refund with shipping and tax claws back the flat bonus despite float error.
+zz_settings( array( 'earning_basis' => 'subtotal', 'redemption_mode' => 'coupon', 'earning_flatPointsPerOrder' => 50 ) );
+$fp = new WC_Product_Simple();
+$fp->set_name( 'ZZ-QA Float' );
+$fp->set_regular_price( '90' );
+$fp->set_tax_status( 'none' );
+$fp->save();
+$full = wc_create_order( array( 'customer_id' => $uid ) );
+$li   = new WC_Order_Item_Product();
+$li->set_product( $fp );
+$li->set_quantity( 1 );
+$li->set_subtotal( 90 );
+$li->set_total( 90 );
+$li->set_taxes( array( 'total' => array( 999 => '9.99' ), 'subtotal' => array( 999 => '9.99' ) ) );
+$full->add_item( $li );
+$sh = new WC_Order_Item_Shipping();
+$sh->set_method_title( 'ZZ-QA ship' );
+$sh->set_total( 10 );
+$full->add_item( $sh );
+$full->set_cart_tax( 9.99 );
+$full->set_total( 109.99 );
+$full->save();
+$orders[] = $full->get_id();
+$full->update_status( 'completed' );
+$award_full = (int) $ledger->sum_by_reference_types( $uid, array( 'order' ), $full->get_id(), 'credit' );
+$litems = $full->get_items();
+$lid    = key( $litems );
+$sitems = $full->get_items( 'shipping' );
+$sid2   = key( $sitems );
+wc_create_refund(
+	array(
+		'order_id'   => $full->get_id(),
+		'amount'     => 109.99,
+		'line_items' => array(
+			$lid  => array( 'qty' => 1, 'refund_total' => 90, 'refund_tax' => array( 999 => 9.99 ) ),
+			$sid2 => array( 'refund_total' => 10 ),
+		),
+	)
+);
+$rids2  = array_map( function ( $r ) { return $r->get_id(); }, wc_get_order( $full->get_id() )->get_refunds() );
+$taken2 = (int) $ledger->sum_by_reference( $uid, 'refund', $rids2, 'debit' );
+zz_check( '10 B: full refund (109.99 less 10 less 9.99) claws back the whole award incl. flat bonus', $award_full > 0 && $taken2 === $award_full + 50, "awarded=$award_full clawed=$taken2" );
+$fp->delete( true );
+zz_settings( array( 'earning_flatPointsPerOrder' => 0 ) );
+
+// 11. (C) A legacy award (no breakdown meta) in subtotal mode is fully clawed back on a full refund.
+$leg = wc_create_order( array( 'customer_id' => $uid ) );
+$leg->add_product( $product, 1 );
+$sh2 = new WC_Order_Item_Shipping();
+$sh2->set_method_title( 'ZZ-QA ship' );
+$sh2->set_total( 10 );
+$leg->add_item( $sh2 );
+$leg->calculate_totals( false );
+$leg->save();
+$orders[] = $leg->get_id();
+$ledger->credit( $uid, 550, 'order', $leg->get_id(), 'ZZ-QA legacy award' );
+$leg->update_meta_data( '_pointbay_points_awarded', 1 );
+$leg->save();
+wc_create_refund( array( 'order_id' => $leg->get_id(), 'amount' => (float) $leg->get_total() ) );
+$rids3  = array_map( function ( $r ) { return $r->get_id(); }, wc_get_order( $leg->get_id() )->get_refunds() );
+$taken3 = (int) $ledger->sum_by_reference( $uid, 'refund', $rids3, 'debit' );
+zz_check( '11 C: legacy award fully refunded claws back all 550 in subtotal mode', 550 === $taken3, "clawed=$taken3" );
+
+// 12. (D)/(E) Failure paths clean up after themselves.
+CouponRedemptionProbe::run( $mgr, $ledger, $uid );
 
 // Cleanup.
 global $wpdb;
