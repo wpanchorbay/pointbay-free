@@ -29,6 +29,7 @@ interface SettingsData {
 	earning_bandMode: string;
 	earning_multiplyFlatBonus: boolean;
 	earning_multiplyFirstOrderBonus: boolean;
+	earning_reverseOnCancel: boolean;
 	redemption_pointsValue: number;
 	redemption_mode: string;
 	redemption_minPoints: number;
@@ -395,6 +396,25 @@ const Settings: React.FC = () => {
 								}
 								description={ __(
 									'Usually left off, so the signup bonus you advertise is the amount every new customer actually receives.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_reverseOnCancel',
+						label: __( 'Take Back Points When an Order Is Cancelled', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ settings.earning_reverseOnCancel !== false }
+								onChange={ ( checked ) =>
+									setSettings( {
+										...settings,
+										earning_reverseOnCancel: checked,
+									} )
+								}
+								description={ __(
+									'When a completed order is cancelled, take back the points earned on it. Cash on delivery orders always do this. If the order is reopened, the points are given back.',
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
