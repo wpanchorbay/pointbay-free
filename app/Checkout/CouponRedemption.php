@@ -57,6 +57,26 @@ class CouponRedemption {
 		$loader = $plugin->get_loader();
 		$loader->add_filter( 'woocommerce_get_shop_coupon_data', $this, 'provide_virtual_coupon', 10, 2 );
 		$loader->add_action( 'woocommerce_before_calculate_totals', $this, 'apply_virtual_coupon' );
+		$loader->add_filter( 'woocommerce_cart_totals_coupon_label', $this, 'friendly_coupon_label', 10, 2 );
+	}
+
+	/**
+	 * Shows "Points discount" instead of the raw `pointbay_points_<hash>` code in
+	 * the classic cart and checkout totals.
+	 *
+	 * Display only: the coupon code itself is untouched, and every internal check
+	 * keys off the code rather than this label.
+	 *
+	 * @since 1.1.0
+	 * @param string     $label  The coupon label.
+	 * @param \WC_Coupon $coupon The coupon.
+	 * @return string
+	 */
+	public function friendly_coupon_label( $label, $coupon ) {
+		if ( $coupon instanceof \WC_Coupon && 0 === strpos( strtolower( $coupon->get_code() ), self::COUPON_CODE_PREFIX ) ) {
+			return esc_html__( 'Points discount', 'pointbay-loyalty-points-referral-rewards-woo' );
+		}
+		return $label;
 	}
 
 	/**
