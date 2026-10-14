@@ -31,6 +31,7 @@ return array(
 		'earning_bandMode'                => 'fixed',
 		'earning_multiplyFlatBonus'       => true,
 		'earning_multiplyFirstOrderBonus' => false,
+		'earning_reverseOnCancel'         => true,
 		'redemption_pointsValue'          => 0.01,
 		'redemption_mode'                 => 'fee',
 		'redemption_minPoints'            => 100,
@@ -104,6 +105,10 @@ return array(
 		'earning_multiplyFirstOrderBonus' => array(
 			'type'    => 'boolean',
 			'default' => false,
+		),
+		'earning_reverseOnCancel'         => array(
+			'type'    => 'boolean',
+			'default' => true,
 		),
 		'redemption_pointsValue'          => array(
 			'type'              => 'number',

@@ -636,6 +636,53 @@ foreach ( array( 'batch', 'single' ) as $kind ) {
 	$wpdb->query( 'ROLLBACK' );
 }
 
+// 20. earning_reverseOnCancel: ON/OFF for COD and non-COD.
+$mk3 = function ( $cod ) use ( $uid, $product, &$orders ) {
+	$o = wc_create_order( array( 'customer_id' => $uid ) );
+	$o->add_product( $product, 3 );
+	$o->set_payment_method( $cod ? 'cod' : 'bacs' );
+	$o->calculate_totals( false );
+	$o->save();
+	$orders[] = $o->get_id();
+	$o->update_status( 'completed' );
+	return $o;
+};
+foreach ( array( true, false ) as $on ) {
+	zz_settings( array( 'earning_reverseOnCancel' => $on ) );
+	$tag = $on ? 'ON' : 'OFF';
+	// non-COD plain cancel.
+	$b0 = $ledger->get_balance( $uid );
+	$o  = $mk3( false );
+	$earn = $net( $b0 );
+	$o->update_status( 'cancelled' );
+	zz_check( "20 $tag non-COD cancel " . ( $on ? 'takes the earned points back' : 'keeps the earned points' ), $net( $b0 ) == ( $on ? 0 : $earn ), 'net=' . $net( $b0 ) . ' earn=' . $earn );
+	$o->update_status( 'completed' );
+	zz_check( "20 $tag non-COD reopen+complete leaves exactly one award", $net( $b0 ) == $earn, 'net=' . $net( $b0 ) . ' earn=' . $earn );
+	$o->update_status( 'cancelled' );
+	$o->update_status( 'completed' );
+	zz_check( "20 $tag non-COD second cycle still exactly one award", $net( $b0 ) == $earn, 'net=' . $net( $b0 ) );
+	// COD always reverses.
+	$b0 = $ledger->get_balance( $uid );
+	$o  = $mk3( true );
+	$o->update_status( 'cancelled' );
+	zz_check( "20 $tag COD cancel always takes the earned points back", $net( $b0 ) == 0, 'net=' . $net( $b0 ) );
+	$o->update_status( 'completed' );
+	zz_check( "20 $tag COD reopen+complete restores the award", $net( $b0 ) == $earn, 'net=' . $net( $b0 ) );
+	// cancel after a partial refund (non-COD).
+	$b0 = $ledger->get_balance( $uid );
+	$o  = $mk3( false );
+	$refund( $o, 150 );
+	$after_partial = $net( $b0 );
+	$o = wc_get_order( $o->get_id() );
+	$o->update_status( 'cancelled' );
+	zz_check( "20 $tag non-COD cancel after partial refund " . ( $on ? 'takes back only the remainder' : 'leaves the post-refund award' ), $net( $b0 ) == ( $on ? 0 : $after_partial ), 'net=' . $net( $b0 ) . ' after_partial=' . $after_partial );
+	$o->update_status( 'completed' );
+	zz_check( "20 $tag non-COD reopen after partial refund keeps the post-refund award", $net( $b0 ) == $after_partial, 'net=' . $net( $b0 ) );
+	$refund( $o );
+	zz_check( "20 $tag non-COD refund of the rest nets 0", $net( $b0 ) == 0, 'net=' . $net( $b0 ) );
+}
+zz_settings( array( 'earning_reverseOnCancel' => true ) );
+
 // 14. (B1) Removing the points coupon through WooCommerce clears the redemption; our swap does not.
 $ledger->credit( $uid, 20000, 'manual', 0, 'ZZ-QA top-up for check 14' );
 zz_settings( array( 'redemption_mode' => 'coupon' ) );

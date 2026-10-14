@@ -430,13 +430,14 @@ class OrderHooks {
 	}
 
 	/**
-	 * Claw back points earned for a COD order if it's cancelled or fails.
+	 * Claw back points earned for an order if it's cancelled (or, for COD, fails).
 	 *
 	 * COD orders can't be refunded through a payment gateway, so
 	 * process_order_refunded() never fires for them on a plain cancellation —
 	 * without this, points earned on a completed COD order would never be
-	 * reversed. Non-COD orders are left to the existing refund-based
-	 * clawback, since they can go through an actual WooCommerce refund.
+	 * reversed, so COD is always reversed. Other payment methods are reversed on
+	 * cancellation when the "take back earned points on cancel" setting is on
+	 * (the default); with it off they rely on the refund-based clawback alone.
 	 *
 	 * @param int       $order_id   The order ID.
 	 * @param string    $old_status The previous order status.
@@ -444,11 +445,23 @@ class OrderHooks {
 	 * @param \WC_Order $order      The order object.
 	 */
 	public function maybe_reverse_order_points( $order_id, $old_status, $new_status, $order ) {
-		if ( ! $order || $order->get_payment_method() !== 'cod' ) {
+		if ( ! $order ) {
 			return;
 		}
 
-		if ( ! in_array( $new_status, array( 'cancelled', 'failed' ), true ) ) {
+		// COD orders are always reversed (a cash order has no gateway refund to
+		// do it). Other payment methods follow the "take back earned points on
+		// cancel" setting, and only for a real cancellation: 'failed' can still be
+		// paid on retry.
+		if ( 'cod' === $order->get_payment_method() ) {
+			$statuses = array( 'cancelled', 'failed' );
+		} elseif ( Settings::get_instance()->get_settings( 'earning_reverseOnCancel' ) ) {
+			$statuses = array( 'cancelled' );
+		} else {
+			return;
+		}
+
+		if ( ! in_array( $new_status, $statuses, true ) ) {
 			return;
 		}
 

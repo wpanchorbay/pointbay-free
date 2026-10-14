@@ -126,6 +126,7 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 *   Added order-value bands, so points can be awarded per spending tier instead of a flat per-dollar rate.
 *   Added a flat bonus on every order and a one-time bonus on a customer's first order, each with its own control over whether VIP tier multipliers apply.
 *   Added a setting for whether points are calculated on the order total or the subtotal, so shipping and tax can be excluded.
+*   Added a setting to take back the points earned on a completed order when it is cancelled (on by default; Cash on Delivery orders always do), with the points restored if the order is reopened.
 *   Added a "you will earn X points" notice to product pages, which updates as a variation is chosen.
 *   Added shortcodes ([pointbay_rewards], [pointbay_balance], [pointbay_history], [pointbay_referral_link], [pointbay_earn_notice]) and classic widgets for placing the rewards UI anywhere.
 *   Added an option to show the customer's points balance in the site navigation and toolbar.
