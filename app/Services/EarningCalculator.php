@@ -162,7 +162,14 @@ class EarningCalculator {
 
 		$applied = (int) $manager->get_applied_points();
 		if ( $applied > 0 && 'fee' === (string) $this->setting( 'redemption_mode', 'coupon' ) ) {
-			$basis -= (float) $manager->calculate_discount_value( $applied );
+			$basis -= (float) $manager->calculate_discount_value(
+				$applied,
+				get_current_user_id(),
+				array(
+					'source' => 'cart',
+					'amount' => $manager->get_cart_basis_before_points(),
+				)
+			);
 		}
 
 		if ( 'total' === $this->get_basis_mode() ) {
