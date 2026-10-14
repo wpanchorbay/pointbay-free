@@ -96,6 +96,15 @@ class OrderHooks {
 	const META_REOPEN_CYCLE = '_pointbay_redemption_reopen_cycle';
 
 	/**
+	 * Order meta listing the refund IDs redeemed points were returned for, kept
+	 * so a deleted and re-recorded refund is not paid out twice.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const META_RETURNED_REFUNDS = '_pointbay_redemption_returned_refunds';
+
+	/**
 	 * Order meta key holding the award breakdown as JSON.
 	 *
 	 * @since 1.1.0
@@ -532,11 +541,7 @@ class OrderHooks {
 	 * @return int Points returned so far.
 	 */
 	private function get_returned_points( $user_id, $order ) {
-		$ledger     = LedgerService::get_instance();
-		$refund_ids = array();
-		foreach ( $order->get_refunds() as $refund ) {
-			$refund_ids[] = $refund->get_id();
-		}
+		$ledger = LedgerService::get_instance();
 
 		$cycles     = (int) $order->get_meta( self::META_REOPEN_CYCLE );
 		$cancel_ids = array();
@@ -544,9 +549,59 @@ class OrderHooks {
 			$cancel_ids[] = $this->cancel_ref_id( $order->get_id(), $i );
 		}
 
-		return (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_REFUND, $refund_ids, 'credit' )
+		return $this->get_refund_returned_points( $user_id, $order )
 			+ (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_CANCEL, $cancel_ids, 'credit' )
 			- (int) $ledger->sum_by_reference( $user_id, self::REF_REDEMPTION_REOPEN, $cancel_ids, 'debit' );
+	}
+
+	/**
+	 * Points handed back through refunds of an order.
+	 *
+	 * Counts every refund this plugin has ever returned points for, remembered in
+	 * order meta, and not only the refunds that still exist: an admin who deletes
+	 * a refund and records it again must not be handed the points twice.
+	 *
+	 * @since 1.1.0
+	 * @param int       $user_id The customer.
+	 * @param \WC_Order $order   The order.
+	 * @return int Points returned through refunds.
+	 */
+	private function get_refund_returned_points( $user_id, $order ) {
+		$refund_ids = array_map( 'absint', (array) $order->get_meta( self::META_RETURNED_REFUNDS ) );
+		foreach ( $order->get_refunds() as $refund ) {
+			$refund_ids[] = $refund->get_id();
+		}
+
+		return (int) LedgerService::get_instance()->sum_by_reference( $user_id, self::REF_REDEMPTION_REFUND, array_unique( $refund_ids ), 'credit' );
+	}
+
+	/**
+	 * Redeemed points that the refunds on an order say should have come back.
+	 *
+	 * @since 1.1.0
+	 * @param int       $user_id  The customer.
+	 * @param \WC_Order $order    The order.
+	 * @param int       $redeemed Points redeemed on the order.
+	 * @return int Target points.
+	 */
+	private function get_refund_return_target( $user_id, $order, $redeemed ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Kept for symmetry with the other helpers.
+		$decimals       = wc_get_price_decimals();
+		$total          = round( (float) $order->get_total(), $decimals );
+		$refunded_total = 0.0;
+		foreach ( $order->get_refunds() as $refund ) {
+			$refunded_total += abs( (float) $refund->get_amount() );
+		}
+		$refunded_total = round( $refunded_total, $decimals );
+
+		// An order paid entirely with points has nothing to prorate against; a
+		// refund of it is full by definition once the status says so.
+		if ( $total > 0 ) {
+			$ratio = min( 1.0, $refunded_total / $total );
+		} else {
+			$ratio = ( 'refunded' === $order->get_status() ) ? 1.0 : 0.0;
+		}
+
+		return min( (int) round( $redeemed * $ratio ), $redeemed );
 	}
 
 	/**
@@ -680,29 +735,13 @@ class OrderHooks {
 			return;
 		}
 
-		$decimals       = wc_get_price_decimals();
-		$total          = round( (float) $order->get_total(), $decimals );
-		$refunded_total = 0.0;
-		foreach ( $order->get_refunds() as $refund ) {
-			$refunded_total += abs( (float) $refund->get_amount() );
-		}
-		$refunded_total = round( $refunded_total, $decimals );
-
-		// An order paid entirely with points has nothing to prorate against; a
-		// refund of it is full by definition once the status says so.
-		if ( $total > 0 ) {
-			$ratio = min( 1.0, $refunded_total / $total );
-		} else {
-			$ratio = ( 'refunded' === $order->get_status() ) ? 1.0 : 0.0;
-		}
-
-		$target = (int) round( $redeemed * $ratio );
-		$delta  = min( $target, $redeemed ) - $this->get_returned_points( $user_id, $order );
+		$target = $this->get_refund_return_target( $user_id, $order, $redeemed );
+		$delta  = $target - $this->get_returned_points( $user_id, $order );
 		if ( $delta <= 0 ) {
 			return;
 		}
 
-		LedgerService::get_instance()->credit(
+		$result = LedgerService::get_instance()->credit(
 			$user_id,
 			$delta,
 			self::REF_REDEMPTION_REFUND,
@@ -711,6 +750,13 @@ class OrderHooks {
 			sprintf( __( 'Redeemed points returned for refund #%d.', 'pointbay-loyalty-points-referral-rewards-woo' ), $refund_id ),
 			'system'
 		);
+
+		if ( ! is_wp_error( $result ) ) {
+			$remembered   = array_map( 'absint', (array) $order->get_meta( self::META_RETURNED_REFUNDS ) );
+			$remembered[] = (int) $refund_id;
+			$order->update_meta_data( self::META_RETURNED_REFUNDS, array_values( array_unique( $remembered ) ) );
+			$order->save_meta_data();
+		}
 	}
 
 	/**

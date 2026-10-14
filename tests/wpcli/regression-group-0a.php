@@ -596,6 +596,17 @@ zz_check( '13s three cancel/reopen cycles: award stands once', $net( $b0 ) == $e
 $refund( $o );
 zz_check( '13s full refund after the cycles nets 0', $net( $b0 ) == 0, 'net=' . $net( $b0 ) );
 
+// 17. Redeemed points returned once per refund, even if the refund is deleted and re-recorded.
+$b0 = $ledger->get_balance( $uid );
+$o  = $mk( false, 'processing' );
+$thirty = round( (float) $o->get_total() * 0.3, 2 );
+$r1 = wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => $thirty ) );
+$mid = $ledger->get_balance( $uid );
+zz_check( '17 30% refund returns 900 of 3000', $mid == $b0 - 3000 + 900, 'now=' . $mid );
+$r1->delete( true );
+wc_create_refund( array( 'order_id' => $o->get_id(), 'amount' => $thirty ) );
+zz_check( '17 deleting and re-recording the same refund does not return the points twice', $ledger->get_balance( $uid ) == $mid, 'now=' . $ledger->get_balance( $uid ) . ' expected=' . $mid );
+
 // 14. (B1) Removing the points coupon through WooCommerce clears the redemption; our swap does not.
 $ledger->credit( $uid, 20000, 'manual', 0, 'ZZ-QA top-up for check 14' );
 zz_settings( array( 'redemption_mode' => 'coupon' ) );
