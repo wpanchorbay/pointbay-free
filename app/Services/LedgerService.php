@@ -131,6 +131,7 @@ class LedgerService {
 	 * @param bool   $allow_negative Optional. Whether the balance may go negative. Default false.
 	 * @return LedgerEntry|\WP_Error The created ledger entry, or a WP_Error on failure.
 	 * @throws \Exception If the ledger entry or cache fails to save (caught internally and returned as a WP_Error).
+	 * @throws \Throwable Any Error raised inside the transaction, after it has been rolled back.
 	 */
 	private function process_transaction( $user_id, $txn_type, $amount, $ref_type, $ref_id, $description, $in_transaction = false, $origin = 'system', $allow_negative = false ) {
 		global $wpdb;
