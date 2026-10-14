@@ -168,10 +168,16 @@ class CouponRedemption {
 				// form once points are applied. Our own coupon must still be
 				// attachable, so the flag lets it through for this one call.
 				self::$adding = true;
+				// add_discount() queues "Coupon code applied successfully." for a coupon
+				// the customer never typed; it would surface on a later page load.
+				$notices_before = function_exists( 'wc_get_notices' ) ? wc_get_notices() : null;
 				try {
 					$cart->add_discount( $coupon_code );
 				} finally {
 					self::$adding = false;
+					if ( null !== $notices_before && function_exists( 'wc_set_notices' ) ) {
+						wc_set_notices( $notices_before );
+					}
 				}
 			}
 		}

@@ -459,6 +459,16 @@ WC()->cart->calculate_totals();
 zz_check( '14 B1: PointBay own remove still works', 0 === $mgr->get_applied_points() && ! array_filter( WC()->cart->get_applied_coupons(), function ( $c ) { return 0 === strpos( $c, 'pointbay_points_' ); } ) );
 WC()->cart->empty_cart();
 
+// 15. (B4) Attaching the points coupon queues no "Coupon code applied" notice.
+wc_clear_notices();
+zz_settings( array( 'redemption_mode' => 'coupon' ) );
+zz_cart( $product );
+$mgr->apply_points_discount( $uid, 3000 );
+WC()->cart->calculate_totals();
+zz_check( '15 B4: no stale coupon-applied notice', 0 === wc_notice_count( 'success' ), 'notices=' . wp_json_encode( wc_get_notices() ) );
+$mgr->apply_points_discount( $uid, 0 );
+WC()->cart->empty_cart();
+
 // Cleanup.
 global $wpdb;
 foreach ( $orders as $oid ) {
