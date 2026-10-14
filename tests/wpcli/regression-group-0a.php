@@ -438,6 +438,27 @@ $o = wc_get_order( $o->get_id() );
 $o->update_status( 'cancelled' );
 zz_check( '13d cancel afterwards adds nothing', $ledger->get_balance( $uid ) === $b0 );
 
+// 14. (B1) Removing the points coupon through WooCommerce clears the redemption; our swap does not.
+zz_settings( array( 'redemption_mode' => 'coupon' ) );
+zz_cart( $product );
+$mgr->apply_points_discount( $uid, 3000 );
+WC()->cart->calculate_totals();
+$codes = array_values( array_filter( WC()->cart->get_applied_coupons(), function ( $c ) { return 0 === strpos( $c, 'pointbay_points_' ); } ) );
+zz_check( '14 B1: points coupon attached before removal', 1 === count( $codes ) );
+WC()->cart->remove_coupon( $codes[0] );
+WC()->cart->calculate_totals();
+zz_check( '14 B1: WooCommerce removal clears the applied points', 0 === $mgr->get_applied_points() );
+zz_check( '14 B1: and the coupon does not come back', ! array_filter( WC()->cart->get_applied_coupons(), function ( $c ) { return 0 === strpos( $c, 'pointbay_points_' ); } ) && abs( (float) WC()->cart->get_discount_total() ) < 0.01 );
+$mgr->apply_points_discount( $uid, 3000 );
+WC()->cart->calculate_totals();
+$mgr->apply_points_discount( $uid, 4000 );
+WC()->cart->calculate_totals();
+zz_check( '14 B1: changing the amount (swap) keeps the redemption at 4000', 4000 === $mgr->get_applied_points(), 'pts=' . $mgr->get_applied_points() );
+$mgr->apply_points_discount( $uid, 0 );
+WC()->cart->calculate_totals();
+zz_check( '14 B1: PointBay own remove still works', 0 === $mgr->get_applied_points() && ! array_filter( WC()->cart->get_applied_coupons(), function ( $c ) { return 0 === strpos( $c, 'pointbay_points_' ); } ) );
+WC()->cart->empty_cart();
+
 // Cleanup.
 global $wpdb;
 foreach ( $orders as $oid ) {

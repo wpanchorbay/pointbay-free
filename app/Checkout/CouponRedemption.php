@@ -34,6 +34,14 @@ class CouponRedemption {
 	public static $adding = false;
 
 	/**
+	 * True only while this class is swapping out a stale points coupon itself.
+	 *
+	 * @since 1.1.0
+	 * @var bool
+	 */
+	public static $removing = false;
+
+	/**
 	 * Gets an instance of this object.
 	 *
 	 * @since 1.0.0
@@ -57,7 +65,30 @@ class CouponRedemption {
 		$loader = $plugin->get_loader();
 		$loader->add_filter( 'woocommerce_get_shop_coupon_data', $this, 'provide_virtual_coupon', 10, 2 );
 		$loader->add_action( 'woocommerce_before_calculate_totals', $this, 'apply_virtual_coupon' );
+		$loader->add_action( 'woocommerce_removed_coupon', $this, 'on_coupon_removed' );
 		$loader->add_filter( 'woocommerce_cart_totals_coupon_label', $this, 'friendly_coupon_label', 10, 2 );
+	}
+
+	/**
+	 * Clears the applied points when the customer removes the points coupon
+	 * through WooCommerce's own controls (the cart [Remove] link, the checkout chip).
+	 *
+	 * The virtual coupon is re-added on every calculation from the session value,
+	 * so without this the removal silently does nothing. Our own add and swap are
+	 * excluded by the flags.
+	 *
+	 * @since 1.1.0
+	 * @param string $coupon_code The removed coupon code.
+	 * @return void
+	 */
+	public function on_coupon_removed( $coupon_code ) {
+		if ( self::$adding || self::$removing ) {
+			return;
+		}
+
+		if ( 0 === strpos( strtolower( (string) $coupon_code ), self::COUPON_CODE_PREFIX ) ) {
+			RedemptionManager::get_instance()->remove_points_discount();
+		}
 	}
 
 	/**
@@ -120,7 +151,12 @@ class CouponRedemption {
 
 		foreach ( $cart->get_applied_coupons() as $coupon_code ) {
 			if ( strpos( $coupon_code, self::COUPON_CODE_PREFIX ) === 0 && $coupon_code !== $wanted ) {
-				$cart->remove_coupon( $coupon_code );
+				self::$removing = true;
+				try {
+					$cart->remove_coupon( $coupon_code );
+				} finally {
+					self::$removing = false;
+				}
 			}
 		}
 
