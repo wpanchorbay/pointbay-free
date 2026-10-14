@@ -61,10 +61,10 @@ class RedemptionController {
 	/**
 	 * Checks whether the current request is allowed to redeem points.
 	 *
-	 * Being logged in is necessary but no longer sufficient — the same
-	 * `pointbay_can_redeem` gate the cart and the UI consult is enforced here,
-	 * so a restriction cannot be sidestepped by posting to the endpoint
-	 * directly.
+	 * Login is the only requirement at the permission layer. The
+	 * `pointbay_can_redeem` gate is enforced in RedemptionManager when points
+	 * are applied, so a restriction cannot be sidestepped by posting to the
+	 * endpoint directly, while removal stays possible.
 	 *
 	 * @since 1.0.0
 	 * @return bool True when the current user may redeem points.
@@ -75,7 +75,10 @@ class RedemptionController {
 			return false;
 		}
 
-		return RedemptionManager::get_instance()->can_redeem( get_current_user_id(), array( 'source' => 'api' ) );
+		// Login only. The can_redeem() gate is enforced inside
+		// apply_points_discount(), which still lets a points = 0 removal through;
+		// gating here would 403 a customer who is trying to take points OFF.
+		return true;
 	}
 
 	/**
