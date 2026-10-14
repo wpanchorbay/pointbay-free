@@ -534,7 +534,7 @@ $mgr->apply_points_discount( $uid, 0 );
 WC()->cart->empty_cart();
 
 // 16. (item 5) CampaignBay with stacking off must not invalidate the points coupon.
-if ( class_exists( '\\WpabCampaignBay\\Engine\\PricingEngine' ) || is_plugin_active( 'campaignbay/campaignbay.php' ) ) {
+if ( in_array( 'campaignbay/campaignbay.php', (array) get_option( 'active_plugins' ), true ) ) {
 	zz_settings( array( 'redemption_mode' => 'coupon' ) );
 	zz_cart( $product );
 	$cart_before = (float) WC()->cart->get_subtotal();

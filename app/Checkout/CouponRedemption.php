@@ -67,6 +67,35 @@ class CouponRedemption {
 		$loader->add_action( 'woocommerce_before_calculate_totals', $this, 'apply_virtual_coupon' );
 		$loader->add_action( 'woocommerce_removed_coupon', $this, 'on_coupon_removed' );
 		$loader->add_filter( 'woocommerce_cart_totals_coupon_label', $this, 'friendly_coupon_label', 10, 2 );
+		$loader->add_filter( 'woocommerce_coupon_is_valid', $this, 'keep_points_coupon_valid', 99, 2 );
+	}
+
+	/**
+	 * Stops other plugins invalidating the points coupon.
+	 *
+	 * CampaignBay, with coupon stacking switched off, marks every coupon it did
+	 * not create as invalid once a campaign discount applies. That removed the
+	 * points coupon at checkout ("Coupon is not valid") while the panel still
+	 * said the points were redeemed. The points coupon is not a promotion: it
+	 * spends the customer's own balance, and fee mode already stacks with
+	 * campaigns, so it is kept valid here. The virtual coupon only exists while
+	 * points are applied in coupon mode, so nothing else can reach this branch.
+	 *
+	 * @since 1.1.0
+	 * @param bool       $valid  Whether the coupon is valid so far.
+	 * @param \WC_Coupon $coupon The coupon.
+	 * @return bool
+	 */
+	public function keep_points_coupon_valid( $valid, $coupon ) {
+		if ( $valid || ! $coupon instanceof \WC_Coupon || 0 !== strpos( $coupon->get_code(), self::COUPON_CODE_PREFIX ) ) {
+			return $valid;
+		}
+
+		if ( 'coupon' === Settings::get_instance()->get_settings( 'redemption_mode' ) && RedemptionManager::get_instance()->get_applied_points() > 0 ) {
+			return true;
+		}
+
+		return $valid;
 	}
 
 	/**
