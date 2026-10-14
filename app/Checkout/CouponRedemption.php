@@ -132,8 +132,11 @@ class CouponRedemption {
 				// form once points are applied. Our own coupon must still be
 				// attachable, so the flag lets it through for this one call.
 				self::$adding = true;
-				$cart->add_discount( $coupon_code );
-				self::$adding = false;
+				try {
+					$cart->add_discount( $coupon_code );
+				} finally {
+					self::$adding = false;
+				}
 			}
 		}
 	}
