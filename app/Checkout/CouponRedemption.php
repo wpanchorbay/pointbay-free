@@ -175,8 +175,14 @@ class CouponRedemption {
 					$cart->add_discount( $coupon_code );
 				} finally {
 					self::$adding = false;
+					// Drop only the success notice; a failure message must still reach the customer.
 					if ( null !== $notices_before && function_exists( 'wc_set_notices' ) ) {
-						wc_set_notices( $notices_before );
+						$after            = wc_get_notices();
+						$after['success'] = isset( $notices_before['success'] ) ? $notices_before['success'] : array();
+						if ( empty( $after['success'] ) ) {
+							unset( $after['success'] );
+						}
+						wc_set_notices( $after );
 					}
 				}
 			}
