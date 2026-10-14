@@ -15,18 +15,32 @@ import { BuyProLock } from '../components/common/BuyProLock';
 import { VipTiersPreview } from '../components/upsell/VipTiersPreview';
 import { LicenseSettingsPreview } from '../components/upsell/LicenseSettingsPreview';
 import { usePointBayStore } from '../store/pointbayStore';
+import { EarningBandsField } from '../components/settings/EarningBandsField';
 
 interface SettingsData {
 	earning_pointsPerDollar: number;
 	earning_pointsForRegistration: number;
 	earning_pointsForReview: number;
 	earning_orderStatusTrigger: string;
+	earning_basis: string;
+	earning_flatPointsPerOrder: number;
+	earning_firstOrderBonus: number;
+	earning_bands: any[];
+	earning_bandMode: string;
+	earning_multiplyFlatBonus: boolean;
+	earning_multiplyFirstOrderBonus: boolean;
 	redemption_pointsValue: number;
 	redemption_mode: string;
 	redemption_minPoints: number;
+	redemption_allowPartial: boolean;
+	redemption_hideCouponForm: boolean;
 	referrals_enabled: boolean;
 	referrals_bonusPoints: number;
 	display_guestNoticeEnabled: boolean;
+	display_productNoticeEnabled: boolean;
+	display_menuBalanceEnabled: boolean;
+	display_menuBalanceLocation: string;
+	display_menuBalanceFormat: string;
 	display_showAdminMenu: boolean;
 	advanced_deleteAllOnUninstall: boolean;
 	debug_enableMode: boolean;
@@ -273,6 +287,164 @@ const Settings: React.FC = () => {
 							/>
 						),
 					},
+					{
+						id: 'earning_basis',
+						label: __( 'Earn On', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicSelect
+								value={ settings.earning_basis }
+								onChange={ ( value ) =>
+									setSettings( {
+										...settings,
+										earning_basis: String( value ),
+									} )
+								}
+								options={ [
+									{
+										label: __( 'Order total (includes shipping and tax)', 'pointbay-loyalty-points-referral-rewards-woo' ),
+										value: 'total',
+									},
+									{
+										label: __( 'Subtotal only (excludes shipping and tax)', 'pointbay-loyalty-points-referral-rewards-woo' ),
+										value: 'subtotal',
+									},
+								] }
+								description={ __(
+									'Which part of the order points are calculated against. Most stores want the subtotal, so customers are not rewarded for expensive shipping.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_flatPointsPerOrder',
+						label: __( 'Flat Points Per Order', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="number"
+								min="0"
+								value={ settings.earning_flatPointsPerOrder }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										earning_flatPointsPerOrder:
+											parseInt( e.target.value ) || 0,
+									} )
+								}
+								description={ __(
+									'A fixed bonus on every order, added on top of the points earned from the order value. Set to 0 to disable.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="small"
+							/>
+						),
+					},
+					{
+						id: 'earning_multiplyFlatBonus',
+						label: __( 'Apply Tier Multiplier to Flat Bonus', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ !! settings.earning_multiplyFlatBonus }
+								onChange={ ( checked ) =>
+									setSettings( {
+										...settings,
+										earning_multiplyFlatBonus: checked,
+									} )
+								}
+								description={ __(
+									'When on, a customer on a higher tier earns a proportionally larger flat bonus.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_firstOrderBonus',
+						label: __( 'First Order Bonus', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="number"
+								min="0"
+								value={ settings.earning_firstOrderBonus }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										earning_firstOrderBonus:
+											parseInt( e.target.value ) || 0,
+									} )
+								}
+								description={ __(
+									"A one-time bonus on a customer's very first order. Awarded once per customer, for life. Set to 0 to disable.",
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="small"
+							/>
+						),
+					},
+					{
+						id: 'earning_multiplyFirstOrderBonus',
+						label: __( 'Apply Tier Multiplier to First Order Bonus', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ !! settings.earning_multiplyFirstOrderBonus }
+								onChange={ ( checked ) =>
+									setSettings( {
+										...settings,
+										earning_multiplyFirstOrderBonus: checked,
+									} )
+								}
+								description={ __(
+									'Usually left off, so the signup bonus you advertise is the amount every new customer actually receives.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_bandMode',
+						label: __( 'Band Type', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicSelect
+								value={ settings.earning_bandMode }
+								onChange={ ( value ) =>
+									setSettings( {
+										...settings,
+										earning_bandMode: String( value ),
+									} )
+								}
+								options={ [
+									{
+										label: __( 'A fixed number of points', 'pointbay-loyalty-points-referral-rewards-woo' ),
+										value: 'fixed',
+									},
+									{
+										label: __( 'A points-per-dollar rate', 'pointbay-loyalty-points-referral-rewards-woo' ),
+										value: 'rate',
+									},
+								] }
+								description={ __(
+									'What each band below awards. Fixed gives every order in the band the same points; rate multiplies the order value by the band figure.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_bands',
+						label: __( 'Order Value Bands', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<EarningBandsField
+								bands={ settings.earning_bands || [] }
+								bandMode={ settings.earning_bandMode }
+								onChange={ ( bands ) =>
+									setSettings( {
+										...settings,
+										earning_bands: bands,
+									} )
+								}
+							/>
+						),
+					},
 				] }
 			/>
 
@@ -282,91 +454,136 @@ const Settings: React.FC = () => {
 					'Configure how points are converted to discounts.',
 					'pointbay-loyalty-points-referral-rewards-woo'
 				) }
-				fields={ [
-					{
-						id: 'redemption_pointsValue',
-						label: __( 'Point Value ($)', 'pointbay-loyalty-points-referral-rewards-woo' ),
-						render: () => (
-							<ClassicInput
-								type="number"
-								step="0.01"
-								min="0.01"
-								value={ settings.redemption_pointsValue }
-								onChange={ ( e ) =>
-									setSettings( {
-										...settings,
-										redemption_pointsValue:
-											parseFloat( e.target.value ) ||
-											0.01,
-									} )
-								}
-								description={ __(
-									'The monetary value of a single point.',
-									'pointbay-loyalty-points-referral-rewards-woo'
-								) }
-								size="small"
-							/>
-						),
-					},
-					{
-						id: 'redemption_mode',
-						label: __( 'Redemption Mode', 'pointbay-loyalty-points-referral-rewards-woo' ),
-						render: () => (
-							<ClassicSelect
-								value={ settings.redemption_mode }
-								onChange={ ( value ) =>
-									setSettings( {
-										...settings,
-										redemption_mode: value,
-									} )
-								}
-								options={ [
-									{
-										label: __(
-											'Cart Fee (WC_Fee)',
+				fields={
+					applyFilters(
+						'pointbay_redemption_settings_fields',
+						[
+							{
+								id: 'redemption_pointsValue',
+								label: __( 'Point Value ($)', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicInput
+										type="number"
+										step="0.01"
+										min="0.01"
+										value={ settings.redemption_pointsValue }
+										onChange={ ( e ) =>
+											setSettings( {
+												...settings,
+												redemption_pointsValue:
+													parseFloat( e.target.value ) ||
+													0.01,
+											} )
+										}
+										description={ __(
+											'The monetary value of a single point.',
 											'pointbay-loyalty-points-referral-rewards-woo'
-										),
-										value: 'fee',
-									},
-									{
-										label: __(
-											'Virtual Coupon (WC_Coupon)',
+										) }
+										size="small"
+									/>
+								),
+							},
+							{
+								id: 'redemption_mode',
+								label: __( 'Redemption Mode', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicSelect
+										value={ settings.redemption_mode }
+										onChange={ ( value ) =>
+											setSettings( {
+												...settings,
+												redemption_mode: value,
+											} )
+										}
+										options={ [
+											{
+												label: __(
+													'Cart Fee (WC_Fee)',
+													'pointbay-loyalty-points-referral-rewards-woo'
+												),
+												value: 'fee',
+											},
+											{
+												label: __(
+													'Virtual Coupon (WC_Coupon)',
+													'pointbay-loyalty-points-referral-rewards-woo'
+												),
+												value: 'coupon',
+											},
+										] }
+										description={ __(
+											'How the discount is applied to the cart.',
 											'pointbay-loyalty-points-referral-rewards-woo'
-										),
-										value: 'coupon',
-									},
-								] }
-								description={ __(
-									'How the discount is applied to the cart.',
-									'pointbay-loyalty-points-referral-rewards-woo'
-								) }
-							/>
-						),
-					},
-					{
-						id: 'redemption_minPoints',
-						label: __( 'Minimum Points to Redeem', 'pointbay-loyalty-points-referral-rewards-woo' ),
-						render: () => (
-							<ClassicInput
-								type="number"
-								min="0"
-								value={ settings.redemption_minPoints }
-								onChange={ ( e ) =>
-									setSettings( {
-										...settings,
-										redemption_minPoints:
-											parseInt( e.target.value ) || 0,
-									} )
-								}
-								description={ __(
-									'The minimum amount of points needed before the redemption form is shown.',
-									'pointbay-loyalty-points-referral-rewards-woo'
-								) }
-								size="small"
-							/>
-						),
-					},
-				] }
+										) }
+									/>
+								),
+							},
+							{
+								id: 'redemption_minPoints',
+								label: __( 'Minimum Points to Redeem', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicInput
+										type="number"
+										min="0"
+										value={ settings.redemption_minPoints }
+										onChange={ ( e ) =>
+											setSettings( {
+												...settings,
+												redemption_minPoints:
+													parseInt( e.target.value ) || 0,
+											} )
+										}
+										description={ __(
+											'The minimum amount of points needed before the redemption form is shown.',
+											'pointbay-loyalty-points-referral-rewards-woo'
+										) }
+										size="small"
+									/>
+								),
+							},
+							{
+								id: 'redemption_allowPartial',
+								label: __( 'Let Customers Choose the Amount', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicCheckbox
+										checked={ !! settings.redemption_allowPartial }
+										onChange={ ( checked ) =>
+											setSettings( {
+												...settings,
+												redemption_allowPartial: checked,
+											} )
+										}
+										description={ __(
+											'When on, the checkout shows a slider so the customer can spend part of their balance. When off, redemption is all-or-nothing.',
+											'pointbay-loyalty-points-referral-rewards-woo'
+										) }
+									/>
+								),
+							},
+							{
+								id: 'redemption_hideCouponForm',
+								label: __( 'Hide Coupon Form While Points Are Applied', 'pointbay-loyalty-points-referral-rewards-woo' ),
+								render: () => (
+									<ClassicCheckbox
+										checked={ !! settings.redemption_hideCouponForm }
+										onChange={ ( checked ) =>
+											setSettings( {
+												...settings,
+												redemption_hideCouponForm: checked,
+											} )
+										}
+										description={ __(
+											'Stops customers stacking a coupon on top of a points discount by hiding the coupon box once points are applied.',
+											'pointbay-loyalty-points-referral-rewards-woo'
+										) }
+									/>
+								),
+							},
+						],
+						settings,
+						setSettings
+					) as any[]
+				}
 			/>
 
 			<ClassicSettingsTable
@@ -489,6 +706,96 @@ const Settings: React.FC = () => {
 									'Show login/register prompt on checkout',
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
+							/>
+						),
+					},
+					{
+						id: 'display_productNoticeEnabled',
+						label: __( 'Product Page Earn Notice', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ !! settings.display_productNoticeEnabled }
+								onChange={ ( val ) =>
+									setSettings( {
+										...settings,
+										display_productNoticeEnabled: val,
+									} )
+								}
+								label={ __(
+									'Show how many points a product will earn',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								description={ __(
+									'Displays the points figure under the price on each product page.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'display_menuBalanceEnabled',
+						label: __( 'Balance in Site Menu', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ !! settings.display_menuBalanceEnabled }
+								onChange={ ( val ) =>
+									setSettings( {
+										...settings,
+										display_menuBalanceEnabled: val,
+									} )
+								}
+								label={ __(
+									"Show the customer's balance in the navigation and toolbar",
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								description={ __(
+									'Block themes do not use classic navigation menus. On those, use the toolbar entry or place the [pointbay_balance] shortcode in a header block.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'display_menuBalanceLocation',
+						label: __( 'Menu Location', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="text"
+								disabled={ ! settings.display_menuBalanceEnabled }
+								value={ settings.display_menuBalanceLocation || '' }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										display_menuBalanceLocation: e.target.value,
+									} )
+								}
+								description={ __(
+									"The theme menu location to append the balance to, e.g. 'primary'.",
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="regular"
+							/>
+						),
+					},
+					{
+						id: 'display_menuBalanceFormat',
+						label: __( 'Balance Format', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="text"
+								disabled={ ! settings.display_menuBalanceEnabled }
+								value={ settings.display_menuBalanceFormat || '' }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										display_menuBalanceFormat: e.target.value,
+									} )
+								}
+								description={ __(
+									'How the balance reads. {points} is replaced with the number, e.g. "{points} pts".',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="regular"
 							/>
 						),
 					},

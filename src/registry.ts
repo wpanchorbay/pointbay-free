@@ -7,6 +7,7 @@ import {
 	ClassicTable,
 	ClassicSettingsTable,
 	ClassicTextarea,
+	ClassicRepeater,
 } from './components/classics';
 import CustomModal from './components/common/CustomModal';
 import { useToast } from './store/toast/use-toast';
@@ -28,6 +29,7 @@ export function registerPointBayRegistry() {
 			ClassicTable,
 			ClassicSettingsTable,
 			ClassicTextarea,
+			ClassicRepeater,
 			CustomModal,
 		},
 		useToast,
