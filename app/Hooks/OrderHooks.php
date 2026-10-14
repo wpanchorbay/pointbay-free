@@ -8,6 +8,7 @@
 namespace PointBay\Hooks;
 
 use PointBay\Services\LedgerService;
+use PointBay\Services\EarningCalculator;
 use PointBay\Core\Settings;
 
 /**
@@ -16,6 +17,54 @@ use PointBay\Core\Settings;
  * @since 1.0.0
  */
 class OrderHooks {
+
+	/**
+	 * Reference type for the amount-proportional part of an order award.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_ORDER = 'order';
+
+	/**
+	 * Reference type for the flat per-order bonus.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_FLAT_BONUS = 'order_flat_bonus';
+
+	/**
+	 * Reference type for the one-time first-order bonus.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_FIRST_ORDER = 'first_order_bonus';
+
+	/**
+	 * Reference type for a full COD reversal.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_ORDER_REVERSAL = 'order_reversal';
+
+	/**
+	 * Reference type for a refund clawback.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const REF_REFUND = 'refund';
+
+	/**
+	 * Order meta key holding the award breakdown as JSON.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const META_BREAKDOWN = '_pointbay_award_breakdown';
 
 	/**
 	 * The single instance of the class.
@@ -36,6 +85,16 @@ class OrderHooks {
 			self::$instance = new self();
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * Every reference type an order award may be written under.
+	 *
+	 * @since 1.1.0
+	 * @return array List of reference types.
+	 */
+	private static function award_reference_types() {
+		return array( self::REF_ORDER, self::REF_FLAT_BONUS, self::REF_FIRST_ORDER );
 	}
 
 	/**
@@ -82,25 +141,156 @@ class OrderHooks {
 			return;
 		}
 
-		$ledger_service = LedgerService::get_instance();
+		$this->award_order_points( $order, $user_id );
+	}
 
-		if ( $ledger_service->has_existing_transaction( $user_id, 'order', $order_id, 'credit' ) ) {
+	/**
+	 * Writes an order's award to the ledger.
+	 *
+	 * An award is up to three rows rather than one. The ledger's unique key
+	 * forbids two credits sharing a reference, and folding the bonuses into the
+	 * order credit would make them indistinguishable afterwards — which is
+	 * exactly what the refund clawback needs to tell apart, since a partial
+	 * refund prorates the amount-proportional part and leaves an all-or-nothing
+	 * bonus alone.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order   The order being awarded.
+	 * @param int       $user_id The customer.
+	 * @return void
+	 */
+	private function award_order_points( $order, $user_id ) {
+		$order_id = $order->get_id();
+		$ledger   = LedgerService::get_instance();
+
+		// Any component already present means this order has been awarded; the
+		// unique key would reject a repeat anyway, but bailing here keeps a
+		// re-fired status transition from re-reading settings and re-saving meta.
+		foreach ( self::award_reference_types() as $ref_type ) {
+			if ( $ledger->has_existing_transaction( $user_id, $ref_type, $order_id, 'credit' ) ) {
+				return;
+			}
+		}
+
+		$calculator = EarningCalculator::get_instance();
+
+		// The ledger, not the order list, is what says whether this customer has
+		// had their first-order bonus: order history is not stable across a
+		// guest checkout later claimed by a registration.
+		$is_first_order = 0 === $ledger->count_by_reference_type( $user_id, self::REF_FIRST_ORDER );
+
+		$breakdown = $calculator->calculate(
+			array(
+				'amount'              => $calculator->resolve_order_basis( $order ),
+				'user_id'             => $user_id,
+				'include_first_order' => $is_first_order,
+				'context'             => 'order',
+				'order'               => $order,
+			)
+		);
+
+		if ( $breakdown['total'] <= 0 ) {
 			return;
 		}
 
-		$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
-		$total             = (float) $order->get_total();
+		$credits = array();
 
-		$multiplier = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
+		if ( $breakdown['base'] > 0 ) {
+			$credits[] = array(
+				'amount'      => $breakdown['base'],
+				'ref_type'    => self::REF_ORDER,
+				'ref_id'      => $order_id,
+				// translators: %d: order number.
+				'description' => sprintf( __( 'Points earned for order #%d', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id ),
+			);
+		}
 
-		$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
+		if ( $breakdown['flat'] > 0 ) {
+			$credits[] = array(
+				'amount'      => $breakdown['flat'],
+				'ref_type'    => self::REF_FLAT_BONUS,
+				'ref_id'      => $order_id,
+				// translators: %d: order number.
+				'description' => sprintf( __( 'Order bonus for order #%d', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id ),
+			);
+		}
 
-		if ( $points_to_award > 0 ) {
-			$result = $ledger_service->credit( $user_id, $points_to_award, 'order', $order_id, 'Points earned for order #' . $order_id, 'system' );
-			if ( is_wp_error( $result ) ) {
-				pointbay_log( "OrderHooks: Failed to credit {$points_to_award} points for order #{$order_id} (user {$user_id}): " . $result->get_error_message(), 'ERROR' );
+		if ( $breakdown['first_order'] > 0 ) {
+			$credits[] = array(
+				'amount'      => $breakdown['first_order'],
+				'ref_type'    => self::REF_FIRST_ORDER,
+				'ref_id'      => $order_id,
+				// translators: %d: order number.
+				'description' => sprintf( __( 'First order bonus for order #%d', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id ),
+			);
+		}
+
+		$result = $ledger->credit_batch( $user_id, $credits );
+
+		if ( is_wp_error( $result ) ) {
+			pointbay_log( "OrderHooks: Failed to credit points for order #{$order_id} (user {$user_id}): " . $result->get_error_message(), 'ERROR' );
+			return;
+		}
+
+		// Recorded so a later refund prorates against the figures this order was
+		// actually awarded on, rather than recomputing from settings that may
+		// have changed in between.
+		$order->update_meta_data( self::META_BREAKDOWN, wp_json_encode( $breakdown ) );
+		$order->save();
+
+		/**
+		 * Fires after an order's points have been awarded.
+		 *
+		 * @since 1.1.0
+		 * @param int   $user_id   The customer credited.
+		 * @param int   $order_id  The order awarded.
+		 * @param array $breakdown The award breakdown from EarningCalculator.
+		 */
+		do_action( 'pointbay_order_points_awarded', $user_id, $order_id, $breakdown );
+	}
+
+	/**
+	 * Reads back the breakdown an order was awarded on.
+	 *
+	 * Orders awarded before the breakdown meta existed get a synthesized one, so
+	 * a refund against them still prorates rather than falling back to
+	 * recomputing from current settings.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order   The order.
+	 * @param int       $user_id The customer.
+	 * @return array|null The breakdown, or null when the order was never awarded.
+	 */
+	private function get_award_breakdown( $order, $user_id ) {
+		$stored = $order->get_meta( self::META_BREAKDOWN );
+
+		if ( $stored ) {
+			$decoded = json_decode( $stored, true );
+			if ( is_array( $decoded ) && isset( $decoded['total'] ) ) {
+				return wp_parse_args(
+					$decoded,
+					array(
+						'basis_amount' => (float) $order->get_total(),
+						'base'         => 0,
+						'flat'         => 0,
+						'first_order'  => 0,
+					)
+				);
 			}
 		}
+
+		$credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, self::REF_ORDER, $order->get_id(), 'credit' );
+		if ( ! $credit || (int) $credit->amount <= 0 ) {
+			return null;
+		}
+
+		return array(
+			'basis_amount' => (float) $order->get_total(),
+			'base'         => (int) $credit->amount,
+			'flat'         => 0,
+			'first_order'  => 0,
+			'total'        => (int) $credit->amount,
+		);
 	}
 
 	/**
@@ -133,19 +323,23 @@ class OrderHooks {
 
 		$ledger_service = LedgerService::get_instance();
 
-		if ( $ledger_service->has_existing_transaction( $user_id, 'order_reversal', $order_id, 'debit' ) ) {
+		if ( $ledger_service->has_existing_transaction( $user_id, self::REF_ORDER_REVERSAL, $order_id, 'debit' ) ) {
 			return;
 		}
 
-		$credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
-		if ( ! $credit || (int) $credit->amount <= 0 ) {
+		// Sums every component the award was written under — reading only the
+		// base credit here would leave the flat and first-order bonuses standing
+		// on a cancelled order.
+		$awarded = (int) $ledger_service->sum_by_reference_types( $user_id, self::award_reference_types(), $order_id, 'credit' );
+
+		if ( $awarded <= 0 ) {
 			return;
 		}
 
 		$ledger_service->clawback(
 			$user_id,
-			(int) $credit->amount,
-			'order_reversal',
+			$awarded,
+			self::REF_ORDER_REVERSAL,
 			$order_id,
 			// translators: 1: order ID, 2: new order status.
 			sprintf( __( 'Points reversed: COD order #%1$d was %2$s.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id, $new_status ),
@@ -158,6 +352,16 @@ class OrderHooks {
 
 	/**
 	 * Claws back points proportional to a refunded amount.
+	 *
+	 * Prorates against what the order was actually awarded, read from the stored
+	 * breakdown, rather than recomputing from live settings — a rate changed
+	 * between the order and the refund must not change the clawback. Partial
+	 * refunds accumulate: the target is always computed against the order's
+	 * whole refunded total and prior clawbacks are subtracted, so three 33%
+	 * refunds reclaim the award exactly once.
+	 *
+	 * Bonuses are all-or-nothing. Refunding 30% of an order should not take back
+	 * 30% of a "+500 on your first order" incentive; only a full refund does.
 	 *
 	 * @since 1.0.0
 	 * @param int $order_id  The order ID.
@@ -177,31 +381,64 @@ class OrderHooks {
 
 		$ledger_service = LedgerService::get_instance();
 
-		if ( $ledger_service->has_existing_transaction( $user_id, 'refund', $refund_id, 'debit' ) ) {
+		if ( $ledger_service->has_existing_transaction( $user_id, self::REF_REFUND, $refund_id, 'debit' ) ) {
 			return;
 		}
 
-		$refund = wc_get_order( $refund_id );
-		if ( ! $refund ) {
+		// A cancelled COD order has already had its whole award reversed.
+		// Without this guard a refund recorded afterwards claws it back twice.
+		if ( $ledger_service->has_existing_transaction( $user_id, self::REF_ORDER_REVERSAL, $order_id, 'debit' ) ) {
 			return;
 		}
 
-		$refund_amount   = (float) $refund->get_amount();
-		$original_credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
+		$breakdown = $this->get_award_breakdown( $order, $user_id );
+		if ( ! $breakdown ) {
+			return;
+		}
 
-		if ( $original_credit ) {
-			$original_points = (int) $original_credit->amount;
+		$base          = (int) $breakdown['base'];
+		$fixed         = (int) $breakdown['flat'] + (int) $breakdown['first_order'];
+		$total_awarded = $base + $fixed;
 
-			$settings          = Settings::get_instance();
-			$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
-			$multiplier        = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
+		if ( $total_awarded <= 0 ) {
+			return;
+		}
 
-			$points_to_claw_back = (int) floor( $refund_amount * $points_per_dollar * $multiplier );
-			$points_to_claw_back = min( $points_to_claw_back, $original_points );
+		$refunds        = $order->get_refunds();
+		$refunded_total = 0.0;
+		$refund_ids     = array();
 
-			if ( $points_to_claw_back > 0 ) {
-				$ledger_service->clawback( $user_id, $points_to_claw_back, 'refund', $refund_id, 'Points clawback for refund #' . $refund_id, false, 'system' );
-			}
+		foreach ( $refunds as $refund ) {
+			$refunded_total += abs( (float) $refund->get_amount() );
+			$refund_ids[]    = $refund->get_id();
+		}
+
+		$basis = (float) $breakdown['basis_amount'];
+		$ratio = $basis > 0 ? min( 1.0, $refunded_total / $basis ) : 1.0;
+
+		// round(), not floor(): repeated partial refunds have to sum back to the
+		// full award rather than losing a point to truncation each time.
+		$target = (int) round( $base * $ratio );
+
+		if ( $ratio >= 1.0 ) {
+			$target += $fixed;
+		}
+
+		$already_clawed = (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
+
+		$delta = min( $target, $total_awarded ) - $already_clawed;
+
+		if ( $delta > 0 ) {
+			$ledger_service->clawback(
+				$user_id,
+				$delta,
+				self::REF_REFUND,
+				$refund_id,
+				// translators: %d: refund number.
+				sprintf( __( 'Points clawback for refund #%d', 'pointbay-loyalty-points-referral-rewards-woo' ), $refund_id ),
+				false,
+				'system'
+			);
 		}
 	}
 
@@ -221,27 +458,34 @@ class OrderHooks {
 			return $total_rows;
 		}
 
-		// Find credit entry (points earned)
-		$credit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'credit' );
-		// Find debit entry (points redeemed)
-		$debit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, 'order', $order_id, 'debit' );
+		$ledger = LedgerService::get_instance();
 
-		if ( $credit && (int) $credit->amount > 0 ) {
+		// Points earned, summed across every component of the award.
+		$earned = (int) $ledger->sum_by_reference_types( $user_id, self::award_reference_types(), $order_id, 'credit' );
+
+		// Find debit entry (points redeemed)
+		$debit = \PointBay\Models\LedgerEntry::find_by_reference( $user_id, self::REF_ORDER, $order_id, 'debit' );
+
+		if ( $earned > 0 ) {
 			$total_rows['pointbay_points_earned'] = array(
 				'label' => __( 'Points Earned:', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				// translators: %d: number of points earned.
-				'value' => sprintf( __( '+%d points', 'pointbay-loyalty-points-referral-rewards-woo' ), $credit->amount ),
+				'value' => sprintf( __( '+%d points', 'pointbay-loyalty-points-referral-rewards-woo' ), $earned ),
 			);
 		} else {
 			$status = $order->get_status();
 			if ( ! in_array( $status, array( 'cancelled', 'failed', 'refunded', 'completed' ), true ) ) {
-				$settings          = Settings::get_instance();
-				$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
-				$total             = (float) $order->get_total();
+				$calculator = EarningCalculator::get_instance();
 
-				$multiplier = apply_filters( 'pointbay_earning_multiplier', 1.0, $user_id );
-
-				$points_to_award = (int) floor( $total * $points_per_dollar * $multiplier );
+				$points_to_award = $calculator->total(
+					array(
+						'amount'              => $calculator->resolve_order_basis( $order ),
+						'user_id'             => $user_id,
+						'include_first_order' => 0 === $ledger->count_by_reference_type( $user_id, self::REF_FIRST_ORDER ),
+						'context'             => 'order',
+						'order'               => $order,
+					)
+				);
 
 				if ( $points_to_award > 0 ) {
 					$total_rows['pointbay_points_pending'] = array(
