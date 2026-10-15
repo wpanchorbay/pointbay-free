@@ -117,9 +117,10 @@ return array(
 			'default' => true,
 		),
 		'earning_minCartSpend'            => array(
-			'type'    => 'number',
-			'minimum' => 0,
-			'default' => 0,
+			'type'              => 'number',
+			'minimum'           => 0,
+			'sanitize_callback' => array( '\\PointBay\\Services\\EarningCalculator', 'sanitize_amount' ),
+			'default'           => 0,
 		),
 		'earning_pointsForComment'        => array(
 			'type'              => 'integer',
