@@ -276,7 +276,7 @@ const BackfillTool: React.FC = () => {
 							<p>
 								{ sprintf(
 									/* translators: 1: number of orders, 2: number of customers, 3: total points. */
-									__( '%1$s orders from %2$s customers will earn %3$s points in total.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+									__( '%1$s order(s) from %2$s customer(s) will earn %3$s points in total.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 									String( totals.orders ),
 									String( totals.customers ),
 									String( totals.points )
@@ -286,7 +286,7 @@ const BackfillTool: React.FC = () => {
 								<strong>
 									{ sprintf(
 										/* translators: 1: total points, 2: number of customers, 3: number of orders. */
-										__( 'This will add %1$s points to %2$s customers for %3$s orders. This cannot be undone in bulk.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+										__( 'This will add %1$s points to %2$s customer(s) for %3$s order(s). This cannot be undone in bulk.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 										String( totals.points ),
 										String( totals.customers ),
 										String( totals.orders )
@@ -325,7 +325,7 @@ const BackfillTool: React.FC = () => {
 					<p>
 						{ sprintf(
 							/* translators: 1: orders credited, 2: customers credited, 3: points awarded. */
-							__( 'Done: %1$s orders credited, %2$s customers, %3$s points', 'pointbay-loyalty-points-referral-rewards-woo' ),
+							__( 'Done: %1$s order(s) credited, %2$s customer(s), %3$s points', 'pointbay-loyalty-points-referral-rewards-woo' ),
 							String( totals.orders ),
 							String( totals.customers ),
 							String( totals.points )
