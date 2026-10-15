@@ -105,6 +105,15 @@ class OrderHooks {
 	const META_RETURNED_REFUNDS = '_pointbay_redemption_returned_refunds';
 
 	/**
+	 * Order meta listing the refund IDs an earn clawback was written for, kept so
+	 * a deleted and re-recorded refund is not clawed back twice.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const META_CLAWED_REFUNDS = '_pointbay_earn_clawed_refunds';
+
+	/**
 	 * Order meta key holding the award breakdown as JSON.
 	 *
 	 * @since 1.1.0
@@ -485,11 +494,7 @@ class OrderHooks {
 
 		// Earlier partial-refund clawbacks have already taken some of this back;
 		// reversing the full award on top would take it twice.
-		$refund_ids = array();
-		foreach ( $order->get_refunds() as $refund ) {
-			$refund_ids[] = $refund->get_id();
-		}
-		$awarded -= (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
+		$awarded -= (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $this->get_clawed_refund_ids( $order ), 'debit' );
 
 		// Earlier cancel/reopen cycles reversed some of the award and gave part of
 		// it back; whatever is still reversed from them is not there to reverse
@@ -836,7 +841,7 @@ class OrderHooks {
 		$delta        = min( $progress['target'] - $progress['already_clawed'] - $net_reversed, $outstanding );
 
 		if ( $delta > 0 ) {
-			$ledger_service->clawback(
+			$result = $ledger_service->clawback(
 				$user_id,
 				$delta,
 				self::REF_REFUND,
@@ -846,7 +851,34 @@ class OrderHooks {
 				false,
 				'system'
 			);
+
+			if ( ! is_wp_error( $result ) ) {
+				$remembered   = array_map( 'absint', (array) $order->get_meta( self::META_CLAWED_REFUNDS ) );
+				$remembered[] = (int) $refund_id;
+				$order->update_meta_data( self::META_CLAWED_REFUNDS, array_values( array_unique( $remembered ) ) );
+				$order->save_meta_data();
+			}
 		}
+	}
+
+	/**
+	 * Refund IDs whose earn clawback counts toward what has been taken back.
+	 *
+	 * The union of every refund this plugin has ever clawed points back for,
+	 * remembered in order meta, and the refunds that currently exist: an admin who
+	 * deletes a refund and records it again must not be clawed back twice.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order The order.
+	 * @return int[] Unique refund IDs.
+	 */
+	private function get_clawed_refund_ids( $order ) {
+		$refund_ids = array_map( 'absint', (array) $order->get_meta( self::META_CLAWED_REFUNDS ) );
+		foreach ( $order->get_refunds() as $refund ) {
+			$refund_ids[] = $refund->get_id();
+		}
+
+		return array_values( array_unique( $refund_ids ) );
 	}
 
 	/**
@@ -875,7 +907,6 @@ class OrderHooks {
 
 		$refunds        = $order->get_refunds();
 		$refunded_total = 0.0;
-		$refund_ids     = array();
 
 		// Subtotal-mode awards were measured excluding shipping and tax, so the
 		// refunded side must be too, or refunding shipping would claw back
@@ -888,7 +919,6 @@ class OrderHooks {
 				$amount = max( 0.0, $amount - abs( (float) $refund->get_shipping_total() ) - abs( (float) $refund->get_total_tax() ) );
 			}
 			$refunded_total += $amount;
-			$refund_ids[]    = $refund->get_id();
 		}
 
 		// Round both sides to the currency's decimals: 109.99 - 10 - 9.99 is
@@ -907,7 +937,7 @@ class OrderHooks {
 			$target += $fixed;
 		}
 
-		$already_clawed = (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $refund_ids, 'debit' );
+		$already_clawed = (int) $ledger_service->sum_by_reference( $user_id, self::REF_REFUND, $this->get_clawed_refund_ids( $order ), 'debit' );
 
 		return array(
 			'target'         => min( $target, $total_awarded ),
