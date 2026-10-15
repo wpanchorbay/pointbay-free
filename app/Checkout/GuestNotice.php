@@ -8,6 +8,7 @@
 namespace PointBay\Checkout;
 
 use PointBay\Core\Settings;
+use PointBay\Services\EarningCalculator;
 
 /**
  * Displays a notice encouraging guests to log in or register to earn points.
@@ -45,21 +46,38 @@ class GuestNotice {
 			return;
 		}
 
-		$points_per_dollar = (int) $settings->get_settings( 'earning_pointsPerDollar' );
-		if ( $points_per_dollar <= 0 ) {
+		$calculator = EarningCalculator::get_instance();
+		$basis      = $calculator->resolve_cart_basis();
+
+		if ( $basis <= 0 ) {
 			return;
 		}
 
-		$total = (float) WC()->cart->subtotal;
-		if ( $total <= 0 ) {
-			return;
-		}
-
-		$points_to_award = (int) floor( $total * $points_per_dollar );
+		// Two deliberate departures from the logged-in notice, both intentional
+		// and neither a bug to be tidied away:
+		//
+		// 1. apply_multiplier is off. A visitor has no account, so no VIP tier,
+		// so no multiplier can honestly be promised to them.
+		// 2. The registration points are added *outside* the calculator. They
+		// are not an earning rule for this order — they are a separate
+		// signup incentive being previewed alongside it, and folding them in
+		// would make them prorate on refund like order-earned points.
+		$points_to_award = $calculator->total(
+			array(
+				'amount'           => $basis,
+				'user_id'          => 0,
+				'apply_multiplier' => false,
+				'context'          => 'guest',
+			)
+		);
 
 		$reg_points = (int) $settings->get_settings( 'earning_pointsForRegistration' );
 		if ( $reg_points > 0 ) {
 			$points_to_award += $reg_points;
+		}
+
+		if ( $points_to_award <= 0 ) {
+			return;
 		}
 
 		$message = sprintf(

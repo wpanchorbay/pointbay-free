@@ -26,6 +26,22 @@ class CouponRedemption {
 	const COUPON_CODE_PREFIX = 'pointbay_points_';
 
 	/**
+	 * True only while this class is attaching its own coupon to the cart.
+	 *
+	 * @since 1.1.0
+	 * @var bool
+	 */
+	public static $adding = false;
+
+	/**
+	 * True only while this class is swapping out a stale points coupon itself.
+	 *
+	 * @since 1.1.0
+	 * @var bool
+	 */
+	public static $removing = false;
+
+	/**
 	 * Gets an instance of this object.
 	 *
 	 * @since 1.0.0
@@ -49,6 +65,78 @@ class CouponRedemption {
 		$loader = $plugin->get_loader();
 		$loader->add_filter( 'woocommerce_get_shop_coupon_data', $this, 'provide_virtual_coupon', 10, 2 );
 		$loader->add_action( 'woocommerce_before_calculate_totals', $this, 'apply_virtual_coupon' );
+		$loader->add_action( 'woocommerce_removed_coupon', $this, 'on_coupon_removed' );
+		$loader->add_filter( 'woocommerce_cart_totals_coupon_label', $this, 'friendly_coupon_label', 10, 2 );
+		$loader->add_filter( 'woocommerce_coupon_is_valid', $this, 'keep_points_coupon_valid', 99, 2 );
+	}
+
+	/**
+	 * Stops other plugins invalidating the points coupon.
+	 *
+	 * CampaignBay, with coupon stacking switched off, marks every coupon it did
+	 * not create as invalid once a campaign discount applies. That removed the
+	 * points coupon at checkout ("Coupon is not valid") while the panel still
+	 * said the points were redeemed. The points coupon is not a promotion: it
+	 * spends the customer's own balance, and fee mode already stacks with
+	 * campaigns, so it is kept valid here. The virtual coupon only exists while
+	 * points are applied in coupon mode, so nothing else can reach this branch.
+	 *
+	 * @since 1.1.0
+	 * @param bool       $valid  Whether the coupon is valid so far.
+	 * @param \WC_Coupon $coupon The coupon.
+	 * @return bool
+	 */
+	public function keep_points_coupon_valid( $valid, $coupon ) {
+		if ( $valid || ! $coupon instanceof \WC_Coupon || 0 !== strpos( $coupon->get_code(), self::COUPON_CODE_PREFIX ) ) {
+			return $valid;
+		}
+
+		if ( 'coupon' === Settings::get_instance()->get_settings( 'redemption_mode' ) && RedemptionManager::get_instance()->get_applied_points() > 0 ) {
+			return true;
+		}
+
+		return $valid;
+	}
+
+	/**
+	 * Clears the applied points when the customer removes the points coupon
+	 * through WooCommerce's own controls (the cart [Remove] link, the checkout chip).
+	 *
+	 * The virtual coupon is re-added on every calculation from the session value,
+	 * so without this the removal silently does nothing. Our own add and swap are
+	 * excluded by the flags.
+	 *
+	 * @since 1.1.0
+	 * @param string $coupon_code The removed coupon code.
+	 * @return void
+	 */
+	public function on_coupon_removed( $coupon_code ) {
+		if ( self::$adding || self::$removing ) {
+			return;
+		}
+
+		if ( 0 === strpos( strtolower( (string) $coupon_code ), self::COUPON_CODE_PREFIX ) ) {
+			RedemptionManager::get_instance()->remove_points_discount();
+		}
+	}
+
+	/**
+	 * Shows "Points discount" instead of the raw `pointbay_points_<hash>` code in
+	 * the classic cart and checkout totals.
+	 *
+	 * Display only: the coupon code itself is untouched, and every internal check
+	 * keys off the code rather than this label.
+	 *
+	 * @since 1.1.0
+	 * @param string     $label  The coupon label.
+	 * @param \WC_Coupon $coupon The coupon.
+	 * @return string
+	 */
+	public function friendly_coupon_label( $label, $coupon ) {
+		if ( $coupon instanceof \WC_Coupon && 0 === strpos( strtolower( $coupon->get_code() ), self::COUPON_CODE_PREFIX ) ) {
+			return esc_html__( 'Points discount', 'pointbay-loyalty-points-referral-rewards-woo' );
+		}
+		return $label;
 	}
 
 	/**
@@ -69,21 +157,63 @@ class CouponRedemption {
 		}
 
 		$redemption_manager = RedemptionManager::get_instance();
-		$points             = $redemption_manager->get_applied_points();
 
-		$applied_coupons = $cart->get_applied_coupons();
-		foreach ( $applied_coupons as $coupon_code ) {
-			if ( strpos( $coupon_code, self::COUPON_CODE_PREFIX ) === 0 ) {
-				if ( $points <= 0 ) {
+		// Deliberately NOT reconciling here, for two reasons. This runs on
+		// woocommerce_before_calculate_totals, where the cart subtotal has not
+		// been computed yet — the ceiling would be measured against zero and
+		// clear the customer's redemption outright. And the discount is a
+		// coupon in this mode, so it is inside get_discount_total(): recomputing
+		// the ceiling from a total that already has the discount in it is
+		// circular, the same trap get_max_redeemable_points() documents for fees.
+		$points = $redemption_manager->get_applied_points();
+
+		// A customer who may no longer redeem must not keep the points coupon.
+		if ( $points > 0 && ! $redemption_manager->can_redeem( get_current_user_id(), array( 'source' => 'cart' ) ) ) {
+			$points = 0;
+		}
+
+		// The code encodes the points amount, and provide_virtual_coupon() serves
+		// any prefixed code at the CURRENT amount. A leftover code from an earlier
+		// amount would therefore stack a second full discount, so only the code
+		// for the current points may remain.
+		$wanted = $points > 0 ? self::COUPON_CODE_PREFIX . md5( WC()->session->get_customer_id() . $points ) : '';
+
+		foreach ( $cart->get_applied_coupons() as $coupon_code ) {
+			if ( strpos( $coupon_code, self::COUPON_CODE_PREFIX ) === 0 && $coupon_code !== $wanted ) {
+				self::$removing = true;
+				try {
 					$cart->remove_coupon( $coupon_code );
+				} finally {
+					self::$removing = false;
 				}
 			}
 		}
 
 		if ( $points > 0 ) {
-			$coupon_code = self::COUPON_CODE_PREFIX . md5( WC()->session->get_customer_id() . $points );
+			$coupon_code = $wanted;
 			if ( ! $cart->has_discount( $coupon_code ) ) {
-				$cart->add_discount( $coupon_code );
+				// WC_Cart::add_discount() refuses outright while coupons are
+				// disabled, and CouponFormVisibility disables them to hide the
+				// form once points are applied. Our own coupon must still be
+				// attachable, so the flag lets it through for this one call.
+				self::$adding = true;
+				// add_discount() queues "Coupon code applied successfully." for a coupon
+				// the customer never typed; it would surface on a later page load.
+				$notices_before = function_exists( 'wc_get_notices' ) ? wc_get_notices() : null;
+				try {
+					$cart->add_discount( $coupon_code );
+				} finally {
+					self::$adding = false;
+					// Drop only the success notice; a failure message must still reach the customer.
+					if ( null !== $notices_before && function_exists( 'wc_set_notices' ) ) {
+						$after            = wc_get_notices();
+						$after['success'] = isset( $notices_before['success'] ) ? $notices_before['success'] : array();
+						if ( empty( $after['success'] ) ) {
+							unset( $after['success'] );
+						}
+						wc_set_notices( $after );
+					}
+				}
 			}
 		}
 	}
@@ -113,7 +243,14 @@ class CouponRedemption {
 			return false;
 		}
 
-		$discount_value = $redemption_manager->calculate_discount_value( $points );
+		$discount_value = $redemption_manager->calculate_discount_value(
+			$points,
+			get_current_user_id(),
+			array(
+				'source' => 'cart',
+				'amount' => $redemption_manager->get_cart_basis_before_points(),
+			)
+		);
 
 		return array(
 			'id'                         => 0,

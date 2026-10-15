@@ -121,6 +121,16 @@ class CheckoutProcessor {
 			return;
 		}
 
+		// Re-check eligibility at the moment points are taken, not only when they
+		// were applied. Abort rather than let the order keep a discount it may not have.
+		$can_context = array(
+			'source' => 'order',
+			'order'  => $order,
+		);
+		if ( ! $redemption_manager->can_redeem( $user_id, $can_context ) ) {
+			throw new \Exception( esc_html__( 'Points redemption is not available on this account.', 'pointbay-loyalty-points-referral-rewards-woo' ) );
+		}
+
 		$order_id = $order->get_id();
 
 		global $wpdb;
@@ -136,8 +146,21 @@ class CheckoutProcessor {
 			// applied earlier in checkout — the cart may have shrunk since then
 			// (item removed, coupon added), which would otherwise let the debit
 			// exceed what this order can actually support.
-			$order_total_basis    = max( 0.0, (float) $order->get_subtotal() - (float) $order->get_total_discount() );
-			$max_points_for_order = $redemption_manager->get_max_points_for_amount( $order_total_basis );
+			//
+			// Goes through get_max_redeemable_points() rather than the bare
+			// arithmetic of get_max_points_for_amount(): the ceiling filter lives
+			// in the former, so calling the latter here would apply an add-on's
+			// redemption cap on screen and then quietly ignore it at the moment
+			// the points are actually taken.
+			$order_total_basis    = $redemption_manager->get_order_basis_before_points( $order );
+			$max_points_for_order = $redemption_manager->get_max_redeemable_points(
+				$user_id,
+				$order_total_basis,
+				array(
+					'source' => 'order',
+					'order'  => $order,
+				)
+			);
 			$points               = min( $points, $max_points_for_order );
 
 			if ( $points <= 0 ) {

@@ -61,12 +61,24 @@ class RedemptionController {
 	/**
 	 * Checks whether the current request is allowed to redeem points.
 	 *
+	 * Login is the only requirement at the permission layer. The
+	 * `pointbay_can_redeem` gate is enforced in RedemptionManager when points
+	 * are applied, so a restriction cannot be sidestepped by posting to the
+	 * endpoint directly, while removal stays possible.
+	 *
 	 * @since 1.0.0
-	 * @return bool True when the current user is logged in.
+	 * @return bool True when the current user may redeem points.
 	 */
 	public function check_permission() {
 		// nonce check is handled by WP REST API if using X-WP-Nonce header
-		return is_user_logged_in();
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
+		// Login only. The can_redeem() gate is enforced inside
+		// apply_points_discount(), which still lets a points = 0 removal through;
+		// gating here would 403 a customer who is trying to take points OFF.
+		return true;
 	}
 
 	/**
@@ -95,19 +107,29 @@ class RedemptionController {
 		$points  = $request->get_param( 'points' );
 		$user_id = get_current_user_id();
 
-		$manager    = RedemptionManager::get_instance();
-		$max_points = $manager->get_max_redeemable_points( $user_id );
+		$manager = RedemptionManager::get_instance();
 
 		$result = $manager->apply_points_discount( $user_id, $points );
-
-		$has_session = isset( WC()->session ) ? 'yes' : 'no';
-		$session_val = isset( WC()->session ) ? WC()->session->get( RedemptionManager::SESSION_KEY, 0 ) : 'N/A';
 
 		if ( is_wp_error( $result ) ) {
 			return new \WP_REST_Response( array( 'message' => $result->get_error_message() ), 400 );
 		}
 
-		return new \WP_REST_Response( array( 'success' => true ), 200 );
+		return new \WP_REST_Response(
+			array(
+				'success'  => true,
+				// What the applied points are worth under the active valuation, for the UI to state.
+				'discount' => $manager->calculate_discount_value(
+					(int) $points,
+					$user_id,
+					array(
+						'source' => 'cart',
+						'amount' => $manager->get_cart_basis_before_points(),
+					)
+				),
+			),
+			200
+		);
 	}
 
 	/**

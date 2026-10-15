@@ -4,7 +4,7 @@ Tags: woocommerce, loyalty, rewards, points, referral
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,21 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 6.  The admin Points History ledger.
 
 == Changelog ==
+
+= 1.1.0 =
+*   Added order-value bands, so points can be awarded per spending tier instead of a flat per-dollar rate.
+*   Added a flat bonus on every order and a one-time bonus on a customer's first order, each with its own control over whether VIP tier multipliers apply.
+*   Added a setting for whether points are calculated on the order total or the subtotal, so shipping and tax can be excluded.
+*   Added a setting to take back the points earned on a completed order when it is cancelled (on by default; Cash on Delivery orders always do), with the points restored if the order is reopened.
+*   Added a "you will earn X points" notice to product pages, which updates as a variation is chosen.
+*   Added shortcodes ([pointbay_rewards], [pointbay_balance], [pointbay_history], [pointbay_referral_link], [pointbay_earn_notice]) and classic widgets for placing the rewards UI anywhere.
+*   Added an option to show the customer's points balance in the site navigation and toolbar.
+*   Added an option to turn off partial redemption, and an option to hide the coupon form while a points discount is applied.
+*   Points are now calculated in one place for both the storefront preview and the award, so the figure a customer is shown is the figure they receive. Previously the cart and checkout notices quietly used a smaller basis than the award did.
+*   Refunds now claw back a fair share of the points actually awarded, rather than recalculating from current settings. Partial refunds accumulate correctly, and one-time bonuses are only reclaimed on a full refund.
+*   Points a customer redeemed on an order are now returned when the order is fully refunded or cancelled (and in proportion on partial refunds), instead of being lost while the earned points were clawed back.
+*   Fixed a refunded Cash on Delivery order having its points clawed back twice.
+*   Fixed the redemption limit not being re-checked against the same rules when points were taken at checkout.
 
 = 1.0.1 =
 *   Added a first-run setup wizard that walks through earning, redemption and referral settings, with a "Run Setup Wizard" link in Settings to launch it again any time.

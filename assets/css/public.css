@@ -1,7 +1,124 @@
 /**
  * PointBay public (front-end) styles.
  *
- * Enqueued as the "pointbay_public" style handle.
- * Front-end point-redemption / earn-notice styling lives in the block/checkout
- * bundles; add any additional public CSS rules here.
+ * Enqueued sitewide as the "pointbay_public" style handle.
  */
+
+/* -------------------------------------------------------------------------
+ * Rewards dashboard
+ *
+ * Rendered by RewardsRenderer, and reached from the My Account tab, the
+ * shortcodes and the widgets alike. These were inline style attributes until
+ * the renderer was extracted; as classes they are themeable, which matters far
+ * more now that a merchant can place this markup anywhere on the site.
+ * ---------------------------------------------------------------------- */
+.pointbay-balance-card {
+	background: #f7f7f7;
+	padding: 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	/*
+	 * The card was built for the full-width My Account tab, where the balance
+	 * and the tier slot sit comfortably side by side. It can now be placed in a
+	 * sidebar widget or a narrow column, where that row has nowhere near enough
+	 * width — without wrapping, the two columns collide and the text breaks
+	 * mid-word. Wrapping lets the tier badge drop beneath the balance instead.
+	 */
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+/*
+ * Give each column a real minimum before it is allowed to shrink. Without this
+ * the two columns keep "fitting" all the way down to their min-content width,
+ * so a sidebar-width card never wraps — it just squeezes both sides until the
+ * headings break mid-word.
+ */
+.pointbay-balance-card > * {
+	flex: 1 1 180px;
+	min-width: 0;
+}
+
+.pointbay-balance-card__heading {
+	margin-top: 0;
+}
+
+.pointbay-balance-amount {
+	font-size: 32px;
+	font-weight: bold;
+	margin: 0;
+	color: #5c35b6;
+}
+
+.pointbay-balance-unit {
+	font-size: 16px;
+	font-weight: normal;
+}
+
+.pointbay-history-amount {
+	font-weight: bold;
+}
+
+.pointbay-history-amount--credit {
+	color: green;
+}
+
+.pointbay-history-amount--debit {
+	color: red;
+}
+
+.pointbay-login-prompt {
+	margin: 0;
+}
+
+/* -------------------------------------------------------------------------
+ * The `pointbay_tier_progress` slot
+ *
+ * That action fires inside .pointbay-balance-card, which is a flex row: the
+ * balance is its left column and whatever fills the slot is its right. These
+ * classes are the styling contract for anything hooking it, declared here
+ * because the container belongs to this stylesheet. A callback supplying its
+ * own accent colour still sets that inline, since it is per-row data rather
+ * than something a stylesheet can know.
+ * ---------------------------------------------------------------------- */
+.pointbay-tier-progress {
+	text-align: right;
+}
+
+.pointbay-tier-badge {
+	display: inline-block;
+	padding: 5px 15px;
+	border-radius: 20px;
+	color: #fff;
+	font-weight: bold;
+}
+
+.pointbay-tier-note {
+	margin: 5px 0 0 0;
+	font-size: 14px;
+}
+
+.pointbay-tier-note--muted {
+	margin: 5px 0 0 0;
+	font-size: 13px;
+	color: #666;
+}
+
+/* -------------------------------------------------------------------------
+ * Block checkout coupon suppression
+ *
+ * WooCommerce bakes `couponsEnabled` into the page at render time and never
+ * re-reads it, so applying points over AJAX leaves the coupon panel visible
+ * even though the Store API has already stopped accepting coupons. The
+ * redemption block toggles this class to match.
+ *
+ * Presentation only — the server-side rejection in CartApplyCoupon is what
+ * actually prevents the coupon being used.
+ * ---------------------------------------------------------------------- */
+body.pointbay-points-applied .wc-block-components-totals-coupon,
+body.pointbay-points-applied .wp-block-woocommerce-cart-order-summary-coupon-form-block {
+	display: none;
+}

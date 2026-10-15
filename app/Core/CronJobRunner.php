@@ -60,13 +60,17 @@ class CronJobRunner {
 			$retry_count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT retry_count FROM %i WHERE id = %d', $table, $log_id ) );
 		} else {
 			$payload_json = wp_json_encode( $payload );
+			// Write started_at from PHP, not the column default (MySQL CURRENT_TIMESTAMP in the
+			// session time zone). completed_at is written with current_time( 'mysql' ), so both
+			// timestamps must come from the same clock or durations and ordering go negative.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; writes must not be cached.
 			$wpdb->insert(
 				$table,
 				array(
-					'job_name' => $job_name,
-					'status'   => 'running',
-					'payload'  => $payload_json,
+					'job_name'   => $job_name,
+					'status'     => 'running',
+					'payload'    => $payload_json,
+					'started_at' => current_time( 'mysql' ),
 				)
 			);
 			$log_id      = $wpdb->insert_id;

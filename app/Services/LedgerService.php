@@ -26,6 +26,15 @@ class LedgerService {
 	private static $instance = null;
 
 	/**
+	 * Actions queued while credit_batch() has a transaction open, or null when
+	 * nothing is being batched.
+	 *
+	 * @since 1.1.0
+	 * @var array|null
+	 */
+	private $deferred_actions = null;
+
+	/**
 	 * Gets an instance of this object.
 	 *
 	 * @since 1.0.0
@@ -122,6 +131,7 @@ class LedgerService {
 	 * @param bool   $allow_negative Optional. Whether the balance may go negative. Default false.
 	 * @return LedgerEntry|\WP_Error The created ledger entry, or a WP_Error on failure.
 	 * @throws \Exception If the ledger entry or cache fails to save (caught internally and returned as a WP_Error).
+	 * @throws \Throwable Any Error raised inside the transaction, after it has been rolled back.
 	 */
 	private function process_transaction( $user_id, $txn_type, $amount, $ref_type, $ref_id, $description, $in_transaction = false, $origin = 'system', $allow_negative = false ) {
 		global $wpdb;
@@ -206,7 +216,11 @@ class LedgerService {
 				$wpdb->query( 'COMMIT' );
 			}
 
-			if ( $txn_type === 'credit' ) {
+			if ( null !== $this->deferred_actions ) {
+				// Inside credit_batch(): listeners must only hear about rows that
+				// are actually committed, so the batch fires these after COMMIT.
+				$this->deferred_actions[] = array( $txn_type, $user_id, $amount, $entry );
+			} elseif ( 'credit' === $txn_type ) {
 				do_action( 'pointbay_points_credited', $user_id, $amount, $entry );
 			} else {
 				do_action( 'pointbay_points_debited', $user_id, $amount, $entry );
@@ -220,6 +234,14 @@ class LedgerService {
 				$wpdb->query( 'ROLLBACK' );
 			}
 			return new \WP_Error( 'transaction_failed', $e->getMessage() );
+		} catch ( \Throwable $e ) {
+			// An Error (type error, undefined function) is not an Exception; without
+			// this the BEGIN above would stay open on the shared connection.
+			if ( ! $in_transaction ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+				$wpdb->query( 'ROLLBACK' );
+			}
+			throw $e;
 		}
 	}
 
@@ -254,6 +276,227 @@ class LedgerService {
 	 */
 	public function get_transaction( $user_id, $ref_type, $ref_id, $txn_type ) {
 		return LedgerEntry::find_by_reference( $user_id, $ref_type, $ref_id, $txn_type );
+	}
+
+	/**
+	 * Counts a user's transactions of a given reference type.
+	 *
+	 * The authoritative "has this ever happened to this customer" check. Used
+	 * for the first-order bonus in preference to counting past orders, because
+	 * order history is not stable across a guest checkout that is later claimed
+	 * by a registration — the ledger is.
+	 *
+	 * @since 1.1.0
+	 * @param int    $user_id  The user ID.
+	 * @param string $ref_type The reference type to count.
+	 * @param string $txn_type Optional. Transaction type to restrict to. Default 'credit'.
+	 * @return int The number of matching rows.
+	 */
+	public function count_by_reference_type( $user_id, $ref_type, $txn_type = 'credit' ) {
+		global $wpdb;
+		$table = ( new LedgerEntry() )->get_table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; an award guard must read live data.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i WHERE user_id = %d AND reference_type = %s AND transaction_type = %s',
+				$table,
+				$user_id,
+				$ref_type,
+				$txn_type
+			)
+		);
+	}
+
+	/**
+	 * Sums the amounts of a user's transactions across a set of reference IDs.
+	 *
+	 * @since 1.1.0
+	 * @param int    $user_id  The user ID.
+	 * @param string $ref_type The reference type.
+	 * @param array  $ref_ids  The reference IDs to include. An empty list sums to zero.
+	 * @param string $txn_type The transaction type.
+	 * @return float The summed amount.
+	 */
+	public function sum_by_reference( $user_id, $ref_type, $ref_ids, $txn_type ) {
+		global $wpdb;
+
+		$ref_ids = array_values( array_filter( array_map( 'absint', (array) $ref_ids ) ) );
+		if ( ! $ref_ids ) {
+			return 0.0;
+		}
+
+		$table        = ( new LedgerEntry() )->get_table();
+		$placeholders = implode( ',', array_fill( 0, count( $ref_ids ), '%d' ) );
+
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The replacements are passed as a single array, which prepare() supports; the sniff can't count a runtime-built placeholder list.
+		$sql = $wpdb->prepare(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated list of %d tokens, and every value is bound below.
+			"SELECT SUM(amount) FROM %i WHERE user_id = %d AND reference_type = %s AND transaction_type = %s AND reference_id IN ($placeholders)",
+			array_merge( array( $table, $user_id, $ref_type, $txn_type ), $ref_ids )
+		);
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom plugin table; the statement is prepared immediately above.
+		return (float) $wpdb->get_var( $sql );
+	}
+
+	/**
+	 * Sums a user's credits for one reference ID across several reference types.
+	 *
+	 * An order's award is written as up to three rows — the proratable base plus
+	 * the flat and first-order bonuses — so anything reporting or reversing
+	 * "what this order earned" has to add them back up.
+	 *
+	 * @since 1.1.0
+	 * @param int    $user_id   The user ID.
+	 * @param array  $ref_types The reference types to include.
+	 * @param int    $ref_id    The shared reference ID.
+	 * @param string $txn_type  Optional. The transaction type. Default 'credit'.
+	 * @return float The summed amount.
+	 */
+	public function sum_by_reference_types( $user_id, $ref_types, $ref_id, $txn_type = 'credit' ) {
+		$total = 0.0;
+
+		foreach ( (array) $ref_types as $ref_type ) {
+			$entry = LedgerEntry::find_by_reference( $user_id, $ref_type, $ref_id, $txn_type );
+			if ( $entry ) {
+				$total += (float) $entry->amount;
+			}
+		}
+
+		return $total;
+	}
+
+	/**
+	 * Writes several credits for one user as a single database transaction.
+	 *
+	 * An order award is up to three rows. Written one at a time each would open
+	 * its own transaction, so a failure partway through would leave the customer
+	 * credited for some components and not others, with no way to tell after the
+	 * fact which. Wrapping them makes the award atomic.
+	 *
+	 * @since 1.1.0
+	 * @param int    $user_id The user to credit.
+	 * @param array  $credits List of arrays with 'amount', 'ref_type', 'ref_id' and optional 'description'.
+	 * @param string $origin Optional. Origin of the transactions. Default 'system'.
+	 * @return array|\WP_Error The created entries, or a WP_Error if any one failed.
+	 * @throws \Throwable Anything thrown while crediting, after the transaction is rolled back.
+	 */
+	public function credit_batch( $user_id, $credits, $origin = 'system' ) {
+		global $wpdb;
+
+		$credits = array_values(
+			array_filter(
+				(array) $credits,
+				static function ( $credit ) {
+					return isset( $credit['amount'] ) && (float) $credit['amount'] > 0;
+				}
+			)
+		);
+
+		if ( ! $credits ) {
+			return array();
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+		$wpdb->query( 'BEGIN' );
+
+		$entries                = array();
+		$this->deferred_actions = array();
+
+		try {
+			LedgerCache::lock_for_update( $user_id );
+
+			foreach ( $credits as $credit ) {
+				$entry = $this->process_transaction(
+					$user_id,
+					'credit',
+					(float) $credit['amount'],
+					$credit['ref_type'],
+					(int) $credit['ref_id'],
+					isset( $credit['description'] ) ? $credit['description'] : null,
+					true,
+					$origin
+				);
+
+				if ( is_wp_error( $entry ) ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+					$wpdb->query( 'ROLLBACK' );
+					$this->deferred_actions = null;
+					return $entry;
+				}
+
+				$entries[] = $entry;
+			}
+		} catch ( \Throwable $e ) {
+			// A thrown error (not just a WP_Error) must not leave the transaction
+			// open or the deferred hooks queued for the next call.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+			$wpdb->query( 'ROLLBACK' );
+			$this->deferred_actions = null;
+			throw $e;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control statement; not a data query and not cacheable.
+		$wpdb->query( 'COMMIT' );
+
+		// process_transaction() queued one `pointbay_points_credited` per row
+		// instead of firing it; release them now that the batch is committed.
+		$queued                 = $this->deferred_actions;
+		$this->deferred_actions = null;
+		foreach ( $queued as $action ) {
+			if ( 'credit' === $action[0] ) {
+				do_action( 'pointbay_points_credited', $action[1], $action[2], $action[3] );
+			} else {
+				do_action( 'pointbay_points_debited', $action[1], $action[2], $action[3] );
+			}
+		}
+
+		return $entries;
+	}
+
+	/**
+	 * Fetches a page of a user's ledger history, most recent first.
+	 *
+	 * @since 1.1.0
+	 * @param int $user_id The user whose history to read.
+	 * @param int $limit   Optional. Maximum rows to return. Default 10.
+	 * @param int $offset  Optional. Rows to skip. Default 0.
+	 * @return array List of row arrays.
+	 */
+	public function get_history( $user_id, $limit = 10, $offset = 0 ) {
+		global $wpdb;
+
+		$user_id = (int) $user_id;
+		if ( $user_id < 1 ) {
+			return array();
+		}
+
+		/**
+		 * Filters how many ledger rows a history view shows.
+		 *
+		 * @since 1.1.0
+		 * @param int $limit   The row limit.
+		 * @param int $user_id The user the history is for.
+		 */
+		$limit = (int) apply_filters( 'pointbay_history_limit', (int) $limit, $user_id );
+		$limit = max( 1, min( 500, $limit ) );
+
+		$table = ( new LedgerEntry() )->get_table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin table, no core API available; the customer's own history must be current.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d',
+				$table,
+				$user_id,
+				$limit,
+				max( 0, (int) $offset )
+			),
+			ARRAY_A
+		);
+
+		return is_array( $rows ) ? $rows : array();
 	}
 
 	/**

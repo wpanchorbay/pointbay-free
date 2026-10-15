@@ -47,6 +47,44 @@ class FeeRedemption {
 	public function run( $plugin ) {
 		$loader = $plugin->get_loader();
 		$loader->add_action( 'woocommerce_cart_calculate_fees', $this, 'apply_fee' );
+		$loader->add_action( 'woocommerce_checkout_create_order_fee_item', $this, 'mark_points_fee_item', 10, 3 );
+	}
+
+	/**
+	 * Meta key flagging an order fee item as the points discount.
+	 *
+	 * The fee name is translated into the shopper's locale when the order is
+	 * created, so it cannot be matched later from another locale (an admin
+	 * completing the order, WPML, Polylang). The flag can.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const FEE_META_KEY = '_pointbay_points_fee';
+
+	/**
+	 * Flags the points fee when the order's fee lines are created.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order_Item_Fee $item     The order fee item.
+	 * @param string             $fee_key  The cart fee key.
+	 * @param object             $fee      The cart fee.
+	 * @return void
+	 */
+	public function mark_points_fee_item( $item, $fee_key, $fee ) {
+		if ( is_object( $fee ) && isset( $fee->name ) && self::fee_name() === $fee->name ) {
+			$item->add_meta_data( self::FEE_META_KEY, '1', true );
+		}
+	}
+
+	/**
+	 * The label of the negative fee, which is also how an order's points fee is recognised.
+	 *
+	 * @since 1.1.0
+	 * @return string The fee name.
+	 */
+	public static function fee_name() {
+		return __( 'PointBay Points Discount', 'pointbay-loyalty-points-referral-rewards-woo' );
 	}
 
 	/**
@@ -67,17 +105,40 @@ class FeeRedemption {
 		}
 
 		$redemption_manager = RedemptionManager::get_instance();
-		$points             = $redemption_manager->get_applied_points();
+
+		// Deliberately NOT reconciling here. This hook also runs during the
+		// place-order request, and clamping the session mid-checkout turns an
+		// honest "your points discount could no longer be applied, please try
+		// again" into a silent full-price order — the customer expected a
+		// discount and is charged without it. Reconciliation happens when a
+		// checkout page is rendered instead, where the shopper can see the
+		// adjustment notice and decide. Order-time safety is still handled by
+		// CheckoutProcessor, which re-validates against the locked balance.
+		$points = $redemption_manager->get_applied_points();
 		pointbay_log( 'PointBay FeeRedemption: apply_fee points: ' . $points . ', Session exists: ' . ( isset( WC()->session ) ? 'yes' : 'no' ) );
 
 		if ( $points <= 0 ) {
 			return;
 		}
 
-		$discount_value = $redemption_manager->calculate_discount_value( $points );
+		// Eligibility can change after points were applied (a filter, an account
+		// change). Never price a discount for a customer who may not redeem; the
+		// order-time check in CheckoutProcessor aborts rather than charging full price.
+		if ( ! $redemption_manager->can_redeem( get_current_user_id(), array( 'source' => 'cart' ) ) ) {
+			return;
+		}
+
+		$discount_value = $redemption_manager->calculate_discount_value(
+			$points,
+			get_current_user_id(),
+			array(
+				'source' => 'cart',
+				'amount' => $redemption_manager->get_cart_basis_before_points(),
+			)
+		);
 
 		if ( $discount_value > 0 ) {
-			$cart->add_fee( __( 'PointBay Points Discount', 'pointbay-loyalty-points-referral-rewards-woo' ), -$discount_value, true );
+			$cart->add_fee( self::fee_name(), -$discount_value, true );
 		}
 	}
 }

@@ -415,6 +415,19 @@ class WizardController {
 				<td><input type="number" min="0" step="1" id="pointbay_earning_pointsPerDollar" name="earning_pointsPerDollar" value="<?php echo esc_attr( $settings['earning_pointsPerDollar'] ); ?>" class="small-text" /></td>
 			</tr>
 			<tr>
+				<th scope="row"><label for="pointbay_earning_basis"><?php esc_html_e( 'Calculate points on', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></label></th>
+				<td>
+					<select id="pointbay_earning_basis" name="earning_basis">
+						<option value="total" <?php selected( $settings['earning_basis'], 'total' ); ?>><?php esc_html_e( 'Order total (includes shipping and tax)', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></option>
+						<option value="subtotal" <?php selected( $settings['earning_basis'], 'subtotal' ); ?>><?php esc_html_e( 'Subtotal only (excludes shipping and tax)', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="pointbay_earning_flatPointsPerOrder"><?php esc_html_e( 'Flat bonus on every order', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></label></th>
+				<td><input type="number" min="0" step="1" id="pointbay_earning_flatPointsPerOrder" name="earning_flatPointsPerOrder" value="<?php echo esc_attr( $settings['earning_flatPointsPerOrder'] ); ?>" class="small-text" /></td>
+			</tr>
+			<tr>
 				<th scope="row"><label for="pointbay_earning_pointsForRegistration"><?php esc_html_e( 'Points for creating an account', 'pointbay-loyalty-points-referral-rewards-woo' ); ?></label></th>
 				<td><input type="number" min="0" step="1" id="pointbay_earning_pointsForRegistration" name="earning_pointsForRegistration" value="<?php echo esc_attr( $settings['earning_pointsForRegistration'] ); ?>" class="small-text" /></td>
 			</tr>
@@ -449,7 +462,18 @@ class WizardController {
 			$order_status_trigger = 'completed';
 		}
 
+		// This step writes straight through update_settings() and never reaches
+		// sanitize_settings_object(), so every value has to be validated right
+		// here. Array-valued settings are deliberately kept out of the wizard
+		// for the same reason.
+		$basis = isset( $_POST['earning_basis'] ) ? sanitize_text_field( wp_unslash( $_POST['earning_basis'] ) ) : 'total';
+		if ( ! in_array( $basis, array( 'total', 'subtotal' ), true ) ) {
+			$basis = 'total';
+		}
+
 		$data = array(
+			'earning_basis'                 => $basis,
+			'earning_flatPointsPerOrder'    => isset( $_POST['earning_flatPointsPerOrder'] ) ? absint( wp_unslash( $_POST['earning_flatPointsPerOrder'] ) ) : 0,
 			'earning_pointsPerDollar'       => isset( $_POST['earning_pointsPerDollar'] ) ? absint( wp_unslash( $_POST['earning_pointsPerDollar'] ) ) : 0,
 			'earning_pointsForRegistration' => isset( $_POST['earning_pointsForRegistration'] ) ? absint( wp_unslash( $_POST['earning_pointsForRegistration'] ) ) : 0,
 			'earning_pointsForReview'       => isset( $_POST['earning_pointsForReview'] ) ? absint( wp_unslash( $_POST['earning_pointsForReview'] ) ) : 0,

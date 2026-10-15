@@ -262,7 +262,18 @@ class Settings {
 					$sanitized_output[ $key ] = floatval( $value );
 					break;
 				case 'array':
-					$sanitized_output[ $key ] = (array) $value;
+					// A bare (array) cast validates nothing about the rows, which is
+					// unsafe for an array-of-objects setting. Where the schema declares
+					// its own sanitize_callback, hand the value to it and let it own the
+					// shape. Deliberately scoped to the 'array' branch: the scalar
+					// branches below already coerce correctly, and routing 'string'
+					// through a callback would bypass the enum fallback beneath it.
+					$array_callback = $details['sanitize_callback'] ?? null;
+					if ( $array_callback && is_callable( $array_callback ) ) {
+						$sanitized_output[ $key ] = (array) call_user_func( $array_callback, $value );
+					} else {
+						$sanitized_output[ $key ] = (array) $value;
+					}
 					break;
 				case 'string':
 					$sanitized = sanitize_text_field( $value );

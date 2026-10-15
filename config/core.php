@@ -40,4 +40,10 @@ return array(
 	\PointBay\Checkout\EarnNotice::class,
 	\PointBay\Checkout\BlockCheckoutUI::class,
 	\PointBay\Checkout\BlockCartUI::class,
+	\PointBay\Checkout\StoreApiData::class,
+	\PointBay\Checkout\ProductEarnNotice::class,
+	\PointBay\Checkout\CouponFormVisibility::class,
+	\PointBay\Dashboard\Shortcodes::class,
+	\PointBay\Dashboard\Widgets\WidgetRegistrar::class,
+	\PointBay\Dashboard\MenuBalance::class,
 );
