@@ -68,31 +68,14 @@ class BackfillController extends ApiController {
 	}
 
 	/**
-	 * Only shop managers and above may award points for past orders.
+	 * Same gate as every other PointBay admin endpoint (manage_pointbay plus REST nonce).
 	 *
 	 * @since 1.1.0
 	 * @param \WP_REST_Request $request Full details about the request.
 	 * @return bool|\WP_Error True when allowed, a WP_Error otherwise.
 	 */
 	public function backfill_permissions_check( $request ) {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce core capability.
-			return new \WP_Error(
-				'rest_forbidden',
-				__( 'Sorry, you are not allowed to access this resource.', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				array( 'status' => rest_authorization_required_code() )
-			);
-		}
-
-		$nonce = $request->get_header( 'X-WP-Nonce' );
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-			return new \WP_Error(
-				'rest_invalid_nonce',
-				__( 'Invalid or missing nonce.', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				array( 'status' => 403 )
-			);
-		}
-
-		return true;
+		return $this->update_item_permissions_check( $request );
 	}
 
 	/**
