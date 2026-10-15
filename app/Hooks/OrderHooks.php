@@ -311,9 +311,13 @@ class OrderHooks {
 		// Recorded so a later refund prorates against the figures this order was
 		// actually awarded on, rather than recomputing from settings that may
 		// have changed in between.
-		$breakdown['basis_mode'] = $calculator->get_basis_mode();
+		$points_paid                    = $calculator->get_points_paid_value( $order );
+		$breakdown['basis_mode']        = $calculator->get_basis_mode();
+		$breakdown['points_paid_value'] = $points_paid;
 		$order->update_meta_data( self::META_BREAKDOWN, wp_json_encode( $breakdown ) );
 		$order->save();
+
+		$this->add_award_note( $order, $breakdown, $points_paid );
 
 		/**
 		 * Fires after an order's points have been awarded.
@@ -324,6 +328,37 @@ class OrderHooks {
 		 * @param array $breakdown The award breakdown from EarningCalculator.
 		 */
 		do_action( 'pointbay_order_points_awarded', $user_id, $order_id, $breakdown );
+	}
+
+	/**
+	 * Adds a private order note recording what an award was measured on.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order       The awarded order.
+	 * @param array     $breakdown   The award breakdown.
+	 * @param float     $points_paid The money value paid with points, which did not earn.
+	 * @return void
+	 */
+	private function add_award_note( $order, $breakdown, $points_paid ) {
+		$decimals = (int) wc_get_price_decimals();
+
+		$note = sprintf(
+			// translators: 1: points awarded, 2: earning basis amount, 3: earning basis mode (total or subtotal).
+			__( 'PointBay: %1$s points awarded (earning basis %2$s, %3$s).', 'pointbay-loyalty-points-referral-rewards-woo' ),
+			number_format_i18n( (int) $breakdown['total'] ),
+			wc_format_decimal( $breakdown['basis_amount'], $decimals ),
+			$breakdown['basis_mode']
+		);
+
+		if ( $points_paid > 0 ) {
+			$note .= ' ' . sprintf(
+				// translators: %s: amount paid with points.
+				__( '%s paid with points did not earn.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				wc_format_decimal( $points_paid, $decimals )
+			);
+		}
+
+		$order->add_order_note( $note, 0, false );
 	}
 
 	/**
