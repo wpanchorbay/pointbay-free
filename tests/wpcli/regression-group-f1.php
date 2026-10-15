@@ -718,6 +718,91 @@ zz_check( '6 manage_woocommerce user without the nonce header gets 403', 403 ===
 wp_set_current_user( 0 );
 
 // ---------------------------------------------------------------------------
+// 7. Review fixes: listener dating, backfilling flag, interrupted resume,
+//    incomplete total basis, number sanitizer, post-author comments.
+// ---------------------------------------------------------------------------
+echo "\n== 7. Review fixes ==\n";
+zz_settings( array( 'earning_orderStatusTrigger' => 'completed', 'earning_basis' => 'subtotal', 'earning_pointsPerDollar' => 5, 'earning_flatPointsPerOrder' => 0, 'earning_firstOrderBonus' => 0, 'earning_minCartSpend' => 0 ) );
+$b3 = zz_user( 'bf3' );
+$zz_users[] = $b3;
+$seen = array( 'backfilling' => null, 'retro' => null, 'listener_row' => null );
+$listener = function ( $uid, $amount, $entry ) use ( $b3, &$seen, $ledger ) {
+	if ( (int) $uid !== (int) $b3 || 'order' !== $entry->reference_type ) {
+		return;
+	}
+	$seen['backfilling'] = BackfillService::is_backfilling();
+	$ledger->credit( $b3, 3, 'admin', 999000 + (int) $entry->reference_id, 'ZZ-QA listener bonus' );
+};
+$listener2 = function ( $uid, $oid, $bd, $ctx = array() ) use ( $b3, &$seen ) {
+	if ( (int) $uid === (int) $b3 ) {
+		$seen['retro'] = ! empty( $ctx['retroactive'] );
+	}
+};
+add_action( 'pointbay_points_credited', $listener, 10, 3 );
+add_action( 'pointbay_order_points_awarded', $listener2, 10, 4 );
+zz_settings( array( 'earning_orderStatusTrigger' => 'on-hold' ) );
+$o7 = zz_hist_order( $b3, 100, '15' );
+zz_settings( array( 'earning_orderStatusTrigger' => 'completed' ) );
+$r7 = $svc->process_batch( '2001-03-15', '2001-03-15', 1, 10, true );
+remove_action( 'pointbay_points_credited', $listener, 10 );
+remove_action( 'pointbay_order_points_awarded', $listener2, 10 );
+zz_check( '7 backfill credited the order (500)', 500 === zz_awarded( $b3, $o7->get_id() ) && 1 === $r7['credited_orders'], wp_json_encode( $r7 ) );
+$lrow = $wpdb->get_row( $wpdb->prepare( 'SELECT created_at FROM %i WHERE user_id=%d AND reference_type=%s', $lt, $b3, 'admin' ) );
+zz_check( '7 a row written by a credited-listener is dated now, not 2001', $lrow && substr( $lrow->created_at, 0, 4 ) >= '2026', 'got=' . ( $lrow ? $lrow->created_at : 'none' ) );
+$orow = $wpdb->get_row( $wpdb->prepare( 'SELECT created_at FROM %i WHERE user_id=%d AND reference_type=%s AND reference_id=%d', $lt, $b3, 'order', $o7->get_id() ) );
+zz_check( '7 the order row itself is still dated 2001-03-15', $orow && 0 === strpos( $orow->created_at, '2001-03-15' ), 'got=' . ( $orow ? $orow->created_at : 'none' ) );
+zz_check( '7 listeners can see is_backfilling() and the retroactive context', true === $seen['backfilling'] && true === $seen['retro'], wp_json_encode( $seen ) );
+zz_check( '7 is_backfilling() is false again afterwards', false === BackfillService::is_backfilling() );
+zz_check( '7 the refunds-done marker is set', (bool) wc_get_order( $o7->get_id() )->get_meta( '_pointbay_backfill_refunds_done' ) );
+
+// Interrupted run: awarded + marker, refunds never replayed.
+$b4 = zz_user( 'bf4' );
+$zz_users[] = $b4;
+zz_settings( array( 'earning_orderStatusTrigger' => 'on-hold' ) );
+$o8 = zz_hist_order( $b4, 100, '16' );
+wc_create_refund( array( 'order_id' => $o8->get_id(), 'amount' => 40, 'reason' => 'ZZ-QA interrupted' ) );
+zz_settings( array( 'earning_orderStatusTrigger' => 'completed' ) );
+$o8 = wc_get_order( $o8->get_id() );
+OrderHooks::get_instance()->award_order_points( $o8, $b4, array( 'retroactive' => true ) );
+$o8->update_meta_data( '_pointbay_backfilled', time() );
+$o8->save_meta_data();
+$bal_i = (int) $ledger->get_balance( $b4 );
+zz_check( '7 interrupted: awarded 500 and no clawback yet', 500 === zz_awarded( $b4, $o8->get_id() ) && 500 === $bal_i, "bal=$bal_i" );
+$pv = $svc->process_batch( '2001-03-16', '2001-03-16', 1, 10, false );
+zz_check( '7 interrupted: preview writes nothing', $bal_i === (int) $ledger->get_balance( $b4 ) && 0 === $pv['credited_orders'] );
+$rc = $svc->process_batch( '2001-03-16', '2001-03-16', 1, 10, true );
+zz_check( '7 interrupted: a re-run finishes the refund replay (500 less 200 = 300) and credits no new points', 300 === (int) $ledger->get_balance( $b4 ) && 0 === $rc['credited_orders'] && 0 === $rc['points'], 'bal=' . $ledger->get_balance( $b4 ) . ' ' . wp_json_encode( $rc ) );
+$rc2 = $svc->process_batch( '2001-03-16', '2001-03-16', 1, 10, true );
+zz_check( '7 interrupted: a further run changes nothing', 300 === (int) $ledger->get_balance( $b4 ) && 0 === $rc2['credited_orders'] );
+
+// Offset paging with the time budget semantics.
+$o1 = $svc->process_batch( $start, $end, 1, 2, false, 0 );
+$o2 = $svc->process_batch( $start, $end, 1, 2, false, $o1['next_offset'] );
+zz_check( '7 offset paging: next_offset advances by the orders scanned and done is false mid-range', 2 === $o1['next_offset'] && false === $o1['done'] && 4 === $o2['next_offset'], wp_json_encode( array( $o1['next_offset'], $o2['next_offset'] ) ) );
+
+// Incomplete total basis hides the shortfall message.
+zz_settings( array( 'earning_basis' => 'total', 'earning_minCartSpend' => 500 ) );
+add_filter( 'pointbay_total_basis_incomplete', '__return_true' );
+zz_check( '7 total mode with shipping unknown: no shortfall message', null === $calc->minimum_spend_state( 10, $b4, 'cart', false ) );
+remove_filter( 'pointbay_total_basis_incomplete', '__return_true' );
+add_filter( 'pointbay_total_basis_incomplete', '__return_false' );
+zz_check( '7 total mode with shipping known: shortfall message shown', is_array( $calc->minimum_spend_state( 10, $b4, 'cart', false ) ) );
+remove_filter( 'pointbay_total_basis_incomplete', '__return_false' );
+zz_settings( array( 'earning_basis' => 'subtotal' ) );
+
+// Number sanitizer.
+$san = Settings::get_instance()->sanitize_settings_object( array( 'earning_minCartSpend' => '-12.5' ) );
+zz_check( '7 earning_minCartSpend: a negative value is saved as 0', isset( $san['earning_minCartSpend'] ) && 0.0 === (float) $san['earning_minCartSpend'], wp_json_encode( $san['earning_minCartSpend'] ?? null ) );
+$san = Settings::get_instance()->sanitize_settings_object( array( 'earning_minCartSpend' => '30.5' ) );
+zz_check( '7 earning_minCartSpend: a positive value is kept', 30.5 === (float) ( $san['earning_minCartSpend'] ?? -1 ) );
+
+// Post author commenting on their own post, top level.
+zz_settings( array( 'earning_pointsForComment' => 10, 'earning_commentRequireApproval' => true, 'earning_commentDailyLimit' => 0 ) );
+$bal_a = (int) $ledger->get_balance( $author );
+zz_comment( $post_id, $author, 1 );
+zz_check( '7 the post author commenting top level on their own post earns nothing', (int) $ledger->get_balance( $author ) === $bal_a );
+
+// ---------------------------------------------------------------------------
 // Cleanup.
 // ---------------------------------------------------------------------------
 echo "\n== Cleanup ==\n";
