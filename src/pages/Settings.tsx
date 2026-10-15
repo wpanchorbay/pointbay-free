@@ -30,6 +30,10 @@ interface SettingsData {
 	earning_multiplyFlatBonus: boolean;
 	earning_multiplyFirstOrderBonus: boolean;
 	earning_reverseOnCancel: boolean;
+	earning_minCartSpend: number;
+	earning_pointsForComment: number;
+	earning_commentRequireApproval: boolean;
+	earning_commentDailyLimit: number;
 	redemption_pointsValue: number;
 	redemption_mode: string;
 	redemption_minPoints: number;
@@ -39,6 +43,8 @@ interface SettingsData {
 	referrals_bonusPoints: number;
 	display_guestNoticeEnabled: boolean;
 	display_productNoticeEnabled: boolean;
+	display_minSpendMessage: string;
+	display_commentNoticeEnabled: boolean;
 	display_menuBalanceEnabled: boolean;
 	display_menuBalanceLocation: string;
 	display_menuBalanceFormat: string;
@@ -311,7 +317,7 @@ const Settings: React.FC = () => {
 									},
 								] }
 								description={ __(
-									'Which part of the order points are calculated against. Most stores want the subtotal, so customers are not rewarded for expensive shipping.',
+									'Which part of the order points are calculated against. Most stores want the subtotal, so customers are not rewarded for expensive shipping. Points paid with redeemed points never earn points back: only the part of the order paid with money counts, in both modes.',
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
@@ -417,6 +423,97 @@ const Settings: React.FC = () => {
 									'When a completed order is cancelled, take back the points earned on it. Cash on delivery orders always do this. If the order is reopened, the points are given back.',
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_minCartSpend',
+						label: __( 'Minimum order amount to earn points', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="number"
+								min="0"
+								step="0.01"
+								value={ settings.earning_minCartSpend ?? 0 }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										earning_minCartSpend:
+											parseFloat( e.target.value ) || 0,
+									} )
+								}
+								description={ __(
+									'Orders below this amount earn no points at all (flat and first-order bonuses included). Leave 0 to turn this off. Measured the same way points are calculated, so it follows the "points basis" setting above and ignores the part paid with points.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="small"
+							/>
+						),
+					},
+					{
+						id: 'earning_pointsForComment',
+						label: __( 'Points for blog comments', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="number"
+								min="0"
+								value={ settings.earning_pointsForComment ?? 0 }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										earning_pointsForComment:
+											parseInt( e.target.value ) || 0,
+									} )
+								}
+								description={ __(
+									'Points a logged-in customer earns for a comment on a blog post. 0 turns this off. Product reviews are rewarded separately above.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="small"
+							/>
+						),
+					},
+					{
+						id: 'earning_commentRequireApproval',
+						label: __( 'Require comment approval before earning', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ !! settings.earning_commentRequireApproval }
+								disabled={ ! settings.earning_pointsForComment }
+								onChange={ ( val ) =>
+									setSettings( {
+										...settings,
+										earning_commentRequireApproval: val,
+									} )
+								}
+								description={ __(
+									'On: points are given when the comment is approved. Off: points are given as soon as the comment is posted (spam never earns). Points are taken back if the comment is later marked as spam, trashed or deleted.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'earning_commentDailyLimit',
+						label: __( 'Comments that can earn per day', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="number"
+								min="0"
+								disabled={ ! settings.earning_pointsForComment }
+								value={ settings.earning_commentDailyLimit ?? 0 }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										earning_commentDailyLimit:
+											parseInt( e.target.value ) || 0,
+									} )
+								}
+								description={ __(
+									'Per customer, per day. 0 means no limit.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="small"
 							/>
 						),
 					},
@@ -747,6 +844,49 @@ const Settings: React.FC = () => {
 								) }
 								description={ __(
 									'Displays the points figure under the price on each product page.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+							/>
+						),
+					},
+					{
+						id: 'display_minSpendMessage',
+						label: __( 'Minimum spend message', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicInput
+								type="text"
+								value={ settings.display_minSpendMessage || '' }
+								placeholder={ __( 'Spend {amount} more to earn {points} points.', 'pointbay-loyalty-points-referral-rewards-woo' ) }
+								onChange={ ( e ) =>
+									setSettings( {
+										...settings,
+										display_minSpendMessage:
+											e.target.value,
+									} )
+								}
+								description={ __(
+									'Shown on the product page, cart and checkout when the order is below the minimum. Use {amount} for what is left to spend and {points} for the points they will earn once the minimum is reached. Leave empty for the default.',
+									'pointbay-loyalty-points-referral-rewards-woo'
+								) }
+								size="regular"
+							/>
+						),
+					},
+					{
+						id: 'display_commentNoticeEnabled',
+						label: __( 'Comment Form Earn Notice', 'pointbay-loyalty-points-referral-rewards-woo' ),
+						render: () => (
+							<ClassicCheckbox
+								checked={ !! settings.display_commentNoticeEnabled }
+								onChange={ ( val ) =>
+									setSettings( {
+										...settings,
+										display_commentNoticeEnabled: val,
+									} )
+								}
+								label={ __( 'Show points notice on the comment form', 'pointbay-loyalty-points-referral-rewards-woo' ) }
+								description={ __(
+									'Tells logged-in customers how many points a blog comment earns.',
 									'pointbay-loyalty-points-referral-rewards-woo'
 								) }
 							/>
