@@ -32,6 +32,10 @@ return array(
 		'earning_multiplyFlatBonus'       => true,
 		'earning_multiplyFirstOrderBonus' => false,
 		'earning_reverseOnCancel'         => true,
+		'earning_minCartSpend'            => 0,
+		'earning_pointsForComment'        => 0,
+		'earning_commentRequireApproval'  => true,
+		'earning_commentDailyLimit'       => 1,
 		'redemption_pointsValue'          => 0.01,
 		'redemption_mode'                 => 'fee',
 		'redemption_minPoints'            => 100,
@@ -41,6 +45,8 @@ return array(
 		'referrals_bonusPoints'           => 1000,
 		'display_guestNoticeEnabled'      => true,
 		'display_productNoticeEnabled'    => true,
+		'display_minSpendMessage'         => 'Spend {amount} more to earn {points} points.',
+		'display_commentNoticeEnabled'    => true,
 		'display_menuBalanceEnabled'      => false,
 		'display_menuBalanceLocation'     => 'primary',
 		'display_menuBalanceFormat'       => '{points} pts',
@@ -110,6 +116,25 @@ return array(
 			'type'    => 'boolean',
 			'default' => true,
 		),
+		'earning_minCartSpend'            => array(
+			'type'    => 'number',
+			'minimum' => 0,
+			'default' => 0,
+		),
+		'earning_pointsForComment'        => array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+			'default'           => 0,
+		),
+		'earning_commentRequireApproval'  => array(
+			'type'    => 'boolean',
+			'default' => true,
+		),
+		'earning_commentDailyLimit'       => array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+			'default'           => 1,
+		),
 		'redemption_pointsValue'          => array(
 			'type'              => 'number',
 			'sanitize_callback' => 'floatval',
@@ -148,6 +173,15 @@ return array(
 			'default' => true,
 		),
 		'display_productNoticeEnabled'    => array(
+			'type'    => 'boolean',
+			'default' => true,
+		),
+		'display_minSpendMessage'         => array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+			'default'           => 'Spend {amount} more to earn {points} points.',
+		),
+		'display_commentNoticeEnabled'    => array(
 			'type'    => 'boolean',
 			'default' => true,
 		),
