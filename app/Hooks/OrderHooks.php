@@ -364,8 +364,9 @@ class OrderHooks {
 		 * @param int   $user_id   The customer credited.
 		 * @param int   $order_id  The order awarded.
 		 * @param array $breakdown The award breakdown from EarningCalculator.
+		 * @param array $context   array( 'retroactive' => bool ). True for the retroactive tool: customer-facing notifications should stay silent (see BackfillService::is_backfilling()).
 		 */
-		do_action( 'pointbay_order_points_awarded', $user_id, $order_id, $breakdown );
+		do_action( 'pointbay_order_points_awarded', $user_id, $order_id, $breakdown, array( 'retroactive' => (bool) $args['retroactive'] ) );
 
 		return (int) $breakdown['total'];
 	}

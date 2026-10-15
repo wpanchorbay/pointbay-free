@@ -51,6 +51,10 @@ class BackfillController extends ApiController {
 							'default' => 1,
 							'minimum' => 1,
 						),
+						'offset'     => array(
+							'type'    => 'integer',
+							'minimum' => 0,
+						),
 						'per_page'   => array(
 							'type'    => 'integer',
 							'default' => 25,
@@ -118,7 +122,8 @@ class BackfillController extends ApiController {
 			$end,
 			max( 1, (int) $request->get_param( 'page' ) ),
 			max( 1, min( 50, (int) $request->get_param( 'per_page' ) ) ),
-			rest_sanitize_boolean( $request->get_param( 'commit' ) )
+			rest_sanitize_boolean( $request->get_param( 'commit' ) ),
+			null !== $request->get_param( 'offset' ) ? max( 0, (int) $request->get_param( 'offset' ) ) : null
 		);
 
 		return rest_ensure_response( $result );

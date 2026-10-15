@@ -37,6 +37,48 @@ class BackfillService {
 	const META_BACKFILLED = '_pointbay_backfilled';
 
 	/**
+	 * Order meta set once an order's existing refunds have been replayed.
+	 *
+	 * An order carrying META_BACKFILLED without this marker was interrupted
+	 * between the award and the refund replay; a re-run finishes it.
+	 *
+	 * @since 1.1.0
+	 * @var string
+	 */
+	const META_REFUNDS_DONE = '_pointbay_backfill_refunds_done';
+
+	/**
+	 * Seconds a committing batch may run before it stops early and hands the
+	 * rest back to the caller (guards against PHP/proxy time-outs).
+	 *
+	 * @since 1.1.0
+	 * @var int
+	 */
+	const TIME_BUDGET = 15;
+
+	/**
+	 * Whether a backfill commit is currently writing awards.
+	 *
+	 * @since 1.1.0
+	 * @var bool
+	 */
+	private static $running = false;
+
+	/**
+	 * Whether the current request is a retroactive (backfill) award.
+	 *
+	 * Listeners of the live award hooks (customer emails, notifications, SMS,
+	 * Pro bonus messages) should check this and stay silent, so a merchant who
+	 * backfills hundreds of old orders does not mail customers about them.
+	 *
+	 * @since 1.1.0
+	 * @return bool True while a backfill commit is awarding.
+	 */
+	public static function is_backfilling() {
+		return self::$running;
+	}
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @since 1.1.0
@@ -99,9 +141,11 @@ class BackfillService {
 	 * @param int         $page     Page number, 1-based.
 	 * @param int         $per_page Orders per page, clamped to 1-50.
 	 * @param bool        $commit   Whether to write the awards. False only counts.
-	 * @return array page, total_pages, total_orders, scanned, credited_orders, points, customer_ids, skipped (guest, already_awarded, refunded, zero_points) and done.
+	 * @param int|null    $offset   Optional. Orders to skip from the start of the range. When given it replaces $page, and the batch may stop early on its time budget; continue from `next_offset`.
+	 * @return array page, total_pages, total_orders, next_offset, scanned, credited_orders, points, customer_ids, skipped (guest, already_awarded, refunded, zero_points) and done.
 	 */
-	public function process_batch( $start, $end, $page, $per_page, $commit ) {
+	public function process_batch( $start, $end, $page, $per_page, $commit, $offset = null ) {
+		$started  = microtime( true );
 		$page     = max( 1, (int) $page );
 		$per_page = max( 1, min( 50, (int) $per_page ) );
 		$tz       = wp_timezone();
@@ -114,23 +158,28 @@ class BackfillService {
 			$date_created = '>=' . $from;
 		}
 
-		$result = wc_get_orders(
-			array(
-				'status'       => $this->qualifying_statuses(),
-				'type'         => 'shop_order',
-				'date_created' => $date_created,
-				'orderby'      => 'date',
-				'order'        => 'ASC',
-				'limit'        => $per_page,
-				'paged'        => $page,
-				'paginate'     => true,
-			)
+		$query = array(
+			'status'       => $this->qualifying_statuses(),
+			'type'         => 'shop_order',
+			'date_created' => $date_created,
+			'orderby'      => 'date',
+			'order'        => 'ASC',
+			'limit'        => $per_page,
+			'paginate'     => true,
 		);
+		if ( null !== $offset ) {
+			$offset          = max( 0, (int) $offset );
+			$query['offset'] = $offset;
+		} else {
+			$query['paged'] = $page;
+		}
+		$result = wc_get_orders( $query );
 
 		$summary = array(
 			'page'            => $page,
 			'total_pages'     => (int) $result->max_num_pages,
 			'total_orders'    => (int) $result->total,
+			'next_offset'     => 0,
 			'scanned'         => 0,
 			'credited_orders' => 0,
 			'points'          => 0,
@@ -145,6 +194,9 @@ class BackfillService {
 		);
 
 		foreach ( $result->orders as $order ) {
+			if ( $commit && null !== $offset && $summary['scanned'] > 0 && ( microtime( true ) - $started ) > self::TIME_BUDGET ) {
+				break;
+			}
 			++$summary['scanned'];
 			$points = $this->process_order( $order, $commit, $summary['skipped'] );
 			if ( $points > 0 ) {
@@ -155,7 +207,13 @@ class BackfillService {
 		}
 
 		$summary['customer_ids'] = array_values( array_unique( $summary['customer_ids'] ) );
-		$summary['done']         = $page >= $summary['total_pages'];
+		if ( null !== $offset ) {
+			$summary['next_offset'] = $offset + $summary['scanned'];
+			$summary['done']        = $summary['next_offset'] >= $summary['total_orders'] || 0 === $summary['scanned'];
+		} else {
+			$summary['next_offset'] = ( ( $page - 1 ) * $per_page ) + $summary['scanned'];
+			$summary['done']        = $page >= $summary['total_pages'];
+		}
 
 		return $summary;
 	}
@@ -177,6 +235,16 @@ class BackfillService {
 		}
 
 		if ( $this->is_already_awarded( $order, $user_id ) ) {
+			if ( $commit && $order->get_meta( self::META_BACKFILLED ) && ! $order->get_meta( self::META_REFUNDS_DONE ) ) {
+				// An earlier run was interrupted after the award: finish the
+				// refund replay (idempotent per refund) without crediting again.
+				self::$running = true;
+				try {
+					$this->replay_refunds( $order );
+				} finally {
+					self::$running = false;
+				}
+			}
 			++$skipped['already_awarded'];
 			return 0;
 		}
@@ -198,25 +266,51 @@ class BackfillService {
 			return (int) $preview['net'];
 		}
 
-		$ledger  = LedgerService::get_instance();
-		$awarded = $hooks->award_order_points(
-			$order,
-			$user_id,
-			array(
-				'retroactive' => true,
-				'created_at'  => $this->order_award_datetime( $order ),
-			)
-		);
+		self::$running = true;
+		try {
+			$awarded = $hooks->award_order_points(
+				$order,
+				$user_id,
+				array(
+					'retroactive' => true,
+					'created_at'  => $this->order_award_datetime( $order ),
+				)
+			);
 
-		if ( $awarded <= 0 ) {
-			// Lost a race with another run, or the credit failed: nothing was
-			// written by this call, so nothing is counted.
-			++$skipped['already_awarded'];
-			return 0;
+			if ( $awarded <= 0 ) {
+				// Lost a race with another run, or the credit failed: nothing was
+				// written by this call, so nothing is counted.
+				++$skipped['already_awarded'];
+				return 0;
+			}
+
+			// Marked straight after the award, before the refund replay, so an
+			// interruption in between is recognised and finished by a re-run
+			// instead of being skipped as already awarded.
+			$order->update_meta_data( self::META_BACKFILLED, time() );
+			$order->save_meta_data();
+
+			$this->replay_refunds( $order );
+		} finally {
+			self::$running = false;
 		}
 
-		// Replay refunds oldest first, each dated at the refund, through the same
-		// clawback the live flow uses.
+		return (int) $preview['net'];
+	}
+
+	/**
+	 * Replays an order's existing refunds through the live clawback, oldest first.
+	 *
+	 * Each refund is dated at the refund itself. The clawback is idempotent per
+	 * refund id, so replaying twice never claws twice.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order The order.
+	 * @return void
+	 */
+	private function replay_refunds( $order ) {
+		$hooks   = OrderHooks::get_instance();
+		$ledger  = LedgerService::get_instance();
 		$refunds = $order->get_refunds();
 		usort(
 			$refunds,
@@ -233,10 +327,8 @@ class BackfillService {
 			}
 		}
 
-		$order->update_meta_data( self::META_BACKFILLED, time() );
+		$order->update_meta_data( self::META_REFUNDS_DONE, time() );
 		$order->save_meta_data();
-
-		return (int) $preview['net'];
 	}
 
 	/**

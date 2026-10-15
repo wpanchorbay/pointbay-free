@@ -17,6 +17,7 @@ interface BatchResult {
 	page: number;
 	total_pages: number;
 	total_orders: number;
+	next_offset: number;
 	scanned: number;
 	credited_orders: number;
 	points: number;
@@ -82,7 +83,7 @@ const BackfillTool: React.FC = () => {
 			customers: 0,
 			skipped: emptySkips(),
 		};
-		let page = 1;
+		let offset = 0;
 		let scanned = 0;
 
 		setChecked( 0 );
@@ -95,7 +96,7 @@ const BackfillTool: React.FC = () => {
 				data: {
 					start_date: startDate,
 					end_date: endDate || undefined,
-					page,
+					offset,
 					per_page: PER_PAGE,
 					commit,
 				},
@@ -117,7 +118,7 @@ const BackfillTool: React.FC = () => {
 			if ( batch.done || batch.scanned === 0 ) {
 				break;
 			}
-			page += 1;
+			offset = batch.next_offset;
 		}
 
 		totalsAcc.customers = customers.size;
