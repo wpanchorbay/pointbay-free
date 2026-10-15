@@ -465,6 +465,33 @@ class EarningCalculator {
 	}
 
 	/**
+	 * Whether the cart's total-mode basis is still missing its shipping.
+	 *
+	 * In "total" mode the basis includes shipping, which a cart that needs it
+	 * only knows once a shipping method has been chosen. Until then a
+	 * "spend more" shortfall would be a guess.
+	 *
+	 * @since 1.1.0
+	 * @return bool True when the basis is total mode and shipping is not yet known.
+	 */
+	public function is_total_basis_incomplete() {
+		$incomplete = false;
+
+		if ( 'total' === $this->get_basis_mode() && function_exists( 'WC' ) && isset( WC()->cart ) && WC()->cart->needs_shipping() ) {
+			$chosen     = isset( WC()->session ) && WC()->session ? WC()->session->get( 'chosen_shipping_methods' ) : array();
+			$incomplete = empty( $chosen );
+		}
+
+		/**
+		 * Filters whether the cart's total-mode earning basis is still incomplete.
+		 *
+		 * @since 1.1.0
+		 * @param bool $incomplete True when shipping is not yet known.
+		 */
+		return (bool) apply_filters( 'pointbay_total_basis_incomplete', $incomplete );
+	}
+
+	/**
 	 * Describes how far a basis is from the minimum spend, and what reaching it earns.
 	 *
 	 * @since 1.1.0
@@ -478,6 +505,12 @@ class EarningCalculator {
 	public function minimum_spend_state( $basis, $user_id, $context = 'cart', $include_first_order = false ) {
 		$minimum = $this->get_min_spend();
 		if ( $minimum <= 0 || ! $this->is_below_minimum( $basis ) ) {
+			return null;
+		}
+
+		// A shortfall promised on an incomplete total (shipping not chosen yet)
+		// could be wrong: the final order may well qualify. Say nothing instead.
+		if ( 'cart' === $context && $this->is_total_basis_incomplete() ) {
 			return null;
 		}
 
