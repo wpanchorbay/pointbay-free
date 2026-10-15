@@ -35,6 +35,14 @@ class LedgerService {
 	private $deferred_actions = null;
 
 	/**
+	 * Site-local datetime to stamp on new ledger rows instead of "now", or null.
+	 *
+	 * @since 1.1.0
+	 * @var string|null
+	 */
+	private $created_at_override = null;
+
+	/**
 	 * Gets an instance of this object.
 	 *
 	 * @since 1.0.0
@@ -45,6 +53,25 @@ class LedgerService {
 			self::$instance = new self();
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * Dates the ledger rows written from now on, instead of stamping them "now".
+	 *
+	 * Used by the retroactive award tool: backfilled rows are dated at the
+	 * order's completion time (date completed, else date paid, else date
+	 * created, in the site timezone) so history and rolling windows are right.
+	 * The value uses the same WordPress clock as ordinary rows (the site-local
+	 * `current_time( 'mysql' )` that Model::save() writes) and does not touch the
+	 * database DEFAULT CURRENT_TIMESTAMP path, so it does not worsen the known
+	 * clock-skew issue. Callers must clear it again with null, in a finally block.
+	 *
+	 * @since 1.1.0
+	 * @param string|null $mysql_datetime Site-local 'Y-m-d H:i:s', or null to clear.
+	 * @return void
+	 */
+	public function set_created_at_override( $mysql_datetime ) {
+		$this->created_at_override = ( is_string( $mysql_datetime ) && preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $mysql_datetime ) ) ? $mysql_datetime : null;
 	}
 
 	/**
@@ -178,17 +205,21 @@ class LedgerService {
 				return new \WP_Error( 'insufficient_balance', 'User does not have enough points for this debit.' );
 			}
 
-			$entry = new LedgerEntry(
-				array(
-					'user_id'          => $user_id,
-					'transaction_type' => $txn_type,
-					'origin'           => $origin,
-					'amount'           => $amount,
-					'reference_type'   => $ref_type,
-					'reference_id'     => $ref_id,
-					'description'      => $description,
-				)
+			$attributes = array(
+				'user_id'          => $user_id,
+				'transaction_type' => $txn_type,
+				'origin'           => $origin,
+				'amount'           => $amount,
+				'reference_type'   => $ref_type,
+				'reference_id'     => $ref_id,
+				'description'      => $description,
 			);
+
+			if ( null !== $this->created_at_override ) {
+				$attributes['created_at'] = $this->created_at_override;
+			}
+
+			$entry = new LedgerEntry( $attributes );
 
 			$saved = $entry->save();
 			if ( ! $saved ) {

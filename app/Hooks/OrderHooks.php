@@ -165,7 +165,7 @@ class OrderHooks {
 	 * @since 1.1.0
 	 * @return array List of reference types.
 	 */
-	private static function award_reference_types() {
+	public static function award_reference_types() {
 		return array( self::REF_ORDER, self::REF_FLAT_BONUS, self::REF_FIRST_ORDER );
 	}
 
@@ -220,6 +220,36 @@ class OrderHooks {
 	}
 
 	/**
+	 * Calculates what an order would be awarded, without writing anything.
+	 *
+	 * The single calculation behind both the live award and the retroactive
+	 * tool, so the two cannot drift apart.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order   The order.
+	 * @param int       $user_id The customer.
+	 * @return array The EarningCalculator breakdown.
+	 */
+	public function calculate_order_award( $order, $user_id ) {
+		$calculator = EarningCalculator::get_instance();
+
+		// The ledger, not the order list, is what says whether this customer has
+		// had their first-order bonus: order history is not stable across a
+		// guest checkout later claimed by a registration.
+		$is_first_order = $calculator->is_first_order( $user_id, $order );
+
+		return $calculator->calculate(
+			array(
+				'amount'              => $calculator->resolve_order_basis( $order ),
+				'user_id'             => $user_id,
+				'include_first_order' => $is_first_order,
+				'context'             => 'order',
+				'order'               => $order,
+			)
+		);
+	}
+
+	/**
 	 * Writes an order's award to the ledger.
 	 *
 	 * An award is up to three rows rather than one. The ledger's unique key
@@ -232,9 +262,22 @@ class OrderHooks {
 	 * @since 1.1.0
 	 * @param \WC_Order $order   The order being awarded.
 	 * @param int       $user_id The customer.
-	 * @return void
+	 * @param array     $args    {
+	 *     Optional. Retroactive award options.
+	 *
+	 *     @type bool        $retroactive Whether this is a backfill; changes the order note. Default false.
+	 *     @type string|null $created_at  Site-local datetime to date the ledger rows at. Default null (now).
+	 * }
+	 * @return int Points credited by this call; 0 when nothing was credited.
 	 */
-	private function award_order_points( $order, $user_id ) {
+	public function award_order_points( $order, $user_id, $args = array() ) {
+		$args     = wp_parse_args(
+			$args,
+			array(
+				'retroactive' => false,
+				'created_at'  => null,
+			)
+		);
 		$order_id = $order->get_id();
 		$ledger   = LedgerService::get_instance();
 
@@ -244,29 +287,15 @@ class OrderHooks {
 		foreach ( self::award_reference_types() as $ref_type ) {
 			if ( $ledger->has_existing_transaction( $user_id, $ref_type, $order_id, 'credit' ) ) {
 				$this->maybe_reaward_reversed_points( $order, $user_id );
-				return;
+				return 0;
 			}
 		}
 
 		$calculator = EarningCalculator::get_instance();
-
-		// The ledger, not the order list, is what says whether this customer has
-		// had their first-order bonus: order history is not stable across a
-		// guest checkout later claimed by a registration.
-		$is_first_order = $calculator->is_first_order( $user_id, $order );
-
-		$breakdown = $calculator->calculate(
-			array(
-				'amount'              => $calculator->resolve_order_basis( $order ),
-				'user_id'             => $user_id,
-				'include_first_order' => $is_first_order,
-				'context'             => 'order',
-				'order'               => $order,
-			)
-		);
+		$breakdown  = $this->calculate_order_award( $order, $user_id );
 
 		if ( $breakdown['total'] <= 0 ) {
-			return;
+			return 0;
 		}
 
 		$credits = array();
@@ -301,11 +330,20 @@ class OrderHooks {
 			);
 		}
 
-		$result = $ledger->credit_batch( $user_id, $credits );
+		// The override covers only the credit itself, never the listeners of
+		// pointbay_order_points_awarded below.
+		try {
+			$ledger->set_created_at_override( $args['created_at'] );
+			$result = $ledger->credit_batch( $user_id, $credits );
+		} finally {
+			$ledger->set_created_at_override( null );
+		}
 
 		if ( is_wp_error( $result ) ) {
-			pointbay_log( "OrderHooks: Failed to credit points for order #{$order_id} (user {$user_id}): " . $result->get_error_message(), 'ERROR' );
-			return;
+			if ( 'duplicate_transaction' !== $result->get_error_code() ) {
+				pointbay_log( "OrderHooks: Failed to credit points for order #{$order_id} (user {$user_id}): " . $result->get_error_message(), 'ERROR' );
+			}
+			return 0;
 		}
 
 		// Recorded so a later refund prorates against the figures this order was
@@ -317,7 +355,7 @@ class OrderHooks {
 		$order->update_meta_data( self::META_BREAKDOWN, wp_json_encode( $breakdown ) );
 		$order->save();
 
-		$this->add_award_note( $order, $breakdown, $points_paid );
+		$this->add_award_note( $order, $breakdown, $points_paid, (bool) $args['retroactive'] );
 
 		/**
 		 * Fires after an order's points have been awarded.
@@ -328,6 +366,8 @@ class OrderHooks {
 		 * @param array $breakdown The award breakdown from EarningCalculator.
 		 */
 		do_action( 'pointbay_order_points_awarded', $user_id, $order_id, $breakdown );
+
+		return (int) $breakdown['total'];
 	}
 
 	/**
@@ -337,9 +377,10 @@ class OrderHooks {
 	 * @param \WC_Order $order       The awarded order.
 	 * @param array     $breakdown   The award breakdown.
 	 * @param float     $points_paid The money value paid with points, which did not earn.
+	 * @param bool      $retroactive Whether the award was made retroactively by the backfill tool.
 	 * @return void
 	 */
-	private function add_award_note( $order, $breakdown, $points_paid ) {
+	private function add_award_note( $order, $breakdown, $points_paid, $retroactive = false ) {
 		$decimals = (int) wc_get_price_decimals();
 
 		$note = sprintf(
@@ -349,6 +390,10 @@ class OrderHooks {
 			wc_format_decimal( $breakdown['basis_amount'], $decimals ),
 			$breakdown['basis_mode']
 		);
+
+		if ( $retroactive ) {
+			$note .= ' ' . __( 'Awarded retroactively.', 'pointbay-loyalty-points-referral-rewards-woo' );
+		}
 
 		if ( $points_paid > 0 ) {
 			$note .= ' ' . sprintf(
@@ -897,6 +942,36 @@ class OrderHooks {
 	}
 
 	/**
+	 * Previews what an order would net after its existing refunds are replayed.
+	 *
+	 * Uses the freshly calculated award and the same proration as the live
+	 * clawback, so a retroactive award of a partly refunded order is credited
+	 * only for what was not refunded.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order   The order.
+	 * @param int       $user_id The customer.
+	 * @return array breakdown (the fresh award breakdown), refund_clawback (points the refunds take back) and net (points the customer keeps).
+	 */
+	public function preview_net_award( $order, $user_id ) {
+		$breakdown = $this->calculate_order_award( $order, $user_id );
+		$clawback  = 0;
+
+		if ( $breakdown['total'] > 0 && $order->get_refunds() ) {
+			$progress = $this->refund_progress( $order, $user_id, $breakdown );
+			if ( $progress ) {
+				$clawback = max( 0, min( (int) $progress['target'], (int) $progress['total_awarded'] ) );
+			}
+		}
+
+		return array(
+			'breakdown'       => $breakdown,
+			'refund_clawback' => $clawback,
+			'net'             => max( 0, (int) $breakdown['total'] - $clawback ),
+		);
+	}
+
+	/**
 	 * Refund IDs whose earn clawback counts toward what has been taken back.
 	 *
 	 * The union of every refund this plugin has ever clawed points back for,
@@ -920,14 +995,17 @@ class OrderHooks {
 	 * Where the refunds on an order say the award should stand.
 	 *
 	 * @since 1.1.0
-	 * @param \WC_Order $order   The order.
-	 * @param int       $user_id The customer.
+	 * @param \WC_Order  $order   The order.
+	 * @param int        $user_id The customer.
+	 * @param array|null $breakdown Optional. A breakdown to prorate against instead of the stored one.
 	 * @return array|null target (points that should be clawed back in total), total_awarded and already_clawed; null when the order was never awarded.
 	 */
-	private function refund_progress( $order, $user_id ) {
+	private function refund_progress( $order, $user_id, $breakdown = null ) {
 		$ledger_service = LedgerService::get_instance();
 
-		$breakdown = $this->get_award_breakdown( $order, $user_id );
+		if ( null === $breakdown ) {
+			$breakdown = $this->get_award_breakdown( $order, $user_id );
+		}
 		if ( ! $breakdown ) {
 			return null;
 		}

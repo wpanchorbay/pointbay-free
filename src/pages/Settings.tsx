@@ -16,6 +16,7 @@ import { VipTiersPreview } from '../components/upsell/VipTiersPreview';
 import { LicenseSettingsPreview } from '../components/upsell/LicenseSettingsPreview';
 import { usePointBayStore } from '../store/pointbayStore';
 import { EarningBandsField } from '../components/settings/EarningBandsField';
+import BackfillTool from '../components/settings/BackfillTool';
 
 interface SettingsData {
 	earning_pointsPerDollar: number;
@@ -1035,6 +1036,8 @@ const Settings: React.FC = () => {
 					},
 				] }
 			/>
+
+			<BackfillTool />
 
 			{ isProActive ? (
 				proSections

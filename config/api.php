@@ -19,4 +19,5 @@ if ( ! defined( 'WPINC' ) ) {
 
 return array(
 	\PointBay\Api\SettingsController::class,
+	\PointBay\Admin\BackfillController::class,
 );
