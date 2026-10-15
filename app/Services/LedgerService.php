@@ -75,6 +75,34 @@ class LedgerService {
 	}
 
 	/**
+	 * Fires the credited/debited action with the created_at override suspended.
+	 *
+	 * Listeners (referral or Pro bonuses, for example) write their own ledger
+	 * rows; those must be dated now, not at the backdated time of the row that
+	 * triggered them.
+	 *
+	 * @since 1.1.0
+	 * @param string $txn_type 'credit' or 'debit'.
+	 * @param int    $user_id  The user.
+	 * @param float  $amount   The amount.
+	 * @param mixed  $entry    The ledger entry.
+	 * @return void
+	 */
+	private function fire_ledger_action( $txn_type, $user_id, $amount, $entry ) {
+		$saved                     = $this->created_at_override;
+		$this->created_at_override = null;
+		try {
+			if ( 'credit' === $txn_type ) {
+				do_action( 'pointbay_points_credited', $user_id, $amount, $entry );
+			} else {
+				do_action( 'pointbay_points_debited', $user_id, $amount, $entry );
+			}
+		} finally {
+			$this->created_at_override = $saved;
+		}
+	}
+
+	/**
 	 * Credit points to a user.
 	 *
 	 * @since 1.0.0
@@ -251,10 +279,8 @@ class LedgerService {
 				// Inside credit_batch(): listeners must only hear about rows that
 				// are actually committed, so the batch fires these after COMMIT.
 				$this->deferred_actions[] = array( $txn_type, $user_id, $amount, $entry );
-			} elseif ( 'credit' === $txn_type ) {
-				do_action( 'pointbay_points_credited', $user_id, $amount, $entry );
 			} else {
-				do_action( 'pointbay_points_debited', $user_id, $amount, $entry );
+				$this->fire_ledger_action( $txn_type, $user_id, $amount, $entry );
 			}
 
 			return $entry;
@@ -476,11 +502,7 @@ class LedgerService {
 		$queued                 = $this->deferred_actions;
 		$this->deferred_actions = null;
 		foreach ( $queued as $action ) {
-			if ( 'credit' === $action[0] ) {
-				do_action( 'pointbay_points_credited', $action[1], $action[2], $action[3] );
-			} else {
-				do_action( 'pointbay_points_debited', $action[1], $action[2], $action[3] );
-			}
+			$this->fire_ledger_action( $action[0], $action[1], $action[2], $action[3] );
 		}
 
 		return $entries;
