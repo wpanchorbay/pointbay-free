@@ -260,11 +260,16 @@ class CommentHooks {
 			return; // Product reviews are handled by ReviewHooks.
 		}
 
+		// A post's author never earns for commenting on their own post, top level
+		// or reply; nor does anyone replying to their own comment.
+		if ( (int) get_post_field( 'post_author', $comment->comment_post_ID ) === $user_id ) {
+			return;
+		}
+
 		if ( (int) $comment->comment_parent > 0 ) {
-			$parent      = get_comment( (int) $comment->comment_parent );
-			$post_author = (int) get_post_field( 'post_author', $comment->comment_post_ID );
-			if ( ( $parent && (int) $parent->user_id === $user_id ) || $post_author === $user_id ) {
-				return; // Authors replying on their own thread do not earn.
+			$parent = get_comment( (int) $comment->comment_parent );
+			if ( $parent && (int) $parent->user_id === $user_id ) {
+				return;
 			}
 		}
 
