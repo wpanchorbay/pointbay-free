@@ -16,9 +16,24 @@
 	}
 
 	var data = window.pointbay_product_earn;
+	var initial = null;
 
 	function notice() {
 		return document.querySelector( '.pointbay-product-earn-notice' );
+	}
+
+	// The server-rendered state is what reset_data restores; it is captured once
+	// rather than recomputed, so the script never has to know how it was built.
+	function capture() {
+		var el = notice();
+
+		if ( el && ! initial ) {
+			initial = {
+				html: el.innerHTML,
+				className: el.className,
+				display: el.style.display
+			};
+		}
 	}
 
 	function render( template, points ) {
@@ -28,17 +43,43 @@
 			return;
 		}
 
-		// The templates are translated strings carrying a single %s and a
-		// <strong> wrapper, both authored server-side.
+		// The template is a translated string carrying a single %s and a
+		// <strong> wrapper, authored server-side.
+		el.className = 'pointbay-product-earn-notice';
+		el.style.display = '';
 		el.innerHTML = template.replace( '%s', String( points ) );
 	}
+
+	function renderMessage( text ) {
+		var el = notice();
+
+		if ( ! el ) {
+			return;
+		}
+
+		// Plain text from the server: never parsed as HTML.
+		el.className = 'pointbay-product-earn-notice pointbay-product-earn-notice--minimum';
+		el.style.display = text === '' ? 'none' : '';
+		el.textContent = text;
+	}
+
+	capture();
 
 	$( document ).on( 'found_variation', 'form.variations_form', function ( event, variation ) {
 		if ( ! variation || ! variation.variation_id ) {
 			return;
 		}
 
-		var points = data.points[ variation.variation_id ];
+		capture();
+
+		var id = variation.variation_id;
+
+		if ( data.messages && Object.prototype.hasOwnProperty.call( data.messages, id ) ) {
+			renderMessage( String( data.messages[ id ] ) );
+			return;
+		}
+
+		var points = data.points[ id ];
 
 		// A variation missing from the table (unpurchasable, or priced at zero
 		// when the page rendered) leaves the existing text alone rather than
@@ -53,10 +94,12 @@
 	$( document ).on( 'reset_data', 'form.variations_form', function () {
 		var el = notice();
 
-		if ( ! el ) {
+		if ( ! el || ! initial ) {
 			return;
 		}
 
-		render( data.range, el.getAttribute( 'data-pointbay-default' ) );
+		el.className = initial.className;
+		el.style.display = initial.display;
+		el.innerHTML = initial.html;
 	} );
 } )( jQuery );

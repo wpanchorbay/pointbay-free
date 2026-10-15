@@ -26,10 +26,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  * `calculate()`, which is what lets the product-page preview promise a figure
  * the order actually pays out.
  *
+ * Only money earns. The part of an order paid with redeemed points is excluded
+ * from the basis in both basis modes (see `resolve_order_basis()`), and the
+ * basis the award was measured on is stored with the award breakdown. Refunds
+ * claw back against that stored breakdown, so a partly points-paid order
+ * prorates against its money basis only.
+ *
  * ## Canonical order of operations
  *
  * This sequence is the contract. Changing it changes what every store awards.
  *
+ * 0. **Minimum spend gate.** Before anything else, a basis below
+ *    `earning_minCartSpend` (compared at currency precision; 0 = off) earns
+ *    nothing at all: base, flat and first-order bonuses are all zero. The basis
+ *    compared is the one step 1 resolves, so previews and awards share one rule.
+ *    Not enforced for the 'product' context, where the amount is a single price.
  * 1. **Basis.** The caller resolves it, via `resolve_order_basis()` or
  *    `resolve_cart_basis()`, both of which honour the `earning_basis` setting
  *    (`total` includes shipping and tax; `subtotal` does not).
@@ -110,18 +121,50 @@ class EarningCalculator {
 	}
 
 	/**
+	 * The ex-tax money value of the points discount carried by an order.
+	 *
+	 * This is the part of the order the customer paid for with points rather than
+	 * money, and the part that never earns. It is the sum of the negative points
+	 * fee (fee redemption mode) and the discount of every coupon line whose code
+	 * starts with the points coupon prefix (coupon redemption mode). Ordinary
+	 * coupons are not points-paid and are not included.
+	 *
+	 * @since 1.1.0
+	 * @param \WC_Order $order The order to measure.
+	 * @return float The points-paid value, ex-tax; 0 when no points were redeemed.
+	 */
+	public function get_points_paid_value( $order ) {
+		if ( ! $order ) {
+			return 0.0;
+		}
+
+		$value = \PointBay\Checkout\RedemptionManager::get_instance()->get_points_fee_on_order( $order );
+
+		foreach ( $order->get_items( 'coupon' ) as $item ) {
+			if ( 0 === strpos( strtolower( (string) $item->get_code() ), \PointBay\Checkout\CouponRedemption::COUPON_CODE_PREFIX ) ) {
+				$value += (float) $item->get_discount();
+			}
+		}
+
+		return max( 0.0, $value );
+	}
+
+	/**
 	 * Resolves the money basis for an order.
 	 *
 	 * One definition, shared with resolve_cart_basis(), so the figure previewed
-	 * is the figure awarded:
+	 * is the figure awarded. Only the part of an order paid with money earns; the
+	 * part paid with points (see get_points_paid_value()) never does, in either
+	 * redemption mode and either basis mode.
 	 *
-	 * - 'total': what the customer actually paid (order total, which already
-	 *   nets off coupons, a points coupon and a negative points fee).
-	 * - 'subtotal': item subtotal minus every coupon (the points coupon
-	 *   included) minus a fee-mode points discount. Shipping, tax and other
-	 *   fees are excluded.
-	 *
-	 * In both modes points spent on an order never earn points back.
+	 * - 'total': the order total, which is what the customer actually paid in
+	 *   money. Coupons, the points coupon and the negative points fee are already
+	 *   netted off it (and the tax on them with it); shipping, tax and any other
+	 *   fees are included. Excluded: the points-paid value, a normal coupon's
+	 *   discount, and nothing else.
+	 * - 'subtotal': goods ex-tax minus normal coupons minus the points-paid value.
+	 *   Excluded: the points-paid value, normal coupons, shipping, tax and every
+	 *   fee other than the points fee.
 	 *
 	 * @since 1.1.0
 	 * @param \WC_Order $order The order to measure.
@@ -133,8 +176,8 @@ class EarningCalculator {
 		}
 
 		if ( 'subtotal' === $this->get_basis_mode() ) {
-			$points_fee = \PointBay\Checkout\RedemptionManager::get_instance()->get_points_fee_on_order( $order );
-			return max( 0.0, (float) $order->get_subtotal() - (float) $order->get_total_discount() - $points_fee );
+			$before_points = \PointBay\Checkout\RedemptionManager::get_instance()->get_order_basis_before_points( $order );
+			return max( 0.0, $before_points - $this->get_points_paid_value( $order ) );
 		}
 
 		return max( 0.0, (float) $order->get_total() );
@@ -250,10 +293,21 @@ class EarningCalculator {
 	 *     @type bool           $include_first_order Whether the first-order bonus applies. Default false.
 	 *     @type string         $context             One of 'order', 'cart', 'product', 'guest'.
 	 *     @type \WC_Order|null $order               The order, when there is one.
+	 *     @type bool           $enforce_minimum     Whether the minimum spend gate applies. Default true,
+	 *                                               except for the 'product' context where it is false.
 	 * }
-	 * @return array The award breakdown.
+	 * @return array The award breakdown, including `below_minimum` and `minimum`.
 	 */
 	public function calculate( $args ) {
+		$args = (array) $args;
+
+		// A single product price is not the order, so the minimum is not
+		// enforced for the 'product' context unless explicitly requested.
+		if ( ! array_key_exists( 'enforce_minimum', $args ) ) {
+			$args['enforce_minimum'] = ! ( isset( $args['context'] ) && 'product' === $args['context'] );
+		}
+		$enforce_minimum = (bool) $args['enforce_minimum'];
+
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -268,6 +322,24 @@ class EarningCalculator {
 
 		$amount  = max( 0.0, (float) $args['amount'] );
 		$user_id = (int) $args['user_id'];
+		$minimum = $this->get_min_spend();
+
+		// Step 0 — the minimum spend is the first gate: below it nothing is earned.
+		if ( $enforce_minimum && $this->is_below_minimum( $amount ) ) {
+			return array(
+				'basis_amount'  => $amount,
+				'basis_mode'    => $this->get_basis_mode(),
+				'base'          => 0,
+				'flat'          => 0,
+				'first_order'   => 0,
+				'multiplier'    => 1.0,
+				'rate_used'     => 0,
+				'band_id'       => null,
+				'total'         => 0,
+				'below_minimum' => true,
+				'minimum'       => $minimum,
+			);
+		}
 
 		$rate     = (int) $this->setting( 'earning_pointsPerDollar', 1 );
 		$bands    = (array) $this->setting( 'earning_bands', array() );
@@ -335,15 +407,136 @@ class EarningCalculator {
 		}
 
 		return array(
-			'basis_amount' => $amount,
-			'basis_mode'   => $this->get_basis_mode(),
-			'base'         => max( 0, $base ),
-			'flat'         => max( 0, $flat ),
-			'first_order'  => max( 0, $first_order ),
-			'multiplier'   => $multiplier,
-			'rate_used'    => $bands ? 0 : $rate,
-			'band_id'      => $band_id,
-			'total'        => max( 0, $base ) + max( 0, $flat ) + max( 0, $first_order ),
+			'basis_amount'  => $amount,
+			'basis_mode'    => $this->get_basis_mode(),
+			'base'          => max( 0, $base ),
+			'flat'          => max( 0, $flat ),
+			'first_order'   => max( 0, $first_order ),
+			'multiplier'    => $multiplier,
+			'rate_used'     => $bands ? 0 : $rate,
+			'band_id'       => $band_id,
+			'total'         => max( 0, $base ) + max( 0, $flat ) + max( 0, $first_order ),
+			'below_minimum' => false,
+			'minimum'       => $minimum,
+		);
+	}
+
+	/**
+	 * Sanitizes a money amount setting: a float, never negative.
+	 *
+	 * @since 1.1.0
+	 * @param mixed $value The raw value.
+	 * @return float The amount, clamped to zero or above.
+	 */
+	public static function sanitize_amount( $value ) {
+		return max( 0.0, (float) $value );
+	}
+
+	/**
+	 * Returns the minimum basis a cart or order needs before it earns anything.
+	 *
+	 * @since 1.1.0
+	 * @return float The minimum spend. 0 means the rule is off.
+	 */
+	public function get_min_spend() {
+		return self::sanitize_amount( $this->setting( 'earning_minCartSpend', 0 ) );
+	}
+
+	/**
+	 * Whether a basis falls short of the minimum spend.
+	 *
+	 * Compared at currency precision so a displayed "10.00" is never judged
+	 * against a float that is 9.999999. Callers must pass the same basis the
+	 * award uses so preview and award share one rule.
+	 *
+	 * @since 1.1.0
+	 * @param float $basis The resolved money basis.
+	 * @return bool True when a minimum is set and the basis is under it.
+	 */
+	public function is_below_minimum( $basis ) {
+		$minimum = $this->get_min_spend();
+		if ( $minimum <= 0 ) {
+			return false;
+		}
+
+		$decimals = (int) wc_get_price_decimals();
+
+		return round( (float) $basis, $decimals ) < round( $minimum, $decimals );
+	}
+
+	/**
+	 * Describes how far a basis is from the minimum spend, and what reaching it earns.
+	 *
+	 * @since 1.1.0
+	 * @param float  $basis               The resolved money basis.
+	 * @param int    $user_id             The customer, for the tier multiplier. 0 for a guest.
+	 * @param string $context             Award context passed to calculate().
+	 * @param bool   $include_first_order Whether the first-order bonus would apply.
+	 * @return array|null Null when no minimum applies or it is met; otherwise
+	 *                    `minimum`, `remaining`, `points` and a plain-text `message`.
+	 */
+	public function minimum_spend_state( $basis, $user_id, $context = 'cart', $include_first_order = false ) {
+		$minimum = $this->get_min_spend();
+		if ( $minimum <= 0 || ! $this->is_below_minimum( $basis ) ) {
+			return null;
+		}
+
+		$result = $this->calculate(
+			array(
+				'amount'              => $minimum,
+				'user_id'             => (int) $user_id,
+				'include_first_order' => (bool) $include_first_order,
+				'context'             => (string) $context,
+				'enforce_minimum'     => false,
+			)
+		);
+
+		$remaining = round( $minimum - (float) $basis, (int) wc_get_price_decimals() );
+		$points    = (int) $result['total'];
+
+		return array(
+			'minimum'   => $minimum,
+			'remaining' => $remaining,
+			'points'    => $points,
+			'message'   => $this->format_min_spend_message( $remaining, $points ),
+		);
+	}
+
+	/**
+	 * Returns the message template shown when a customer is under the minimum.
+	 *
+	 * The English default is translated at read time; a stored value that still
+	 * equals it is treated as "not customised" so it follows the site language.
+	 *
+	 * @since 1.1.0
+	 * @return string The template, containing {amount} and {points} tokens.
+	 */
+	public function get_min_spend_message_template() {
+		$default  = 'Spend {amount} more to earn {points} points.';
+		$template = trim( (string) $this->setting( 'display_minSpendMessage', '' ) );
+
+		if ( '' === $template || $default === $template ) {
+			return __( 'Spend {amount} more to earn {points} points.', 'pointbay-loyalty-points-referral-rewards-woo' );
+		}
+
+		return $template;
+	}
+
+	/**
+	 * Fills the minimum-spend message template.
+	 *
+	 * @since 1.1.0
+	 * @param float $remaining The amount still to spend.
+	 * @param int   $points    The points reaching the minimum would earn.
+	 * @return string Plain text; callers must escape it for their output context.
+	 */
+	public function format_min_spend_message( $remaining, $points ) {
+		$amount = html_entity_decode( wp_strip_all_tags( wc_price( $remaining ) ), ENT_QUOTES, 'UTF-8' );
+
+		return str_replace(
+			array( '{amount}', '{points}' ),
+			array( $amount, number_format_i18n( (int) $points ) ),
+			$this->get_min_spend_message_template()
 		);
 	}
 
