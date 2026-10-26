@@ -139,6 +139,10 @@ class ReviewHooks {
 			return;
 		}
 
+		if ( ! EarningCalculator::user_can_earn( $user_id, 'review', array( 'comment_id' => (int) $comment->comment_ID ) ) ) {
+			return;
+		}
+
 		$ledger = LedgerService::get_instance();
 
 		// Idempotency: one credit per review comment.

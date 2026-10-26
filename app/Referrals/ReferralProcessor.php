@@ -129,7 +129,15 @@ class ReferralProcessor {
 		}
 
 		$bonus = (int) $settings->get_settings( 'referrals_bonusPoints' );
-		if ( $bonus > 0 ) {
+		$referrer_can_earn = EarningCalculator::user_can_earn(
+			$referrer_id,
+			'referral',
+			array(
+				'referred_user_id' => $buyer_id,
+				'order_id'         => (int) $order_id,
+			)
+		);
+		if ( $bonus > 0 && $referrer_can_earn ) {
 			LedgerService::get_instance()->credit(
 				$referrer_id,
 				$bonus,

@@ -70,6 +70,10 @@ class RegistrationHooks {
 			return;
 		}
 
+		if ( ! EarningCalculator::user_can_earn( $user_id, 'registration' ) ) {
+			return;
+		}
+
 		$result = LedgerService::get_instance()->credit(
 			$user_id,
 			$points,

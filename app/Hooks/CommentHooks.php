@@ -282,6 +282,10 @@ class CommentHooks {
 			return; // Spam and trash never earn.
 		}
 
+		if ( ! EarningCalculator::user_can_earn( $user_id, 'comment', array( 'comment_id' => (int) $comment_id ) ) ) {
+			return;
+		}
+
 		$ledger = LedgerService::get_instance();
 
 		if ( $ledger->has_existing_transaction( $user_id, self::REF_COMMENT, $comment_id, 'credit' ) ) {
