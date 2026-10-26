@@ -273,6 +273,43 @@ class EarningCalculator {
 	}
 
 	/**
+	 * Whether a user may earn points at all.
+	 *
+	 * The one gate every earning path asks. It covers earning only: admin
+	 * adjustments, returns of redeemed points, reversals, clawbacks and expiry
+	 * never call it.
+	 *
+	 * @since 1.1.0
+	 * @param int    $user_id The user. A guest (0) is not filtered here; guests have their own rules.
+	 * @param string $context What is earning: 'order', 'cart', 'product', 'guest', 'comment',
+	 *                        'review', 'registration' or 'referral'.
+	 * @param array  $args    Extra context for the filter, such as the order or comment ID.
+	 * @return bool True when the user may earn.
+	 */
+	public static function user_can_earn( $user_id, $context = 'order', $args = array() ) {
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return true;
+		}
+
+		/**
+		 * Filters whether a user may earn points.
+		 *
+		 * Return false to make a user earn nothing anywhere: no award is written
+		 * to the ledger and the earn previews promise nothing. Admin adjustments,
+		 * returned redemptions, reversals and expiry are not affected.
+		 *
+		 * @since 1.1.0
+		 * @param bool   $can_earn Whether the user may earn. Default true.
+		 * @param int    $user_id  The user.
+		 * @param string $context  What is earning: 'order', 'cart', 'product', 'guest', 'comment',
+		 *                         'review', 'registration' or 'referral'.
+		 * @param array  $args     Extra context, such as 'order' or 'comment_id'.
+		 */
+		return (bool) apply_filters( 'pointbay_user_can_earn', true, $user_id, (string) $context, (array) $args );
+	}
+
+	/**
 	 * Calculates a points award and returns its components.
 	 *
 	 * A breakdown rather than a single integer, because two callers need the
@@ -296,7 +333,7 @@ class EarningCalculator {
 	 *     @type bool           $enforce_minimum     Whether the minimum spend gate applies. Default true,
 	 *                                               except for the 'product' context where it is false.
 	 * }
-	 * @return array The award breakdown, including `below_minimum` and `minimum`.
+	 * @return array The award breakdown, including `below_minimum`, `minimum` and `cannot_earn`.
 	 */
 	public function calculate( $args ) {
 		$args = (array) $args;
@@ -324,6 +361,33 @@ class EarningCalculator {
 		$user_id = (int) $args['user_id'];
 		$minimum = $this->get_min_spend();
 
+		// Step -1 — a user barred from earning gets the zeroed shape, so the
+		// previews promise nothing and the award writes nothing.
+		$can_earn = self::user_can_earn(
+			$user_id,
+			(string) $args['context'],
+			array(
+				'order'  => $args['order'],
+				'amount' => $amount,
+			)
+		);
+		if ( ! $can_earn ) {
+			return array(
+				'basis_amount'  => $amount,
+				'basis_mode'    => $this->get_basis_mode(),
+				'base'          => 0,
+				'flat'          => 0,
+				'first_order'   => 0,
+				'multiplier'    => 1.0,
+				'rate_used'     => 0,
+				'band_id'       => null,
+				'total'         => 0,
+				'below_minimum' => false,
+				'minimum'       => $minimum,
+				'cannot_earn'   => true,
+			);
+		}
+
 		// Step 0 — the minimum spend is the first gate: below it nothing is earned.
 		if ( $enforce_minimum && $this->is_below_minimum( $amount ) ) {
 			return array(
@@ -338,6 +402,7 @@ class EarningCalculator {
 				'total'         => 0,
 				'below_minimum' => true,
 				'minimum'       => $minimum,
+				'cannot_earn'   => false,
 			);
 		}
 
@@ -418,6 +483,7 @@ class EarningCalculator {
 			'total'         => max( 0, $base ) + max( 0, $flat ) + max( 0, $first_order ),
 			'below_minimum' => false,
 			'minimum'       => $minimum,
+			'cannot_earn'   => false,
 		);
 	}
 
