@@ -131,7 +131,7 @@ function zz_comment_rows( $uid, $type, $cid, $txn ) {
 }
 
 // Isolate from Pro and other add-ons: this exercises the free behaviour only.
-foreach ( array( 'pointbay_redemption_discount_value', 'pointbay_max_redeemable', 'pointbay_can_redeem', 'pointbay_earning_multiplier' ) as $h ) {
+foreach ( array( 'pointbay_redemption_discount_value', 'pointbay_max_redeemable', 'pointbay_can_redeem', 'pointbay_earning_multiplier', 'pointbay_user_can_earn' ) as $h ) {
 	remove_all_filters( $h );
 }
 foreach ( $GLOBALS['wp_filter'] as $hook_name => $hook_obj ) {
@@ -801,6 +801,61 @@ zz_settings( array( 'earning_pointsForComment' => 10, 'earning_commentRequireApp
 $bal_a = (int) $ledger->get_balance( $author );
 zz_comment( $post_id, $author, 1 );
 zz_check( '7 the post author commenting top level on their own post earns nothing', (int) $ledger->get_balance( $author ) === $bal_a );
+
+// ---------------------------------------------------------------------------
+// pointbay_user_can_earn: a barred user earns nothing anywhere.
+// ---------------------------------------------------------------------------
+echo "\n== pointbay_user_can_earn ==\n";
+zz_settings(
+	array(
+		'earning_minCartSpend'           => 0,
+		'earning_pointsForComment'       => 10,
+		'earning_commentRequireApproval' => false,
+		'earning_commentDailyLimit'      => 0,
+		'earning_pointsForRegistration'  => 25,
+	)
+);
+$barred_user = zz_user( 'barred' );
+$zz_users[]  = $barred_user;
+$barred_cb   = function ( $can, $uid ) use ( $barred_user ) {
+	return (int) $uid === (int) $barred_user ? false : $can;
+};
+
+// Without the callback the same actions earn, so the checks below are meaningful.
+$free_user  = zz_user( 'canearn' );
+$zz_users[] = $free_user;
+$free_order = zz_order( $free_user, 50 );
+zz_check( 'F no callback: an order award is written', zz_awarded( $free_user, $free_order->get_id() ) > 0 );
+zz_comment( $post_id, $free_user, 1 );
+zz_check( 'F no callback: a comment award is written', (int) $ledger->get_balance( $free_user ) > zz_awarded( $free_user, $free_order->get_id() ) );
+$calc_free = EarningCalculator::get_instance()->calculate( array( 'amount' => 50, 'user_id' => $free_user, 'context' => 'cart' ) );
+zz_check( 'F no callback: calculate() totals above 0 and cannot_earn is false', $calc_free['total'] > 0 && false === $calc_free['cannot_earn'] );
+
+add_filter( 'pointbay_user_can_earn', $barred_cb, 10, 2 );
+
+$calc = EarningCalculator::get_instance()->calculate( array( 'amount' => 50, 'user_id' => $barred_user, 'context' => 'cart' ) );
+zz_check( 'F barred: calculate() total is 0 with cannot_earn set', 0 === $calc['total'] && true === $calc['cannot_earn'] && array_key_exists( 'below_minimum', $calc ), wp_json_encode( $calc ) );
+$calc_other = EarningCalculator::get_instance()->calculate( array( 'amount' => 50, 'user_id' => $free_user, 'context' => 'cart' ) );
+zz_check( 'F barred: another user is unaffected', $calc_other['total'] > 0 );
+
+$barred_order = zz_order( $barred_user, 50 );
+zz_check( 'F barred: a completed order writes no award rows', 0 === zz_awarded( $barred_user, $barred_order->get_id() ) );
+zz_comment( $post_id, $barred_user, 1 );
+zz_check( 'F barred: a comment writes no ledger row', 0 === (int) $ledger->get_balance( $barred_user ) );
+remove_filter( 'pointbay_user_can_earn', $barred_cb, 10 );
+
+// Registration fires inside wp_insert_user, so the filter must be live before it.
+$reg_cb = function ( $can, $uid, $context ) {
+	return 'registration' === $context ? false : $can;
+};
+add_filter( 'pointbay_user_can_earn', $reg_cb, 10, 3 );
+$reg_id     = zz_user( 'regbarred' );
+$zz_users[] = $reg_id;
+remove_filter( 'pointbay_user_can_earn', $reg_cb, 10 );
+zz_check( 'F barred: a registration writes no ledger row', 0 === (int) $ledger->get_balance( $reg_id ) );
+$reg_ok     = zz_user( 'regok' );
+$zz_users[] = $reg_ok;
+zz_check( 'F no callback: a registration award is written', 25 === (int) $ledger->get_balance( $reg_ok ) );
 
 // ---------------------------------------------------------------------------
 // Cleanup.
