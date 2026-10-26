@@ -652,6 +652,67 @@ async function approveReviewViaAdmin(page, commentId) {
     ).catch(() => {});
 }
 
+// ── Settings snapshot / restore (specs that pin several keys at once) ────────
+// Reads the CURRENT stored value of each key so a spec's finally can put them
+// back exactly. A key that was never stored comes back as null and is removed
+// again on restore (rather than written as null) so the option returns to its
+// original shape and the plugin's defaults apply as before.
+async function snapshotSettings(keys) {
+    const out = {};
+    for (const key of keys) out[key] = await getSetting(key);
+    return out;
+}
+async function restoreSettings(snapshot) {
+    const set = {};
+    const unset = [];
+    for (const [key, value] of Object.entries(snapshot)) {
+        if (value === null || value === undefined) unset.push(key); else set[key] = value;
+    }
+    const b64Set = Buffer.from(JSON.stringify(set)).toString('base64');
+    const b64Unset = Buffer.from(JSON.stringify(unset)).toString('base64');
+    await wpEval(
+        `$o = get_option('pointbay', array());` +
+        `$s = json_decode( base64_decode('${b64Set}'), true );` +
+        `foreach ( json_decode( base64_decode('${b64Unset}'), true ) as $k ) { unset( $o[ $k ] ); }` +
+        `update_option('pointbay', array_merge($o, $s)); echo 'OK';`
+    );
+}
+
+// ── Ledger — any reference type / direction for one reference id ─────────
+// ledgerDeltaFor() only sums credits. Cancel clawbacks are DEBITS under
+// 'order_reversal', and a re-award after a reopen is a credit under
+// 'order_reaward' — both keyed by the order id for an order's first award
+// cycle (OrderHooks::award_cycle_ref_id), which is every order these specs
+// create. Always a per-reference sum, never the running balance.
+async function ledgerSumFor(referenceId, referenceType, transactionType = 'credit') {
+    const sum = await wpEval(
+        `global $wpdb; echo (string) $wpdb->get_var( $wpdb->prepare(` +
+        `"SELECT COALESCE(SUM(amount),0) FROM {$wpdb->prefix}pointbay_ledger ` +
+        `WHERE reference_type = %s AND reference_id = %d AND transaction_type = %s", '${referenceType}', ${referenceId}, '${transactionType}' ) );`
+    );
+    return Number(sum);
+}
+
+// ── Order reads (assert what the plugin recorded on the order itself) ────
+async function getOrderMeta(orderId, metaKey) {
+    return wpEval(`echo (string) wc_get_order(${orderId})->get_meta('${metaKey}');`);
+}
+async function getOrderTotal(orderId) {
+    return Number(await wpEval(`echo wc_get_order(${orderId})->get_total();`));
+}
+async function getOrderPaymentMethod(orderId) {
+    return wpEval(`echo wc_get_order(${orderId})->get_payment_method();`);
+}
+// Order notes as [{content, customer_note}] — customer_note false = private.
+async function getOrderNotes(orderId) {
+    const raw = await wpEval(
+        `$out = array(); foreach ( wc_get_order_notes( array( 'order_id' => ${orderId} ) ) as $n ) {` +
+        ` $out[] = array( 'content' => wp_strip_all_tags( $n->content ), 'customer_note' => (bool) $n->customer_note ); }` +
+        `echo wp_json_encode( $out );`
+    );
+    return JSON.parse(raw || '[]');
+}
+
 module.exports = {
     wpEval, login, getSetting, updateSettings, openSettings, saveAndConfirm,
     settingRow, toggleCheckbox, selectOption, seedProduct, seedCustomer,
@@ -664,4 +725,6 @@ module.exports = {
     addToCartAndViewCart, runUninstallRoutine,
     pointbayTablesExist, pointbayOptionRowExists, recreatePointbayTables, restorePointbayDefaultsOption,
     submitProductReview, getCommentApprovalStatus, approveReviewViaAdmin,
+    snapshotSettings, restoreSettings, ledgerSumFor, getOrderMeta, getOrderTotal,
+    getOrderPaymentMethod, getOrderNotes,
 };
