@@ -18,15 +18,5 @@
                 }
             ]
         }
-    },
-    "test_types": {
-        "e2e": {
-            "default": {
-                "environment": "default",
-                "test_packages": [
-                    "./tests/e2e"
-                ]
-            }
-        }
     }
 }
