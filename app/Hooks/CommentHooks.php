@@ -11,6 +11,7 @@ namespace PointBay\Hooks;
 
 use PointBay\Core\Settings;
 use PointBay\Models\LedgerEntry;
+use PointBay\Services\EarningCalculator;
 use PointBay\Services\LedgerService;
 
 // Exit if accessed directly.

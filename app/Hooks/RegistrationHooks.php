@@ -9,6 +9,7 @@
 
 namespace PointBay\Hooks;
 
+use PointBay\Services\EarningCalculator;
 use PointBay\Services\LedgerService;
 use PointBay\Core\Settings;
 

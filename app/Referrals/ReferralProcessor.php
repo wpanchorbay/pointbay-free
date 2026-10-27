@@ -13,6 +13,7 @@
 namespace PointBay\Referrals;
 
 use PointBay\Core\Settings;
+use PointBay\Services\EarningCalculator;
 use PointBay\Services\LedgerService;
 
 // Exit if accessed directly.
