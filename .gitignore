@@ -41,3 +41,8 @@ graphify-out
 
 # Saved WP.org review correspondence — never commit
 Review in Progress_*.html
+
+# Browser-automation scratch output
+.playwright-mcp/
+/playwright-report/
+.DS_Store

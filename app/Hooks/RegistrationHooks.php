@@ -9,6 +9,7 @@
 
 namespace PointBay\Hooks;
 
+use PointBay\Services\EarningCalculator;
 use PointBay\Services\LedgerService;
 use PointBay\Core\Settings;
 
@@ -67,6 +68,10 @@ class RegistrationHooks {
 		$points   = (int) $settings->get_settings( 'earning_pointsForRegistration' );
 
 		if ( $points <= 0 ) {
+			return;
+		}
+
+		if ( ! EarningCalculator::user_can_earn( $user_id, 'registration' ) ) {
 			return;
 		}
 

@@ -112,9 +112,13 @@ class ProductEarnNotice {
 	 *
 	 * @since 1.1.0
 	 * @param \WC_Product $product The variable product.
+	 * @param array       $messages Receives variation ID => minimum-spend message (empty string
+	 *                              hides the notice) for variations under the minimum.
 	 * @return array Map of variation ID to points.
 	 */
-	private function get_variation_points( $product ) {
+	private function get_variation_points( $product, &$messages = array() ) {
+		$messages = array();
+
 		$children = $product->get_children();
 
 		// A product with hundreds of variations would turn this into a large
@@ -141,6 +145,12 @@ class ProductEarnNotice {
 				continue;
 			}
 
+			$minimum_message = $this->get_minimum_message( $price );
+
+			if ( null !== $minimum_message ) {
+				$messages[ (int) $variation_id ] = $minimum_message;
+			}
+
 			$map[ (int) $variation_id ] = $calculator->total(
 				array(
 					'amount'              => $price,
@@ -152,6 +162,35 @@ class ProductEarnNotice {
 		}
 
 		return $map;
+	}
+
+	/**
+	 * The minimum-spend message for adding a price to the current cart.
+	 *
+	 * The projected basis is the cart as it stands plus this price. Returns null
+	 * when the minimum is off or would be met, so the normal notice applies; an
+	 * empty string when the minimum is not met but reaching it would earn
+	 * nothing, so the notice should be hidden rather than promise points.
+	 *
+	 * @since 1.1.0
+	 * @param float $price The product (or variation) price for the basis.
+	 * @return string|null Plain-text message, '' for "show nothing", null for "not applicable".
+	 */
+	private function get_minimum_message( $price ) {
+		$calculator = EarningCalculator::get_instance();
+
+		if ( $calculator->get_min_spend() <= 0 ) {
+			return null;
+		}
+
+		$projected = $calculator->resolve_cart_basis() + (float) $price;
+		$state     = $calculator->minimum_spend_state( $projected, get_current_user_id(), 'cart', false );
+
+		if ( ! $state ) {
+			return null;
+		}
+
+		return (int) $state['points'] > 0 ? (string) $state['message'] : '';
 	}
 
 	/**
@@ -170,6 +209,42 @@ class ProductEarnNotice {
 		}
 
 		return (float) wc_get_price_to_display( $product );
+	}
+
+	/**
+	 * Hands the variation lookup tables to the script, when there is anything to switch.
+	 *
+	 * @since 1.1.0
+	 * @param EarningCalculator $calculator       The calculator, for the basis wording.
+	 * @param array             $variation_points Variation ID => points.
+	 * @param array             $messages         Variation ID => minimum-spend message.
+	 * @return void
+	 */
+	private function enqueue_data( $calculator, $variation_points, $messages ) {
+		if ( ! $variation_points && ! $messages ) {
+			return;
+		}
+
+		wp_enqueue_script( self::HANDLE );
+		wp_localize_script(
+			self::HANDLE,
+			'pointbay_product_earn',
+			array(
+				'points'   => $variation_points,
+				// Plain text, only for variations under the minimum spend. An
+				// empty string means "show nothing". The script writes it with
+				// textContent.
+				'messages' => (object) $messages,
+				// The template is rendered server-side with the wording already
+				// chosen for the configured basis, so the script only
+				// substitutes a number.
+				'selected' => 'subtotal' === $calculator->get_basis_mode()
+					/* translators: %s: number of points. */
+					? __( 'Earn <strong>%s</strong> points with this product.', 'pointbay-loyalty-points-referral-rewards-woo' )
+					/* translators: %s: number of points. */
+					: __( 'Earn at least <strong>%s</strong> points with this product.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+			)
+		);
 	}
 
 	/**
@@ -197,7 +272,29 @@ class ProductEarnNotice {
 			return;
 		}
 
-		$calculator = EarningCalculator::get_instance();
+		$calculator  = EarningCalculator::get_instance();
+		$is_variable = $product->is_type( 'variable' );
+
+		$messages         = array();
+		$variation_points = $is_variable ? $this->get_variation_points( $product, $messages ) : array();
+		$minimum_message  = $this->get_minimum_message( $price );
+
+		if ( null !== $minimum_message ) {
+			$this->enqueue_data( $calculator, $variation_points, $messages );
+
+			if ( '' !== $minimum_message ) {
+				printf(
+					'<p class="pointbay-product-earn-notice pointbay-product-earn-notice--minimum">%s</p>',
+					esc_html( $minimum_message )
+				);
+			} elseif ( $variation_points || $messages ) {
+				// Nothing worth promising yet, but the element must exist for
+				// the variation script to fill in.
+				echo '<p class="pointbay-product-earn-notice" style="display:none"></p>';
+			}
+
+			return;
+		}
 
 		// The order-level bonuses are deliberately treated differently here. The
 		// flat per-order bonus is included, because from the shopper's side
@@ -218,8 +315,6 @@ class ProductEarnNotice {
 			return;
 		}
 
-		$is_variable = $product->is_type( 'variable' );
-
 		// With earning based on the order total, a single product's price cannot
 		// account for shipping or tax, so the honest phrasing is a floor rather
 		// than an exact figure. On subtotal the number is exact.
@@ -237,28 +332,7 @@ class ProductEarnNotice {
 				: sprintf( __( 'Earn at least <strong>%d</strong> points with this product.', 'pointbay-loyalty-points-referral-rewards-woo' ), $points );
 		}
 
-		$variation_points = $is_variable ? $this->get_variation_points( $product ) : array();
-
-		if ( $variation_points ) {
-			wp_enqueue_script( self::HANDLE );
-			wp_localize_script(
-				self::HANDLE,
-				'pointbay_product_earn',
-				array(
-					'points'   => $variation_points,
-					// Both templates are rendered server-side with the wording
-					// already chosen for the configured basis, so the script
-					// only substitutes a number.
-					'selected' => 'subtotal' === $calculator->get_basis_mode()
-						/* translators: %s: number of points. */
-						? __( 'Earn <strong>%s</strong> points with this product.', 'pointbay-loyalty-points-referral-rewards-woo' )
-						/* translators: %s: number of points. */
-						: __( 'Earn at least <strong>%s</strong> points with this product.', 'pointbay-loyalty-points-referral-rewards-woo' ),
-					/* translators: %s: number of points. */
-					'range'    => __( 'Earn from <strong>%s</strong> points with this product.', 'pointbay-loyalty-points-referral-rewards-woo' ),
-				)
-			);
-		}
+		$this->enqueue_data( $calculator, $variation_points, $messages );
 
 		printf(
 			'<p class="pointbay-product-earn-notice" data-pointbay-default="%s">%s</p>',

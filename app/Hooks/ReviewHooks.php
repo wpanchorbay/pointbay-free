@@ -9,6 +9,7 @@
 
 namespace PointBay\Hooks;
 
+use PointBay\Services\EarningCalculator;
 use PointBay\Services\LedgerService;
 use PointBay\Core\Settings;
 
@@ -136,6 +137,10 @@ class ReviewHooks {
 		pointbay_log( "ReviewHooks: Points to award: $points", 'DEBUG' );
 
 		if ( $points <= 0 ) {
+			return;
+		}
+
+		if ( ! EarningCalculator::user_can_earn( $user_id, 'review', array( 'comment_id' => (int) $comment->comment_ID ) ) ) {
 			return;
 		}
 

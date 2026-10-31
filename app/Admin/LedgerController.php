@@ -55,7 +55,7 @@ class LedgerController extends ApiController {
 	}
 
 	const SORTABLE_COLUMNS = array( 'id', 'amount', 'created_at' );
-	const REFERENCE_TYPES  = array( 'order', 'order_reversal', 'order_reaward', 'refund', 'redemption_refund', 'redemption_cancel', 'redemption_reopen', 'review', 'referral', 'referral_signup', 'referral_reversal', 'referral_signup_reversal', 'admin', 'reversal' );
+	const REFERENCE_TYPES  = array( 'order', 'order_reversal', 'order_reaward', 'refund', 'redemption_refund', 'redemption_cancel', 'redemption_reopen', 'review', 'comment', 'comment_reversal', 'order_flat_bonus', 'first_order_bonus', 'registration', 'referral', 'referral_signup', 'referral_reversal', 'referral_signup_reversal', 'admin', 'reversal' );
 
 	/**
 	 * Retrieve a paginated, filtered list of ledger entries.

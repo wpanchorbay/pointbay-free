@@ -1,8 +1,0 @@
-{
-    "test_type": "e2e",
-    "name": "pointbay-loyalty-points-referral-rewards-woo behavioral e2e",
-    "bootstrap": "npm ci || npm install",
-    "requires": {
-        "note": "Set network:true ONLY if a @pro license-activation spec calls the real license server. Use a fake key in the spec regardless — never a real secret."
-    }
-}

@@ -176,16 +176,35 @@ class Shortcodes {
 	/**
 	 * `[pointbay_earn_notice]` — what the current cart would earn.
 	 *
+	 * Attribute `minimum` ("yes" by default) controls whether the "spend X more"
+	 * message is shown when the cart is under the minimum spend; "no" renders
+	 * nothing in that case.
+	 *
 	 * @since 1.1.0
+	 * @param array $atts Shortcode attributes.
 	 * @return string The rendered markup.
 	 */
-	public function render_earn_notice() {
+	public function render_earn_notice( $atts = array() ) {
+		$atts = shortcode_atts( array( 'minimum' => 'yes' ), $atts, 'pointbay_earn_notice' );
+
 		if ( ! is_user_logged_in() ) {
 			return '';
 		}
 
 		$notice = new EarnNotice();
-		$points = $notice->get_notice_points();
+		$state  = $notice->get_notice_state();
+
+		if ( $state['minimum'] ) {
+			if ( 'no' === strtolower( trim( (string) $atts['minimum'] ) ) ) {
+				return '';
+			}
+
+			ob_start();
+			$notice->render_minimum( $state['minimum'] );
+			return ob_get_clean();
+		}
+
+		$points = (int) $state['points'];
 
 		if ( $points <= 0 ) {
 			return '';

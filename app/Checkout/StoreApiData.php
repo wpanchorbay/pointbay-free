@@ -112,8 +112,21 @@ class StoreApiData {
 
 		$basis = $calculator->resolve_cart_basis();
 
+		$below_minimum       = false;
+		$min_spend_message   = '';
+		$min_spend_remaining = 0;
+
 		if ( $user_id > 0 ) {
 			$is_first_order = $calculator->is_first_order( $user_id );
+
+			$minimum = $basis > 0 ? $calculator->minimum_spend_state( $basis, $user_id, 'cart', $is_first_order ) : null;
+
+			// No message when reaching the minimum would earn nothing.
+			if ( $minimum && (int) $minimum['points'] > 0 ) {
+				$below_minimum       = true;
+				$min_spend_message   = (string) $minimum['message'];
+				$min_spend_remaining = (float) $minimum['remaining'];
+			}
 
 			$earn_points = $calculator->total(
 				array(
@@ -143,11 +156,14 @@ class StoreApiData {
 		}
 
 		return array(
-			'earn_points'        => (int) $earn_points,
-			'max_redeemable'     => (int) $manager->get_max_redeemable_points( $user_id ),
-			'redemption_applied' => (int) $manager->get_applied_points(),
-			'allow_partial'      => (bool) $settings->get_settings( 'redemption_allowPartial' ),
-			'can_redeem'         => (bool) $manager->can_redeem( $user_id, array( 'source' => 'cart' ) ),
+			'earn_points'         => (int) $earn_points,
+			'below_minimum'       => $below_minimum,
+			'min_spend_message'   => $min_spend_message,
+			'min_spend_remaining' => $min_spend_remaining,
+			'max_redeemable'      => (int) $manager->get_max_redeemable_points( $user_id ),
+			'redemption_applied'  => (int) $manager->get_applied_points(),
+			'allow_partial'       => (bool) $settings->get_settings( 'redemption_allowPartial' ),
+			'can_redeem'          => (bool) $manager->can_redeem( $user_id, array( 'source' => 'cart' ) ),
 		);
 	}
 
@@ -159,27 +175,42 @@ class StoreApiData {
 	 */
 	public function get_cart_schema() {
 		return array(
-			'earn_points'        => array(
+			'earn_points'         => array(
 				'description' => __( 'Points this cart will earn when the order completes.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				'type'        => 'integer',
 				'readonly'    => true,
 			),
-			'max_redeemable'     => array(
+			'below_minimum'       => array(
+				'description' => __( 'Whether the cart is under the minimum spend needed to earn points.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'type'        => 'boolean',
+				'readonly'    => true,
+			),
+			'min_spend_message'   => array(
+				'description' => __( 'Plain-text message telling the customer how much more to spend to earn points.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'type'        => 'string',
+				'readonly'    => true,
+			),
+			'min_spend_remaining' => array(
+				'description' => __( 'Amount still to spend to reach the minimum spend for earning points.', 'pointbay-loyalty-points-referral-rewards-woo' ),
+				'type'        => 'number',
+				'readonly'    => true,
+			),
+			'max_redeemable'      => array(
 				'description' => __( 'Maximum points the customer may redeem against this cart.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				'type'        => 'integer',
 				'readonly'    => true,
 			),
-			'redemption_applied' => array(
+			'redemption_applied'  => array(
 				'description' => __( 'Points currently applied to this cart.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				'type'        => 'integer',
 				'readonly'    => true,
 			),
-			'allow_partial'      => array(
+			'allow_partial'       => array(
 				'description' => __( 'Whether the customer may choose how many points to spend.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				'type'        => 'boolean',
 				'readonly'    => true,
 			),
-			'can_redeem'         => array(
+			'can_redeem'          => array(
 				'description' => __( 'Whether this customer is permitted to redeem points.', 'pointbay-loyalty-points-referral-rewards-woo' ),
 				'type'        => 'boolean',
 				'readonly'    => true,

@@ -31,8 +31,6 @@ const EarnNoticeBlock = () => {
 
     const points_to_award = parseInt(pointbay.earn_points, 10) || 0;
 
-    if (points_to_award <= 0) return null;
-
     const data = {
         ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'pointbay_checkout_data' ) : null) || {}),
         ...((window.wc && window.wc.wcSettings ? window.wc.wcSettings.getSetting( 'pointbay_cart_data' ) : null) || {}),
@@ -41,6 +39,22 @@ const EarnNoticeBlock = () => {
     };
 
     const isLoggedIn = data.is_logged_in;
+
+    // Under the minimum spend the server sends a ready-made message instead of
+    // a points figure; it is plain text, rendered as such.
+    if (isLoggedIn && pointbay.below_minimum === true && pointbay.min_spend_message) {
+        return (
+            <div className="wc-block-components-totals-wrapper pointbay-earn-notice--minimum">
+                <div className="wc-block-components-totals-item">
+                    <span className="wc-block-components-totals-item__label" style={{ color: '#111827', fontWeight: 500 }}>
+                        {pointbay.min_spend_message}
+                    </span>
+                </div>
+            </div>
+        );
+    }
+
+    if (points_to_award <= 0) return null;
 
     if (!isLoggedIn) {
         return (

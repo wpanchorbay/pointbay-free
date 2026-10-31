@@ -30,6 +30,7 @@ return array(
 	\PointBay\Checkout\ClassicCheckoutUI::class,
 	\PointBay\Hooks\RegistrationHooks::class,
 	\PointBay\Hooks\ReviewHooks::class,
+	\PointBay\Hooks\CommentHooks::class,
 	\PointBay\Dashboard\MyRewardsEndpoint::class,
 	\PointBay\Referrals\ReferralManager::class,
 	\PointBay\Referrals\ReferralProcessor::class,

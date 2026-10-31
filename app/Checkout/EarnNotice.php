@@ -41,8 +41,29 @@ class EarnNotice {
 	 * @return int The points, or 0 when there is nothing to promise.
 	 */
 	public function get_notice_points() {
+		$state = $this->get_notice_state();
+
+		return (int) $state['points'];
+	}
+
+	/**
+	 * Works out what the notice should say for the current cart and customer.
+	 *
+	 * `points` is what the cart earns now (0 below the minimum spend). `minimum`
+	 * is null unless the cart is under the minimum and reaching it would earn
+	 * something, in which case it is the array from minimum_spend_state().
+	 *
+	 * @since 1.1.0
+	 * @return array{points:int,minimum:array|null} The notice state.
+	 */
+	public function get_notice_state() {
+		$state = array(
+			'points'  => 0,
+			'minimum' => null,
+		);
+
 		if ( ! is_user_logged_in() || ! isset( WC()->cart ) ) {
-			return 0;
+			return $state;
 		}
 
 		$user_id    = get_current_user_id();
@@ -50,12 +71,12 @@ class EarnNotice {
 		$basis      = $calculator->resolve_cart_basis();
 
 		if ( $basis <= 0 ) {
-			return 0;
+			return $state;
 		}
 
 		$is_first_order = $calculator->is_first_order( $user_id );
 
-		return $calculator->total(
+		$state['points'] = $calculator->total(
 			array(
 				'amount'              => $basis,
 				'user_id'             => $user_id,
@@ -63,6 +84,33 @@ class EarnNotice {
 				'context'             => 'cart',
 			)
 		);
+
+		$minimum = $calculator->minimum_spend_state( $basis, $user_id, 'cart', $is_first_order );
+
+		// A minimum that would earn nothing (an empty band, say) has nothing to
+		// promise, so no message is shown for it.
+		if ( $minimum && (int) $minimum['points'] > 0 ) {
+			$state['minimum'] = $minimum;
+		}
+
+		return $state;
+	}
+
+	/**
+	 * Renders the "spend more to earn" notice shown under the minimum spend.
+	 *
+	 * @since 1.1.0
+	 * @param array $minimum The minimum_spend_state() array.
+	 * @return void
+	 */
+	public function render_minimum( $minimum ) {
+		if ( empty( $minimum['message'] ) ) {
+			return;
+		}
+
+		echo '<div class="pointbay-earn-notice pointbay-earn-notice--minimum woocommerce-info" style="margin-bottom: 2em;">';
+		echo esc_html( $minimum['message'] );
+		echo '</div>';
 	}
 
 	/**
@@ -100,7 +148,14 @@ class EarnNotice {
 	 * @return void
 	 */
 	public function display_notice() {
-		$points = $this->get_notice_points();
+		$state = $this->get_notice_state();
+
+		if ( $state['minimum'] ) {
+			$this->render_minimum( $state['minimum'] );
+			return;
+		}
+
+		$points = (int) $state['points'];
 
 		if ( $points <= 0 ) {
 			return;

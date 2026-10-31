@@ -259,7 +259,12 @@ class Settings {
 					$sanitized_output[ $key ] = absint( $value );
 					break;
 				case 'number':
-					$sanitized_output[ $key ] = floatval( $value );
+					$number_callback = $details['sanitize_callback'] ?? null;
+					if ( $number_callback && is_callable( $number_callback ) ) {
+						$sanitized_output[ $key ] = (float) call_user_func( $number_callback, $value );
+					} else {
+						$sanitized_output[ $key ] = floatval( $value );
+					}
 					break;
 				case 'array':
 					// A bare (array) cast validates nothing about the rows, which is

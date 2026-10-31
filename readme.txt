@@ -136,6 +136,13 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 *   Points a customer redeemed on an order are now returned when the order is fully refunded or cancelled (and in proportion on partial refunds), instead of being lost while the earned points were clawed back.
 *   Fixed a refunded Cash on Delivery order having its points clawed back twice.
 *   Fixed the redemption limit not being re-checked against the same rules when points were taken at checkout.
+*   Added a minimum cart spend to earn points, with a message on product, cart, checkout (classic and block) and shortcode views when the cart is below it.
+*   Added points for approved blog comments, with an approval setting, a daily limit, and automatic take-back when a comment is marked as spam, trashed or deleted. Post authors earn nothing on their own posts.
+*   Added a tool to award points for past orders: preview, confirm, then credit in batches, once only per order, with ledger rows dated to the original order.
+*   Added a note on each order showing the points awarded and how many were paid with points.
+*   Added the pointbay_user_can_earn filter so other code can stop a customer earning on any path.
+*   Fixed a deleted and re-recorded refund being able to take earned points back twice.
+*   Fixed the ledger note for a reversed order saying "COD order" for every payment method.
 
 = 1.0.1 =
 *   Added a first-run setup wizard that walks through earning, redemption and referral settings, with a "Run Setup Wizard" link in Settings to launch it again any time.
