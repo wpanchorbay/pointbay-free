@@ -592,7 +592,7 @@ class OrderHooks {
 			self::REF_ORDER_REVERSAL,
 			$reversal_id,
 			// translators: 1: order ID, 2: new order status.
-			sprintf( __( 'Points reversed: COD order #%1$d was %2$s.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id, $new_status ),
+			sprintf( __( 'Points reversed: order #%1$d was %2$s.', 'pointbay-loyalty-points-referral-rewards-woo' ), $order_id, $new_status ),
 			false,
 			'system'
 		);

@@ -305,6 +305,9 @@ zz_settings( array( 'earning_minCartSpend' => 0, 'earning_flatPointsPerOrder' =>
 echo "\n== 2. Points-paid exclusion ==\n";
 
 // A taxable product, one tax rate and one shipping zone so total mode has real shipping and tax.
+// A fresh site has tax calculation off, which would leave the rate below inert.
+$zz_calc_taxes_before = get_option( 'woocommerce_calc_taxes', 'no' );
+update_option( 'woocommerce_calc_taxes', 'yes' );
 $rate_id = WC_Tax::_insert_tax_rate(
 	array(
 		'tax_rate_country'  => 'US',
@@ -840,8 +843,11 @@ zz_check( 'F barred: another user is unaffected', $calc_other['total'] > 0 );
 
 $barred_order = zz_order( $barred_user, 50 );
 zz_check( 'F barred: a completed order writes no award rows', 0 === zz_awarded( $barred_user, $barred_order->get_id() ) );
+// The barred user was created before the filter went live, so it already holds the
+// registration award; the comment must add nothing on top of that.
+$barred_before = (int) $ledger->get_balance( $barred_user );
 zz_comment( $post_id, $barred_user, 1 );
-zz_check( 'F barred: a comment writes no ledger row', 0 === (int) $ledger->get_balance( $barred_user ) );
+zz_check( 'F barred: a comment writes no ledger row', $barred_before === (int) $ledger->get_balance( $barred_user ) );
 remove_filter( 'pointbay_user_can_earn', $barred_cb, 10 );
 
 // Registration fires inside wp_insert_user, so the filter must be live before it.
@@ -861,6 +867,7 @@ zz_check( 'F no callback: a registration award is written', 25 === (int) $ledger
 // Cleanup.
 // ---------------------------------------------------------------------------
 echo "\n== Cleanup ==\n";
+update_option( 'woocommerce_calc_taxes', $zz_calc_taxes_before );
 echo 'INFO cleanup: ' . count( array_unique( $zz_orders ) ) . ' orders, ' . count( array_unique( $zz_comments ) ) . " comments tracked\n";
 foreach ( array_unique( $zz_orders ) as $oid ) {
 	$o = wc_get_order( $oid );
