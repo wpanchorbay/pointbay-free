@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for WooCommerce 1.0.1\n"
+"Project-Id-Version: PointBay - Loyalty Points & Referral Rewards for WooCommerce 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pointbay-loyalty-points-referral-rewards-woo\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T11:58:24+00:00\n"
+"POT-Creation-Date: 2026-10-31T12:01:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pointbay-loyalty-points-referral-rewards-woo\n"
@@ -41,6 +41,14 @@ msgstr ""
 
 #: app/Admin/Admin.php:312
 msgid "Loading..."
+msgstr ""
+
+#: app/Admin/BackfillController.php:113
+msgid "Enter a valid start date."
+msgstr ""
+
+#: app/Admin/BackfillController.php:117
+msgid "The end date must be a valid date on or after the start date."
 msgstr ""
 
 #: app/Admin/LedgerController.php:243
@@ -79,7 +87,7 @@ msgid "PointBay Setup Wizard"
 msgstr ""
 
 #: app/Admin/Wizard/WizardController.php:88
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Setup Wizard"
 msgstr ""
 
@@ -125,7 +133,7 @@ msgid "Welcome"
 msgstr ""
 
 #: app/Admin/Wizard/WizardController.php:357
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Earning Points"
 msgstr ""
 
@@ -134,7 +142,7 @@ msgid "Redemption"
 msgstr ""
 
 #: app/Admin/Wizard/WizardController.php:369
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Referrals"
 msgstr ""
 
@@ -155,50 +163,68 @@ msgid "Points per $1 spent"
 msgstr ""
 
 #: app/Admin/Wizard/WizardController.php:418
-msgid "Points for creating an account"
+msgid "Calculate points on"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:421
+#: build/settings.js:19
+msgid "Order total (includes shipping and tax)"
 msgstr ""
 
 #: app/Admin/Wizard/WizardController.php:422
+#: build/settings.js:19
+msgid "Subtotal only (excludes shipping and tax)"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:427
+msgid "Flat bonus on every order"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:431
+msgid "Points for creating an account"
+msgstr ""
+
+#: app/Admin/Wizard/WizardController.php:435
 msgid "Points for leaving a product review"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:426
+#: app/Admin/Wizard/WizardController.php:439
 msgid "Award points when order status becomes"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:477
+#: app/Admin/Wizard/WizardController.php:501
 msgid "Redemption method"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:480
+#: app/Admin/Wizard/WizardController.php:504
 msgid "Discount at checkout"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:481
+#: app/Admin/Wizard/WizardController.php:505
 msgid "Generate a coupon"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:486
+#: app/Admin/Wizard/WizardController.php:510
 msgid "Value of 1 point"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:490
+#: app/Admin/Wizard/WizardController.php:514
 msgid "Minimum points required to redeem"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:534
+#: app/Admin/Wizard/WizardController.php:558
 msgid "Referral program"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:538
+#: app/Admin/Wizard/WizardController.php:562
 msgid "Reward customers for referring new customers"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:543
+#: app/Admin/Wizard/WizardController.php:567
 msgid "Bonus points per successful referral"
 msgstr ""
 
-#: app/Admin/Wizard/WizardController.php:577
+#: app/Admin/Wizard/WizardController.php:601
 msgid "You're all set! PointBay is ready to start rewarding your customers."
 msgstr ""
 
@@ -231,72 +257,166 @@ msgstr ""
 msgid "Settings updated successfully."
 msgstr ""
 
-#: app/Checkout/CheckoutProcessor.php:150
+#: app/Checkout/CheckoutProcessor.php:131
+#: app/Checkout/RedemptionManager.php:61
+msgid "Points redemption is not available on this account."
+msgstr ""
+
+#: app/Checkout/CheckoutProcessor.php:173
 msgid "Your points discount could no longer be applied to this order. Please try checkout again."
 msgstr ""
 
-#: app/Checkout/CheckoutProcessor.php:154
+#: app/Checkout/CheckoutProcessor.php:177
 msgid "Insufficient points balance. Your points may have been used elsewhere."
 msgstr ""
 
-#: app/Checkout/ClassicCheckoutUI.php:91
+#: app/Checkout/ClassicCheckoutUI.php:108
 #: build/block-checkout.js:11
 msgid "Redeem Loyalty Points"
 msgstr ""
 
 #. translators: 1: number of redeemed points, 2: formatted discount amount.
-#: app/Checkout/ClassicCheckoutUI.php:98
+#: app/Checkout/ClassicCheckoutUI.php:116
 #, php-format
 msgid "Awesome! You have redeemed %1$s points for a %2$s discount."
 msgstr ""
 
-#: app/Checkout/ClassicCheckoutUI.php:101
+#: app/Checkout/ClassicCheckoutUI.php:119
 msgid "Remove Points"
 msgstr ""
 
 #. translators: 1: available points balance, 2: maximum redeemable points for this order.
-#: app/Checkout/ClassicCheckoutUI.php:107
+#: app/Checkout/ClassicCheckoutUI.php:125
 #, php-format
 msgid "You have %1$s points available. (Max %2$s points for this order)."
 msgstr ""
 
-#: app/Checkout/ClassicCheckoutUI.php:113
+#: app/Checkout/ClassicCheckoutUI.php:132
 #: build/block-checkout.js:11
 msgid "Slide to adjust points:"
 msgstr ""
 
-#: app/Checkout/ClassicCheckoutUI.php:122
+#: app/Checkout/ClassicCheckoutUI.php:141
 msgid "points for"
 msgstr ""
 
-#: app/Checkout/ClassicCheckoutUI.php:125
+#: app/Checkout/ClassicCheckoutUI.php:144
 msgid "Apply Discount"
 msgstr ""
 
+#. translators: 1: number of points, 2: formatted discount amount.
+#: app/Checkout/ClassicCheckoutUI.php:154
+#, php-format
+msgid "Redeem %1$s points for %2$s"
+msgstr ""
+
+#: app/Checkout/CouponRedemption.php:137
+#: build/block-cart.js:11
+#: build/block-checkout.js:11
+msgid "Points discount"
+msgstr ""
+
 #. translators: %d: number of points the customer will earn on this order.
-#: app/Checkout/EarnNotice.php:77
+#: app/Checkout/EarnNotice.php:135
 #, php-format
 msgid "Complete this order to earn <strong>%d</strong> points!"
 msgstr ""
 
-#: app/Checkout/FeeRedemption.php:80
+#: app/Checkout/FeeRedemption.php:87
 msgid "PointBay Points Discount"
 msgstr ""
 
 #. translators: %d: number of points the customer can earn on this order.
-#: app/Checkout/GuestNotice.php:67
+#: app/Checkout/GuestNotice.php:85
 #, php-format
 msgid "Log in or create an account to earn <strong>%d</strong> points on this order!"
 msgstr ""
 
+#. translators: %s: number of points.
+#: app/Checkout/ProductEarnNotice.php:243
+#, php-format
+msgid "Earn <strong>%s</strong> points with this product."
+msgstr ""
+
+#. translators: %s: number of points.
+#: app/Checkout/ProductEarnNotice.php:245
+#, php-format
+msgid "Earn at least <strong>%s</strong> points with this product."
+msgstr ""
+
+#. translators: %d: number of points.
+#: app/Checkout/ProductEarnNotice.php:324
+#: app/Checkout/ProductEarnNotice.php:330
+#, php-format
+msgid "Earn from <strong>%d</strong> points with this product."
+msgstr ""
+
+#. translators: %d: number of points.
+#: app/Checkout/ProductEarnNotice.php:326
+#, php-format
+msgid "Earn <strong>%d</strong> points with this product."
+msgstr ""
+
+#. translators: %d: number of points.
+#: app/Checkout/ProductEarnNotice.php:332
+#, php-format
+msgid "Earn at least <strong>%d</strong> points with this product."
+msgstr ""
+
 #. translators: %d: minimum number of points required to redeem.
-#: app/Checkout/RedemptionManager.php:62
+#: app/Checkout/RedemptionManager.php:66
 #, php-format
 msgid "Minimum points required to redeem is %d."
 msgstr ""
 
-#: app/Checkout/RedemptionManager.php:68
+#: app/Checkout/RedemptionManager.php:74
+msgid "Partial redemption is turned off. You can only redeem the full available amount."
+msgstr ""
+
+#: app/Checkout/RedemptionManager.php:78
 msgid "You do not have enough points or the cart value is lower than the points value."
+msgstr ""
+
+#. translators: %d: the number of points now applied.
+#: app/Checkout/RedemptionManager.php:381
+#, php-format
+msgid "Your points discount was adjusted to %d points."
+msgstr ""
+
+#: app/Checkout/RedemptionManager.php:385
+msgid "Your points discount is no longer available and has been removed."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:179
+msgid "Points this cart will earn when the order completes."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:184
+msgid "Whether the cart is under the minimum spend needed to earn points."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:189
+msgid "Plain-text message telling the customer how much more to spend to earn points."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:194
+msgid "Amount still to spend to reach the minimum spend for earning points."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:199
+msgid "Maximum points the customer may redeem against this cart."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:204
+msgid "Points currently applied to this cart."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:209
+msgid "Whether the customer may choose how many points to spend."
+msgstr ""
+
+#: app/Checkout/StoreApiData.php:214
+msgid "Whether this customer is permitted to redeem points."
 msgstr ""
 
 #: app/Core/Activator.php:44
@@ -307,81 +427,207 @@ msgstr ""
 msgid "Plugin dependency check"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:91
-#: app/Dashboard/MyRewardsEndpoint.php:95
+#: app/Dashboard/MenuBalance.php:181
+msgid "Your points balance"
+msgstr ""
+
+#: app/Dashboard/MyRewardsEndpoint.php:88
+#: app/Dashboard/MyRewardsEndpoint.php:92
+#: app/Dashboard/Widgets/RewardsWidget.php:50
+#: app/Dashboard/Widgets/RewardsWidget.php:68
 msgid "My Rewards"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:114
-msgid "My Loyalty Rewards"
-msgstr ""
-
-#: app/Dashboard/MyRewardsEndpoint.php:117
+#: app/Dashboard/RewardsRenderer.php:53
 msgid "Current Balance"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:118
-#: app/Dashboard/MyRewardsEndpoint.php:163
+#: app/Dashboard/RewardsRenderer.php:54
+#: app/Dashboard/RewardsRenderer.php:106
 msgid "Points"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:148
+#: app/Dashboard/RewardsRenderer.php:102
 msgid "Recent History"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:163
+#: app/Dashboard/RewardsRenderer.php:106
 msgid "Date"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:163
+#: app/Dashboard/RewardsRenderer.php:106
 msgid "Description"
 msgstr ""
 
-#: app/Dashboard/MyRewardsEndpoint.php:178
+#: app/Dashboard/RewardsRenderer.php:122
 msgid "No activity yet."
 msgstr ""
 
-#. translators: 1: order ID, 2: new order status.
-#: app/Hooks/OrderHooks.php:151
+#. translators: %1$s: opening link tag, %2$s: closing link tag.
+#: app/Dashboard/RewardsRenderer.php:168
 #, php-format
-msgid "Points reversed: COD order #%1$d was %2$s."
+msgid "Please %1$slog in%2$s to view your rewards."
 msgstr ""
 
-#: app/Hooks/OrderHooks.php:231
+#: app/Dashboard/RewardsRenderer.php:198
+msgid "My Loyalty Rewards"
+msgstr ""
+
+#: app/Dashboard/Widgets/BalanceWidget.php:32
+msgid "PointBay: Points Balance"
+msgstr ""
+
+#: app/Dashboard/Widgets/BalanceWidget.php:33
+msgid "Shows the logged-in customer's point balance."
+msgstr ""
+
+#: app/Dashboard/Widgets/BalanceWidget.php:52
+#: app/Dashboard/Widgets/BalanceWidget.php:69
+msgid "Your Points"
+msgstr ""
+
+#: app/Dashboard/Widgets/BalanceWidget.php:72
+#: app/Dashboard/Widgets/RewardsWidget.php:72
+msgid "Title:"
+msgstr ""
+
+#: app/Dashboard/Widgets/RewardsWidget.php:32
+msgid "PointBay: Rewards Summary"
+msgstr ""
+
+#: app/Dashboard/Widgets/RewardsWidget.php:33
+msgid "Shows the balance and recent points activity."
+msgstr ""
+
+#: app/Dashboard/Widgets/RewardsWidget.php:76
+msgid "History rows to show:"
+msgstr ""
+
+#. translators: %d: number of points.
+#: app/Hooks/CommentHooks.php:178
+#, php-format
+msgid "Earn <strong>%d</strong> points when your comment is approved."
+msgstr ""
+
+#. translators: %d: number of points.
+#: app/Hooks/CommentHooks.php:181
+#, php-format
+msgid "Earn <strong>%d</strong> points for commenting."
+msgstr ""
+
+#: app/Hooks/CommentHooks.php:305
+msgid "Points awarded for blog comment."
+msgstr ""
+
+#: app/Hooks/CommentHooks.php:358
+msgid "Points reversed: blog comment was removed."
+msgstr ""
+
+#. translators: %d: order number.
+#: app/Hooks/OrderHooks.php:309
+#, php-format
+msgid "Points earned for order #%d"
+msgstr ""
+
+#. translators: %d: order number.
+#: app/Hooks/OrderHooks.php:319
+#, php-format
+msgid "Order bonus for order #%d"
+msgstr ""
+
+#. translators: %d: order number.
+#: app/Hooks/OrderHooks.php:329
+#, php-format
+msgid "First order bonus for order #%d"
+msgstr ""
+
+#. translators: 1: points awarded, 2: earning basis amount, 3: earning basis mode (total or subtotal).
+#: app/Hooks/OrderHooks.php:389
+#, php-format
+msgid "PointBay: %1$s points awarded (earning basis %2$s, %3$s)."
+msgstr ""
+
+#: app/Hooks/OrderHooks.php:396
+msgid "Awarded retroactively."
+msgstr ""
+
+#. translators: %s: amount paid with points.
+#: app/Hooks/OrderHooks.php:402
+#, php-format
+msgid "%s paid with points did not earn."
+msgstr ""
+
+#. translators: %d: order ID.
+#: app/Hooks/OrderHooks.php:464
+#, php-format
+msgid "Points restored: order #%d was reopened."
+msgstr ""
+
+#. translators: 1: order ID, 2: new order status.
+#: app/Hooks/OrderHooks.php:595
+#, php-format
+msgid "Points reversed: order #%1$d was %2$s."
+msgstr ""
+
+#. translators: %d: order ID.
+#: app/Hooks/OrderHooks.php:769
+#, php-format
+msgid "Redeemed points taken back: order #%d was reopened."
+msgstr ""
+
+#. translators: %d: order ID.
+#: app/Hooks/OrderHooks.php:819
+#, php-format
+msgid "Redeemed points returned: order #%d was cancelled."
+msgstr ""
+
+#. translators: %d: refund ID.
+#: app/Hooks/OrderHooks.php:865
+#, php-format
+msgid "Redeemed points returned for refund #%d."
+msgstr ""
+
+#. translators: %d: refund number.
+#: app/Hooks/OrderHooks.php:931
+#, php-format
+msgid "Points clawback for refund #%d"
+msgstr ""
+
+#: app/Hooks/OrderHooks.php:1111
 msgid "Points Earned:"
 msgstr ""
 
 #. translators: %d: number of points earned.
-#: app/Hooks/OrderHooks.php:233
+#: app/Hooks/OrderHooks.php:1113
 #, php-format
 msgid "+%d points"
 msgstr ""
 
-#: app/Hooks/OrderHooks.php:248
+#: app/Hooks/OrderHooks.php:1132
 msgid "Pending Points:"
 msgstr ""
 
 #. translators: %d: number of points the customer will earn.
-#: app/Hooks/OrderHooks.php:250
+#: app/Hooks/OrderHooks.php:1134
 #, php-format
 msgid "You will earn %d points"
 msgstr ""
 
-#: app/Hooks/OrderHooks.php:258
+#: app/Hooks/OrderHooks.php:1142
 msgid "Points Redeemed:"
 msgstr ""
 
 #. translators: %d: number of points redeemed.
-#: app/Hooks/OrderHooks.php:260
+#: app/Hooks/OrderHooks.php:1144
 #, php-format
 msgid "-%d points"
 msgstr ""
 
-#: app/Hooks/RegistrationHooks.php:78
+#: app/Hooks/RegistrationHooks.php:83
 msgid "Points awarded for registration."
 msgstr ""
 
-#: app/Hooks/ReviewHooks.php:155
+#: app/Hooks/ReviewHooks.php:160
 msgid "Points awarded for product review."
 msgstr ""
 
@@ -416,15 +662,20 @@ msgid "Copy URL"
 msgstr ""
 
 #. translators: %d: the referred customer's user ID.
-#: app/Referrals/ReferralProcessor.php:140
+#: app/Referrals/ReferralProcessor.php:149
 #, php-format
 msgid "Referral bonus for referring user #%d."
 msgstr ""
 
 #. translators: %d: the order ID that was cancelled or refunded.
-#: app/Referrals/ReferralProcessor.php:265
+#: app/Referrals/ReferralProcessor.php:274
 #, php-format
 msgid "Referral bonus reversed: order #%d was cancelled or refunded."
+msgstr ""
+
+#: app/Services/EarningCalculator.php:618
+#: build/settings.js:19
+msgid "Spend {amount} more to earn {points} points."
 msgstr ""
 
 #: config/admin.php:44
@@ -638,6 +889,7 @@ msgid "Reverse Selected Entries"
 msgstr ""
 
 #: build/admin.js:13
+#: build/settings.js:18
 msgid "Cancel"
 msgstr ""
 
@@ -808,169 +1060,477 @@ msgid "Enter your WPAnchorBay license key. You can find it in your purchase rece
 msgstr ""
 
 #: build/settings.js:13
+msgid "and above"
+msgstr ""
+
+#. translators: %s: points awarded per currency unit.
+#: build/settings.js:14
+#, js-format
+msgid "%s points per $1"
+msgstr ""
+
+#. translators: %s: number of points awarded.
+#: build/settings.js:15
+#, js-format
+msgid "%s points"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Add band"
+msgstr ""
+
+#: build/settings.js:15
+msgid "This band overlaps the one below it. On save, its lower bound will be moved up to remove the overlap."
+msgstr ""
+
+#: build/settings.js:15
+msgid "From ($)"
+msgstr ""
+
+#: build/settings.js:15
+msgid "To ($)"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Leave empty for the top band, which covers every order above \"From\"."
+msgstr ""
+
+#: build/settings.js:15
+msgid "Points per $1"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Points awarded"
+msgstr ""
+
+#: build/settings.js:15
+msgid "While any band is defined, the per-dollar rate above is not used. An order that falls outside every band earns nothing, so make sure the ladder starts at $0."
+msgstr ""
+
+#: build/settings.js:15
+msgid "Points awarded for past orders."
+msgstr ""
+
+#: build/settings.js:15
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: build/settings.js:15
+msgid "Guest orders"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Already awarded"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Fully refunded"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Would earn zero"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Award points for past orders"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Give points for completed orders placed before you installed PointBay or before earning was set up. Guest orders, orders that were already awarded and fully refunded orders are skipped. Each order is only ever credited once, so it is safe to run this again."
+msgstr ""
+
+#: build/settings.js:15
+msgid "Start date (required)"
+msgstr ""
+
+#: build/settings.js:15
+msgid "End date (optional)"
+msgstr ""
+
+#: build/settings.js:15
+msgid "Preview"
+msgstr ""
+
+#. translators: 1: orders checked so far, 2: total orders in the date range.
+#: build/settings.js:16
+#, js-format
+msgid "Checked %1$s of %2$s orders"
+msgstr ""
+
+#: build/settings.js:16
+msgid "Nothing to award for this date range."
+msgstr ""
+
+#. translators: 1: number of orders, 2: number of customers, 3: total points.
+#: build/settings.js:17
+#, js-format
+msgid "%1$s order(s) from %2$s customer(s) will earn %3$s points in total."
+msgstr ""
+
+#. translators: 1: total points, 2: number of customers, 3: number of orders.
+#: build/settings.js:18
+#, js-format
+msgid "This will add %1$s points to %2$s customer(s) for %3$s order(s). This cannot be undone in bulk."
+msgstr ""
+
+#: build/settings.js:18
+msgid "Skipped:"
+msgstr ""
+
+#: build/settings.js:18
+msgid "Confirm and award points"
+msgstr ""
+
+#: build/settings.js:18
+msgid "Back"
+msgstr ""
+
+#. translators: 1: orders credited, 2: customers credited, 3: points awarded.
+#: build/settings.js:19
+#, js-format
+msgid "Done: %1$s order(s) credited, %2$s customer(s), %3$s points"
+msgstr ""
+
+#: build/settings.js:19
 msgid "Failed to load settings."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Settings saved successfully."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Failed to save settings."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Configure how customers earn loyalty points."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Points Per Dollar"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "How many points the customer earns for every $1 spent."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Points for Registration"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Give new users this many points when they register."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Points for Product Review"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Reward points for an approved product review."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Order Status Trigger"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "The WooCommerce order status that triggers points crediting."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
+msgid "Earn On"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Which part of the order points are calculated against. Most stores want the subtotal, so customers are not rewarded for expensive shipping. Points paid with redeemed points never earn points back: only the part of the order paid with money counts, in both modes."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Flat Points Per Order"
+msgstr ""
+
+#: build/settings.js:19
+msgid "A fixed bonus on every order, added on top of the points earned from the order value. Set to 0 to disable."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Apply Tier Multiplier to Flat Bonus"
+msgstr ""
+
+#: build/settings.js:19
+msgid "When on, a customer on a higher tier earns a proportionally larger flat bonus."
+msgstr ""
+
+#: build/settings.js:19
+msgid "First Order Bonus"
+msgstr ""
+
+#: build/settings.js:19
+msgid "A one-time bonus on a customer's very first order. Awarded once per customer, for life. Set to 0 to disable."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Apply Tier Multiplier to First Order Bonus"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Usually left off, so the signup bonus you advertise is the amount every new customer actually receives."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Take Back Points When an Order Is Cancelled"
+msgstr ""
+
+#: build/settings.js:19
+msgid "When a completed order is cancelled, take back the points earned on it. Cash on delivery orders always do this. If the order is reopened, the points are given back."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Minimum order amount to earn points"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Orders below this amount earn no points at all (flat and first-order bonuses included). Leave 0 to turn this off. Measured the same way points are calculated, so it follows the \"points basis\" setting above and ignores the part paid with points."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Points for blog comments"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Points a logged-in customer earns for a comment on a blog post. 0 turns this off. Product reviews are rewarded separately above."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Require comment approval before earning"
+msgstr ""
+
+#: build/settings.js:19
+msgid "On: points are given when the comment is approved. Off: points are given as soon as the comment is posted (spam never earns). Points are taken back if the comment is later marked as spam, trashed or deleted."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Comments that can earn per day"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Per customer, per day. 0 means no limit."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Band Type"
+msgstr ""
+
+#: build/settings.js:19
+msgid "A fixed number of points"
+msgstr ""
+
+#: build/settings.js:19
+msgid "A points-per-dollar rate"
+msgstr ""
+
+#: build/settings.js:19
+msgid "What each band below awards. Fixed gives every order in the band the same points; rate multiplies the order value by the band figure."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Order Value Bands"
+msgstr ""
+
+#: build/settings.js:19
 msgid "Redemption Rules"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Configure how points are converted to discounts."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Point Value ($)"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "The monetary value of a single point."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Redemption Mode"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Cart Fee (WC_Fee)"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Virtual Coupon (WC_Coupon)"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "How the discount is applied to the cart."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Minimum Points to Redeem"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "The minimum amount of points needed before the redemption form is shown."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
+msgid "Let Customers Choose the Amount"
+msgstr ""
+
+#: build/settings.js:19
+msgid "When on, the checkout shows a slider so the customer can spend part of their balance. When off, redemption is all-or-nothing."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Hide Coupon Form While Points Are Applied"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Stops customers stacking a coupon on top of a points discount by hiding the coupon box once points are applied."
+msgstr ""
+
+#: build/settings.js:19
 msgid "Reward customers for referring their friends."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "New Customer Bonus Points"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Reward the new customer too, not just the referrer — only in PointBay Pro"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Points awarded to the new customer themselves after their first purchase via a referral link."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Enable Referrals"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Turn on the referral program"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Gives every customer a shareable link that credits them when a friend they refer completes a first order."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Referral Bonus Points"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Points awarded to the referrer after the new customer's first purchase."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Display & System"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Additional display and maintenance options."
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Guest Notice"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Show login/register prompt on checkout"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
+msgid "Product Page Earn Notice"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Show how many points a product will earn"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Displays the points figure under the price on each product page."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Minimum spend message"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Shown on the product page, cart and checkout when the order is below the minimum. Use {amount} for what is left to spend and {points} for the points they will earn once the minimum is reached. Leave empty for the default."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Comment Form Earn Notice"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Show points notice on the comment form"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Tells logged-in customers how many points a blog comment earns."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Balance in Site Menu"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Show the customer's balance in the navigation and toolbar"
+msgstr ""
+
+#: build/settings.js:19
+msgid "Block themes do not use classic navigation menus. On those, use the toolbar entry or place the [pointbay_balance] shortcode in a header block."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Menu Location"
+msgstr ""
+
+#: build/settings.js:19
+msgid "The theme menu location to append the balance to, e.g. 'primary'."
+msgstr ""
+
+#: build/settings.js:19
+msgid "Balance Format"
+msgstr ""
+
+#: build/settings.js:19
+msgid "How the balance reads. {points} is replaced with the number, e.g. \"{points} pts\"."
+msgstr ""
+
+#: build/settings.js:19
 msgid "Admin Sidebar Menu"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Show a dedicated PointBay menu in the WordPress admin sidebar (Points History and Loyalty settings stay available under WooCommerce either way)"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Run Setup Wizard"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Purge all ledger data upon deletion"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Debug Logging"
 msgstr ""
 
-#: build/settings.js:13
+#: build/settings.js:19
 msgid "Write diagnostic messages to the WordPress debug log"
 msgstr ""
