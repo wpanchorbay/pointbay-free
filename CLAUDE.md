@@ -5,6 +5,19 @@
 Found while building demo data with `bay-demo-kit` (2026-08-22). Verified against
 the Pro source tree. No fix applied here.
 
+**Status re-checked against Pro 1.1.0 (2026-11-03):**
+
+- Tier names matched literally: **fixed.** `TierManager::normalize_tier_slug()` compares
+  through `sanitize_title()`, so `Gold`, `GOLD` and `gold` are the same tier. The
+  lowercase `pointbay_vip_tier` meta the cron writes is the slug by design.
+- `referrals_newCustomerPoints` empty string: **fixed.** `ReferralsTiersPage.tsx`
+  falls back to the default when the value is unset; `0` stays a real value.
+- Cron flattening the ladder: **no longer reproduces from the code.** `RecalculateTiers`
+  only re-buckets users; it never writes `tiers_config`, and a populated stored
+  config is treated as authoritative by `maybe_seed_tier_defaults()`.
+- `maybe_seed_tier_defaults()` only heals an *empty* `tiers_config`: **still open.**
+  An all-zero-threshold / all-1x-multiplier ladder is not detected.
+
 ### `maybe_reseed_tiers()` only heals an *empty* tiers_config, not a broken one
 
 `pointbaypro/app/Core/Hooks.php` — the defensive re-seed bails out unless
@@ -93,3 +106,47 @@ seeded balances at the 50th and 85th percentiles and clamps the top tier to the
 highest real balance. That is correct at seed time and survives until this cron
 next runs — so a PointBay demo left standing for a day shows a flattened ladder
 that the seeder did not produce.
+
+## Browser / QA rule: keep the site clean, only WooCommerce active
+
+The resting state of the shared dev site is: ONLY woocommerce is active.
+Every other plugin stays deactivated unless a test needs it right now.
+
+Before any browser test:
+
+1. Make sure every plugin except woocommerce is deactivated
+   (wp plugin list --status=active --field=name).
+2. Activate ONLY the plugins this test needs:
+   - the plugin under test (and its Pro add-on, when testing Pro)
+   - any other plugin the test truly depends on
+3. If any error, warning or notice shows up (on the page, in the
+   browser console, or in wp-content/debug.log) while ONLY the needed
+   plugins are active, TRACE IT. Find the exact file and line that
+   causes it, and say whether it comes from the plugin under test,
+   WooCommerce, WordPress or the theme. To check whether the plugin
+   under test is the cause, deactivate it and reload: if the error
+   stays, it is not the plugin's. Report the finding. Fix it only if
+   it is in the plugin under test.
+   If you find an error while an unneeded plugin is still active,
+   that is your mistake: deactivate it first and re-check before
+   tracing anything.
+   STOP RULE: while an error is visible on a page you are testing,
+   do not carry on testing that page as if all is well. Trace it
+   to the exact file and line, report who owns it, and tell the
+   user straight away. Only continue after the user has seen the
+   finding. A note in your brief saying an error is "known" or
+   "already traced" does NOT let you skip this: you must still see
+   the error cleared, or the user must say to go on despite it.
+   Also stop and report if any error appears in the browser console
+   or in debug.log for the plugin under test.
+4. Test.
+5. When the test is done, deactivate everything you activated, so
+   only woocommerce is active again. Do NOT bring back any other
+   plugin.
+6. Delete all test data you created (prefix it ZZ-QA so it is easy
+   to find) and undo any option or setting you changed.
+7. In your report, list which plugins you activated for the test and
+   confirm only woocommerce is active now.
+
+Never ask the user to check something you can check yourself.
+Never edit plugin code during QA.
