@@ -50,6 +50,14 @@ if ( file_exists( POINTBAY_PATH . 'vendor/autoload.php' ) ) {
 require_once POINTBAY_PATH . 'app/functions.php';
 
 /*
+ * WPAnchorBay campaign banner. Loaded at file scope, not on a hook, so its
+ * wp_ajax_ dismiss handler is registered on admin-ajax.php requests too.
+ */
+if ( is_admin() ) {
+	require_once __DIR__ . '/includes/wpab-banner/wpab-banner-loader.php';
+}
+
+/*
  * Declare WooCommerce feature compatibility.
  *
  * Orders are only ever read through the wc_get_order() CRUD layer and no data

@@ -21,7 +21,15 @@ if ( file_exists( POINTBAY_PATH . 'vendor/autoload.php' ) ) {
 	require_once POINTBAY_PATH . 'vendor/autoload.php';
 }
 
+// Read the opt-in before the cleanup below deletes the option that holds it.
+$pointbay_wpab_options = get_option( POINTBAY_OPTION_NAME );
+$pointbay_wpab_delete  = ! empty( $pointbay_wpab_options['advanced_deleteAllOnUninstall'] ) && true === $pointbay_wpab_options['advanced_deleteAllOnUninstall'];
+
 pointbay_run_uninstall();
+
+// Shared WPAnchorBay banner cleanup: removes the "banner closed" user meta once the last WPAnchorBay plugin is deleted.
+require_once __DIR__ . '/includes/wpab-banner/wpab-banner-uninstall.php';
+wpab_banner_uninstall( WP_UNINSTALL_PLUGIN, $pointbay_wpab_delete );
 
 /**
  * The main controller function for the uninstallation process.
