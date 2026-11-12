@@ -123,7 +123,7 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 == Changelog ==
 
 = 1.1.1 =
-*   Added a dismissible Black Friday deals notice from WPAnchorBay for administrators, on the Plugins screen and PointBay's own admin and settings pages, through 5 December 2026. Closing it hides it for good.
+*   Added a dismissible Black Friday deals notice from WPAnchorBay for administrators, on the Plugins screen and PointBay's own admin and settings pages, through 20 December 2026. Closing it hides it for a few days, and it comes back on a few key sale dates, such as just before Black Friday and Cyber Monday.
 
 = 1.1.0 =
 *   Added order-value bands, so points can be awarded per spending tier instead of a flat per-dollar rate.
@@ -163,7 +163,7 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 == Upgrade Notice ==
 
 = 1.1.1 =
-Adds a dismissible Black Friday notice for administrators on the Plugins and PointBay screens, through 5 December 2026. No changes to points, referrals or checkout.
+Adds a dismissible Black Friday notice for administrators on the Plugins and PointBay screens, through 20 December 2026. No changes to points, referrals or checkout.
 
 == Development ==
 
