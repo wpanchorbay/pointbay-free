@@ -4,7 +4,7 @@ Tags: woocommerce, loyalty, rewards, points, referral
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -122,6 +122,9 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 
 == Changelog ==
 
+= 1.1.1 =
+*   Added a dismissible Black Friday deals notice from WPAnchorBay for administrators, on the Plugins screen and PointBay's own admin and settings pages, through 5 December 2026. Closing it hides it for good.
+
 = 1.1.0 =
 *   Added order-value bands, so points can be awarded per spending tier instead of a flat per-dollar rate.
 *   Added a flat bonus on every order and a one-time bonus on a customer's first order, each with its own control over whether VIP tier multipliers apply.
@@ -156,6 +159,11 @@ The plugin sets one cookie, `pointbay_ref`, and only when the referral feature i
 
 = 1.0.0 =
 *   Initial release.
+
+== Upgrade Notice ==
+
+= 1.1.1 =
+Adds a dismissible Black Friday notice for administrators on the Plugins and PointBay screens, through 5 December 2026. No changes to points, referrals or checkout.
 
 == Development ==
 

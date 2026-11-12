@@ -60,6 +60,9 @@ copy_plugin_files() {
     cp -r config "$DEST/"
     cp -r includes "$DEST/"
 
+    # The shared banner's README is an internal integration doc, not for release.
+    rm -f "$DEST/includes/wpab-banner/README.md"
+
     # Strip source maps from the release build (dev-only, large, not for production).
     find "$DEST/build" -name '*.map' -delete
 
